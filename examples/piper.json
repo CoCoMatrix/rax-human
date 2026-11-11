@@ -1,0 +1,6 @@
+{
+  "address": "127.0.0.1:8091",
+  "motion_enabled": false,
+  "agent_image_width": 640,
+  "protected_paths": []
+}

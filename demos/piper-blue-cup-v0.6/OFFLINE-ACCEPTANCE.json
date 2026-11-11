@@ -1,0 +1,49 @@
+{
+  "offline_only": true,
+  "hardware_actions_started": false,
+  "tests": [
+    {
+      "group": "compiler",
+      "ok": true,
+      "passed": 10,
+      "elapsed_s": 0.18621408299077302,
+      "log": "compiler-tests.log"
+    },
+    {
+      "group": "transport_owner_contract",
+      "ok": true,
+      "passed": 27,
+      "elapsed_s": 0.5967555029783398,
+      "log": "transport_owner_contract-tests.log"
+    },
+    {
+      "group": "new_layout_ik_and_controller",
+      "ok": true,
+      "passed": 8,
+      "elapsed_s": 19.798689218005165,
+      "log": "new_layout_ik_and_controller-tests.log"
+    },
+    {
+      "group": "api_bridge_settling_web",
+      "ok": true,
+      "passed": 67,
+      "elapsed_s": 2.0412368829129264,
+      "log": "api_bridge_settling_web-tests.log"
+    },
+    {
+      "group": "trial_outcome_and_depth",
+      "ok": true,
+      "passed": 27,
+      "elapsed_s": 0.3368615950457752,
+      "log": "trial_outcome_and_depth-tests.log"
+    }
+  ],
+  "total_passed": 139,
+  "all_passed": true,
+  "integrated_review_ok": true,
+  "original_and_frozen_files_checked": 586,
+  "original_changes": [],
+  "physical_tracking_verified": false,
+  "live_stop_latency_verified": false,
+  "generated_at_ns": 1794365960036229826
+}

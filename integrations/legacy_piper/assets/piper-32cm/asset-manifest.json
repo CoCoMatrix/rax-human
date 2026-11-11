@@ -1,0 +1,150 @@
+{
+  "schema": "junqi.robot_description.v1",
+  "source_archive": "historical v11 supplied archive; derived via v12 and operator 32cm measurement",
+  "archive_sha256": "bc80ea36f4b9036296fa3c6db171bf69e22c1462368d5d05d21dbb2aedd4994e",
+  "revision": "v13_32cm",
+  "derived_from_urdf_sha256": "53cb1afc01523b03f073f9462c57a314ca0ab6176d384a006af1cd100563112f",
+  "physical_acceptance": false,
+  "files": [
+    {
+      "path": "dual_piper_x_description/meshes/base_link.stl",
+      "bytes": 605984,
+      "sha256": "b732cf8a1f8435f51e3ec860f11189c3ec63744d3df008b7d3e9b6505dfc483d"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/base_plate.stl",
+      "bytes": 1713,
+      "sha256": "90ed12b9719cd716276d74f4a8b2534ca5450f276906f8dd2d66014881f7e60f"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/d435.dae",
+      "bytes": 15782439,
+      "sha256": "42f3b66f47a1f8f425a2e4dc07c1d9c283183167d8441f520a15623d98f9bf78"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/base_link.dae",
+      "bytes": 1008119,
+      "sha256": "a99f9875fc3528f75513fc09829d3979e004fd45f4712125ab8ee9b3cf2402bd"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/flange.dae",
+      "bytes": 285331,
+      "sha256": "07f8a0ccc18a72116f44e33e271765ed53d1d38b11695085a1c4af9ea7213b7f"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/gripper_base.dae",
+      "bytes": 2721612,
+      "sha256": "297b6bce631a1b78acf5176b84bcb312c369262571f33ccc6ee275ee3b6b5d6e"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/gripper_link1.dae",
+      "bytes": 176694,
+      "sha256": "526f389a10a82888e9276ed50f41bab13e7bd17b94a4b0bc473deae5d1e59299"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/gripper_link2.dae",
+      "bytes": 176694,
+      "sha256": "f5a0f658abb1333e57e5a5f386a172c801659f95bc5e56072f0a75fb83e8e871"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/link1.dae",
+      "bytes": 2372447,
+      "sha256": "8d3873f799ca38e39757db6591346252ee597238a5d4cac1373976990751610a"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/link2.dae",
+      "bytes": 6932829,
+      "sha256": "6363ac7227755660a70a55c537d6ba074c73fc06bebe5311522038c62ab84fd8"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/link3.dae",
+      "bytes": 4309196,
+      "sha256": "5398179d224cb1399270e7939ff0f6dd990499597d7a371b7952b6b0857235f0"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/link4.dae",
+      "bytes": 2039309,
+      "sha256": "5b9b614a83f1a78891bfc130d8ed50735355eb9073c74ac748aaa2df93e7b76b"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/link5.dae",
+      "bytes": 2158904,
+      "sha256": "8ddba6802ba1765aaa06b8f9246900b89e5c115ef4ae82ff71c40dbee8486804"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/dae/link6.dae",
+      "bytes": 331636,
+      "sha256": "de13aebcf4876f7e603ee3459aa574d560d26e1bcc3d723e0c6a003226128520"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/flange.stl",
+      "bytes": 204584,
+      "sha256": "f9ce752f93a6598858a779e3d8755a09e466b588efcffc3a1c3953773753a22b"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/gripper_base.stl",
+      "bytes": 1837884,
+      "sha256": "0b839dc0bcb7d94e3422c74f6396b54a0441ba4836448ab5586e7f372d1bdbf3"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/gripper_link1.stl",
+      "bytes": 104384,
+      "sha256": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/gripper_link2.stl",
+      "bytes": 104384,
+      "sha256": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/link1.stl",
+      "bytes": 1332084,
+      "sha256": "60c53c4d5d20c5b663cc4ced2f5e322d2a857baa6e79cef04a33b5f9f7c1e985"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/link2.stl",
+      "bytes": 2951684,
+      "sha256": "0316b881cd0bae6c9f8f794fabdee7fbf041f83f2f75980d34b67555fe8a3561"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/link3.stl",
+      "bytes": 2362084,
+      "sha256": "c51994fa4ca6a0577cfc65fe5a666ad47ad6af8dc98fbe81b71c4a7fe8ad09a5"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/link4.stl",
+      "bytes": 1163284,
+      "sha256": "10b69bde5305c53fbb4a6dc4e910e8604d54d250a969e6cda8128d8244989831"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/link5.stl",
+      "bytes": 1139184,
+      "sha256": "fb7ab27270e6b5fa0b2e6df9fa37722062f4ff397cd4f89883d23551bedd0801"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/link6.stl",
+      "bytes": 162084,
+      "sha256": "8c391520fd963fe4f9b46afcde82ceeab2a93b73c01fc5debe039fe632f597e6"
+    },
+    {
+      "path": "dual_piper_x_description/meshes/realsense_d435_mount_centered.stl",
+      "bytes": 74984,
+      "sha256": "7d722a2809b3ec8c8ea3b4575b1857e71d15995e62356d034004fb740df61fb9"
+    },
+    {
+      "path": "dual_piper_x_description/urdf/dual_piper_x.urdf",
+      "bytes": 41566,
+      "sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d"
+    },
+    {
+      "path": "head_camera_extrinsics.json",
+      "bytes": 2676,
+      "sha256": "ff8696d7683078dd95306d9a4994b2bce0b239260d3a784a357f51515d248254"
+    },
+    {
+      "path": "nominal_tcp.json",
+      "bytes": 3601,
+      "sha256": "95a428c5f295a305daf97e692485094a2622d3ed4479ed638a00c898940ae98e"
+    }
+  ]
+}

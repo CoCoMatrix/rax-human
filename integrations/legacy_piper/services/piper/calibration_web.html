@@ -1,0 +1,107 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAX · 左臂标定</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Microsoft Yahei",sans-serif;color:#e8edf3;background:#10151c;font-size:16px}*{box-sizing:border-box}body{margin:0}main{max-width:1240px;margin:auto;padding:28px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}h1{font-size:26px;margin:0 0 8px}h2{font-size:18px;margin:0 0 16px}p{line-height:1.65;color:#b9c4d2;margin:8px 0}.layout{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}.card{background:#1b232e;border:1px solid #354150;border-radius:14px;padding:22px;margin-bottom:18px}.viewport{aspect-ratio:16/9;background:#080c11;border-radius:8px;overflow:hidden}.camera{display:block;width:100%;height:100%;background:#080c11;object-fit:contain;border-radius:8px}.badge{border:1px solid #67768b;padding:8px 12px;border-radius:20px;white-space:nowrap}.muted{font-size:14px;color:#a1b0c2}.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}button{min-height:50px;background:#273547;color:#f6f9ff;border:1px solid #65768c;border-radius:9px;font:inherit;cursor:pointer;padding:10px 14px}button:hover:not(:disabled){filter:brightness(1.2)}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #94c8ff;outline-offset:3px}.hold{background:#755320;border-color:#e4b363}.danger{background:#542a31;border-color:#b86d78}.capture{background:#17634b;border-color:#57bd95;width:100%;font-weight:700;margin:14px 0}.jog{display:grid;grid-template-columns:1fr 70px 70px;gap:8px;align-items:center;margin:9px 0}.jog button{min-height:44px}.success{background:#123d2d;border:1px solid #50bd8c;color:#b5f4d4;border-radius:10px;padding:18px;font-size:19px}.failure{background:#40272d;border:1px solid #ae6c77;color:#ffd1d9;border-radius:10px;padding:15px}.neutral{padding:15px;background:#121b27;border-radius:10px;color:#c0ccdb}.progress{display:flex;gap:24px;margin:14px 0;font-size:19px}label{display:block;line-height:1.6;margin:12px 0}input[type=checkbox]{width:18px;height:18px;vertical-align:middle;margin-right:8px}input[type=number]{background:#111b28;color:white;border:1px solid #61728b;padding:8px;border-radius:6px;width:86px}select{background:#111b28;color:white;padding:10px;border:1px solid #61728b;border-radius:7px;width:100%;font:inherit}details{margin-top:16px}summary{cursor:pointer}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;color:#b2c1d4;max-height:240px;overflow:auto}.instructions{line-height:1.8;color:#bdc8d7;padding-left:23px}.instructions li{margin:8px 0}.notice{color:#f1ce8b}#message{min-height:24px;color:#f1ce8b}#ownerError{color:#f1b7bc;font-size:14px;overflow-wrap:anywhere}#result{margin-top:10px}@media(max-width:850px){main{padding:16px}.layout{grid-template-columns:1fr}header{align-items:flex-start;gap:12px}.card{padding:17px}h1{font-size:22px}}
+</style>
+<style>
+.direction-pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}.direction-pad button{padding:10px 4px}.direction-pad .front{grid-column:2}.direction-pad .left{grid-column:1}.direction-pad .right{grid-column:3}.direction-pad .back{grid-column:2}.direction-center{display:flex;align-items:center;justify-content:center;font-size:13px;color:#a9bdd3}.axis-note{padding:12px;background:#101b29;border-radius:8px;font-size:14px}.wrist-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+</style>
+<main><header><div><h1>RAX · 左臂标定</h1><p class="muted">固定头相机 · 标定板随左臂移动 · 右臂与夹爪不发指令</p></div><span class="badge" id="connection">正在连接…</span></header>
+<div class="layout"><section>
+<div class="card"><h2>头相机画面</h2><div class="viewport"><img class="camera" id="camera" alt="头相机未连接"></div><p class="muted">预览仅用于看位置。采集保存原始分辨率图片及同期关节角。</p><p id="ownerError"></p></div>
+<div class="card"><h2>每换一个姿态，采一组</h2><div class="progress"><span id="fitCount">拟合 0 / 12</span><span id="heldCount">验证 0 / 3</span></div>
+<p id="dragGuide" class="notice" hidden>① 托住左臂，点击「进入拖动」 → ② 调整位置后托稳约 1 秒 → ③ 点击 Hold，等待“已锁定、已停稳” → ④ 采集并看到 ✅ → 再进入拖动。首次切换需有人现场承托验证；拖动时不能假定松手后会悬停。</p>
+<label for="split">样本用途</label><select id="split"><option value="fit">拟合：先采 12 个不同姿态</option><option value="heldout">验证：再采 3 个新姿态，不参与拟合</option></select>
+<button class="capture" id="capture" disabled>采集当前姿态</button>
+<p id="manualGuide" class="notice" hidden>人工采集：一人托稳并摆动机械臂，另一人点击采集。保持失能；采图时持续托稳，程序最多等待 8 秒寻找连续 2 秒静止窗口，不用点击 Hold。板子始终固定在末端，不能用手单独移动板子。</p>
+<div id="result" class="neutral" role="status" aria-live="polite">尚未采集。先确认标定板，再等待停稳。</div>
+<details><summary>15 个姿态怎么摆</summary><ol class="instructions">
+<li>标定板刚性固定在左臂末端，图案朝向头相机。整批采集保持安装和相机位置不变。</li>
+<li>先在画面中间采 4 组：正面、向左倾、向右倾、向上或向下倾。每组都要变换机械臂姿态。</li>
+<li>再在画面左侧和右侧各采 4 组；交替改变倾角，并适当改变高度、远近。整块板始终可见。</li>
+<li>选择“验证”，另外摆 3 个没有采过的新姿态；不原地重复拍照。</li>
+<li>人工模式：保持失能 → 手动摆姿态并托稳 → 采集 → 看到绿色 ✅。点动模式：小步点动 → Hold → 等待停稳 → 采集。</li>
+</ol><p class="notice">倾斜约 15–30° 是取样建议，不是自动运动目标。不能只平移，也不能只绕一个方向旋转。绕两个不同方向改变朝向；以可见、无碰撞和关节范围为准。</p></details></div>
+</section><aside>
+<div class="card"><h2>1. 标定板准备</h2><p>横向、纵向各连续 4 格，从格子边缘量到边缘。</p><label>横向 <input id="horizontal" type="number" min="1" step="0.1" placeholder="100"> mm</label><label>纵向 <input id="vertical" type="number" min="1" step="0.1" placeholder="100"> mm</label><label><input id="rigid" type="checkbox">纸已平整贴在硬板上，硬板已刚性固定在左臂末端</label><button id="verify">确认尺寸与安装</button><p id="boardState" class="muted">尚未确认</p></div>
+<div class="card"><h2>2. 左臂控制</h2><p id="phase">状态未知</p><button id="drag" disabled hidden>进入拖动 · 手动摆姿态</button><div class="actions"><button id="hold" class="hold" disabled>Hold · 锁住当前位置</button><button id="disable" class="danger" disabled>左臂失能</button></div><p class="notice">切换时继续承托，等待已锁定再松手。Hold 不是急停，也不会恢复使能；失能会失去电机支撑。</p><label><input id="supported" type="checkbox">左臂已可靠承托；拖动、切换和失能时继续支撑</label><label><input id="dragClear" type="checkbox">我在现场，板子与手臂周围空间足够，急停可触达</label><p class="muted">失能后本会话锁定运动；恢复使能需另行检查。连接中断不会自动切换模式，请继续承托。</p><p id="message" role="status" aria-live="polite"></p></div>
+<div class="card" id="jogCard"><h2>3. 按方向移动</h2><label for="stepMm">每次平移距离</label><select id="stepMm"><option value="2" selected>2 mm · 精细调整</option><option value="5">5 mm</option><option value="10">10 mm</option></select><p>平移每次 <b id="stepLabel">2 mm</b>，保持末端朝向；速度参数 <b>1%</b>。等待停稳后再点，不会按住连发。切换步长不会移动机械臂。</p>
+<p class="axis-note">按机器人自身方向：站在机器人后面，和它朝向一致。前＝+X，左＝+Y，上＝+Z；不按相机画面方向。</p>
+<p class="muted">自动逆解：各关节配合完成所选方向和距离，保持末端朝向。计算时搜索多个关节配置；仅检查通过的目标才会下发。不能满足时显示限位、误差或途中检查原因。</p>
+<label><input id="clear" type="checkbox">我在现场，已检查板子、手臂与桌面／另一只臂之间的空间，急停可触达</label>
+<div class="direction-pad" aria-label="水平移动">
+<button class="front" data-jog="cal_move_forward" disabled>↑ 向前</button>
+<button class="left" data-jog="cal_move_left" disabled>← 向左</button><span class="direction-center" id="stepCenter">每次 2 mm</span><button class="right" data-jog="cal_move_right" disabled>向右 →</button>
+<button class="back" data-jog="cal_move_backward" disabled>↓ 向后</button></div>
+<div class="actions"><button data-jog="cal_move_up" disabled>↑ 向上抬</button><button data-jog="cal_move_down" disabled>↓ 向下降</button></div>
+<h2 style="margin-top:24px">旋转角度</h2><label for="stepDeg">每次旋转（腕部 J6 和倾角 J4／J5）</label><select id="stepDeg"><option value="0.5" selected>0.5° · 精细调整</option><option value="2">2°</option><option value="5">5°</option><option value="10">10°</option></select><p>每次旋转 <b id="rotationLabel">0.5°</b>。切换角度不会移动机械臂；旋转前检查整块板子扫过的空间。</p><h2 style="margin-top:24px">靠近夹爪的腕部 · J6</h2><p class="muted">绕腕部自身轴旋转。视角：从夹爪端朝腕部看。</p>
+<div class="wrist-controls"><button data-jog="cal_wrist_left" disabled>↶ 向左转 · J6＋</button><button data-jog="cal_wrist_right" disabled>↷ 向右转 · J6−</button></div>
+<details><summary>标定还需要：改变另一个方向的倾角</summary><p>只平移和旋转 J6 不够。采集时也用 J5／J4 改变倾角，让板子绕两个不同方向转动；使用上方所选旋转角度。</p><div id="jogs"></div><p class="muted">＋／−表示关节角方向，实际倾斜方向随姿态改变。先试一步观察。</p></details>
+<p class="muted">不能到达或接近限位时会拒绝这一步，不会改向或跳到另一种姿态。未完成实机验收；仍需人工检查运动空间。</p></div>
+</aside></div><details class="card"><summary>最近操作记录</summary><pre id="audit">尚无记录</pre></details></main>
+<script>
+const token='__CSRF__';let state=null,localBusy=false,lastGood=0;const $=id=>document.getElementById(id);
+const recover=document.createElement('button');recover.id='recover';recover.className='danger';recover.hidden=true;recover.textContent='恢复普通反馈 · 保持失能';$('drag').after(recover);
+const phases={MANUAL_WAIT_DISABLE:'人工采集：先托稳左臂，再点击失能',WAITING_HOLD:'先点击 Hold，建立当前位置保持',HOLD:'已观察到停稳，可准备采集',SETTLING:'正在等待停稳',HOLD_UNCONFIRMED:'Hold 未确认，检查反馈',DISABLED:'左臂六关节已失能；托稳后可直接采集',DISABLE_UNCONFIRMED:'失能请求已提交，驱动状态尚未确认'};
+Object.assign(phases,{DRAG_ENTERING:'正在确认拖动模式；请继续承托',DRAGGING:'拖动模式已反馈：托住左臂调整位置，停稳后点击 Hold',DRAG_FAULT:'模式或反馈异常：继续承托，检查错误；不会自动重试'});
+Object.assign(phases,{ENABLE_HOLD_WAIT:'正在恢复反馈并等待托稳；继续支撑',ENABLE_HOLD_PRELOADED:'已预置当前位置，检查姿态后使能；继续支撑',ENABLE_HOLD_CONFIRM:'正在确认使能和原位保持；暂不松手'});
+for(const j of [5,4]){const row=document.createElement('div');row.className='jog';row.innerHTML=`<span>倾角 J${j}</span><button data-jog="cal_jog_${j}_minus" aria-label="关节 ${j} 减少所选角度" disabled>−</button><button data-jog="cal_jog_${j}_plus" aria-label="关节 ${j} 增加所选角度" disabled>＋</button>`;$('jogs').append(row)}
+function controls(){const fresh=state?.connected&&Date.now()-lastGood<1600;const r=state?.owner?.robot_status||{},c=r.calibration_control||{};const writable=fresh&&state.owner.write_enabled===true&&r.hardware_write_enabled===true;const idle=!localBusy&&!state?.pending&&state?.capture?.state!=='running';const held=c.phase==='HOLD'&&!c.disable_latched&&c.left_enable_bits?.every(x=>x===true)&&!c.error;
+const urgentOwner=state?.owner?.write_enabled===true&&c.schema==='rax.piper.calibration_control.v1';
+$('hold').disabled=!urgentOwner||c.manual_only;$('disable').disabled=!urgentOwner||!$('supported').checked||c.disable_latched;
+$('drag').disabled=!(writable&&idle&&held&&c.drag_supported===true&&c.hold_verified===true&&!c.drag_error&&$('supported').checked&&$('dragClear').checked);
+$('recover').hidden=c.feedback_recovery_supported!==true;$('recover').disabled=!urgentOwner||!$('supported').checked;
+if(c.workflow==='drag_hold_capture')$('hold').disabled=!urgentOwner||c.disable_latched||(c.controller_mode!==1&&!$('supported').checked);
+if(c.enable_hold_supported){const enabling=!!c.enable_hold_stage,needsEnable=c.disable_latched||c.controller_mode===null;
+$('hold').textContent=enabling?'取消恢复 · 保持承托':needsEnable?'Hold · 恢复使能并保持':'Hold · 锁住当前位置';
+$('hold').disabled=!urgentOwner||(!enabling&&needsEnable&&(!$('supported').checked||!$('dragClear').checked||!idle));}
+const step=Number($('stepMm').value);const supportedSteps=c.translation_steps_mm||[2];
+$('stepMm').disabled=!idle;$('stepDeg').disabled=!idle;
+const rotation=Number($('stepDeg').value),supportedRotations=c.rotation_steps_deg||[.5];
+document.querySelectorAll('[data-jog]').forEach(b=>b.disabled=!(writable&&idle&&held&&!c.manual_only&&$('clear').checked&&c.cartesian_jog_supported===true&&(b.dataset.jog.startsWith('cal_move_')?supportedSteps.includes(step):supportedRotations.includes(rotation))));
+const manual=c.phase==='DISABLED'&&c.disable_latched===true&&c.left_enable_bits?.length===6&&c.left_enable_bits.every(x=>x===false)&&!c.error&&!c.enable_error&&$('supported').checked;
+$('capture').disabled=!(fresh&&idle&&state.board_verified&&(r.hardware_write_enabled===false||held||manual));
+if(c.workflow==='drag_hold_capture'&&c.capture_ready!==true)$('capture').disabled=true;
+$('verify').disabled=localBusy||state?.capture?.state==='running'||(state?.counts?.fit||0)+(state?.counts?.heldout||0)>0;
+}
+function render(){const r=state.owner?.robot_status||{},c=r.calibration_control||{};
+$('connection').textContent=state.connected?(state.owner.write_enabled?'控制已连接':'只读采集'):'未连接';
+$('ownerError').textContent=state.error||c.error||c.enable_error||'';$('phase').textContent=phases[c.phase]||'状态未知';
+$('ownerError').textContent=state.error||c.error||c.drag_error||c.enable_error||'';
+const dragFlow=c.workflow==='drag_hold_capture';$('drag').hidden=!dragFlow;$('dragGuide').hidden=!dragFlow;$('dragClear').parentElement.hidden=!dragFlow;
+if(dragFlow&&c.drag_supported===false)$('dragGuide').textContent='当前固件的 Leader 拖动会丢失反馈，暂时禁用。请承托左臂，恢复普通反馈后再处理；未完成拖动到 Hold 的实机验收。';
+if(c.enable_hold_supported){$('drag').hidden=true;$('dragGuide').textContent='失能后手动摆姿态 → 托稳并点击 Hold 恢复使能 → 等待已锁定、已停稳 → 松手后采集 → 再承托并失能。使能确认前持续支撑；异常会取消使能流程并请求失能，不会自动重试。';}
+if(c.enable_hold_supported){const card=$('hold').closest('.card');card.querySelector('p.notice').textContent='Hold 会在确认当前位置后恢复左臂使能。一直承托到显示已锁定、已停稳，再松手；若失败，请继续支撑。';card.querySelector('p.muted').textContent='只有你点击 Hold 才会开始恢复使能；刷新、重连和启动服务不会自动使能。失能后可重新摆位。';$('disable').textContent='左臂失能 · 手动摆位';$('capture').textContent='松手后采集当前姿态';}
+if(dragFlow&&c.phase==='HOLD'&&c.hold_verified)$('phase').textContent='已锁定、已停稳：可以采集，或再次进入拖动';
+if(c.enable_hold_supported&&c.phase==='HOLD'&&c.hold_verified)$('phase').textContent='已使能、已锁定、已停稳：可以松手，再点击采集';
+if(dragFlow&&c.phase==='DISABLED')$('phase').textContent='已失能：继续承托；本会话不能自动恢复使能';
+if(c.enable_hold_supported&&c.phase==='DISABLED')$('phase').textContent='已失能：手动摆好并托稳，勾选下方确认后点击 Hold 恢复使能';
+$('jogCard').hidden=c.manual_only===true;$('manualGuide').hidden=!(c.manual_only||c.disable_latched);$('hold').hidden=c.manual_only===true;
+if(dragFlow){$('jogCard').hidden=true;$('manualGuide').hidden=true;}
+$('boardState').textContent=state.board_verified?'尺寸与安装已确认':'尚未确认';
+$('fitCount').textContent=`拟合 ${state.counts.fit} / 12`;$('heldCount').textContent=`验证 ${state.counts.heldout} / 3`;
+const job=state.capture,total=state.counts.fit+state.counts.heldout;
+if(job.state==='idle'){$('result').className='neutral';$('result').textContent='本姿态尚未采集。确认标定板，Hold 锁定后再采集。'}
+else if(job.state==='running'){$('result').className='neutral';$('result').textContent=dragFlow?'正在检查连续 2 秒静止、识别标定板并保存…':'正在等待连续 2 秒托稳，再识别并保存…（等待上限 8 秒；请继续支撑）'}
+else if(job.state==='done'){$('result').className='success';$('result').textContent=`✅ 本次采集成功 · 已保存第 ${total} 组。识别到 ${job.corners} 个角点。`}
+else if(job.state==='failed'){$('result').className='failure';$('result').textContent='本次未采集成功：'+job.error}
+$('audit').textContent=state.events.map(x=>new Date(x.time_ns/1e6).toLocaleTimeString()+' '+JSON.stringify(x)).reverse().join('\n');controls();}
+async function submit(command,extra={}){if(!state)return;const urgent=['stop','cal_disable_left','cal_restore_feedback'].includes(command);if(!urgent)localBusy=true;controls();$('message').textContent='正在提交…';
+if(command==='capture'){$('result').className='neutral';$('result').textContent='正在采集本次样本…'}
+try{const response=await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Calibration-Token':token},body:JSON.stringify({command,request_id:crypto.randomUUID(),session:state.session,generation:state.owner?.robot_status?.generation,...extra})});const data=await response.json();if(!response.ok)throw Error(data.error);$('message').textContent=command==='verify_board'?'已记录尺寸和安装确认':'请求已提交；等待实际反馈';}
+catch(e){$('message').textContent=e.message+'（不会自动重试）';if(command==='capture'){$('result').className='failure';$('result').textContent='本次未采集成功：'+e.message}}
+finally{if(!urgent)localBusy=false;await refresh();}}
+async function refresh(){try{const response=await fetch('/api/state');if(!response.ok)throw Error('状态读取失败');state=await response.json();lastGood=Date.now();render()}catch(e){if(state)state.connected=false;$('connection').textContent='连接中断';$('ownerError').textContent=e.message;controls();}}
+$('hold').onclick=()=>{const c=state?.owner?.robot_status?.calibration_control||{};const command=c.enable_hold_supported&&!c.enable_hold_stage&&(c.disable_latched||c.controller_mode===null)?'cal_enable_hold':'stop';submit(command,{arm_supported:$('supported').checked,workspace_checked:$('dragClear').checked})};$('disable').onclick=()=>submit('cal_disable_left',{arm_supported:$('supported').checked});
+$('drag').onclick=()=>submit('cal_drag_left',{arm_supported:$('supported').checked,workspace_checked:$('dragClear').checked});
+$('recover').onclick=()=>submit('cal_restore_feedback',{arm_supported:$('supported').checked});
+$('capture').onclick=()=>submit('capture',{split:$('split').value,arm_supported:$('supported').checked});
+$('verify').onclick=()=>submit('verify_board',{horizontal_mm:Number($('horizontal').value),vertical_mm:Number($('vertical').value),rigid_fixed:$('rigid').checked});
+document.querySelectorAll('[data-jog]').forEach(b=>b.onclick=()=>submit(b.dataset.jog,{workspace_checked:$('clear').checked,...(b.dataset.jog.startsWith('cal_move_')?{step_mm:Number($('stepMm').value)}:{step_deg:Number($('stepDeg').value)})}));
+$('stepMm').onchange=()=>{const step=$('stepMm').value;$('stepLabel').textContent=step+' mm';$('stepCenter').textContent='每次 '+step+' mm';controls()};
+$('stepDeg').onchange=()=>{$('rotationLabel').textContent=$('stepDeg').value+'°';controls()};
+$('clear').onchange=controls;$('supported').onchange=controls;$('dragClear').onchange=controls;
+async function poll(){await refresh();setTimeout(poll,400)}poll();setInterval(controls,250);
+setInterval(()=>{if(state?.connected)$('camera').src='/api/camera/head.jpg?t='+Date.now();else $('camera').removeAttribute('src')},1000);
+$('camera').onerror=()=>{$('camera').alt='相机画面不可用';$('camera').removeAttribute('src')};
+</script></html>

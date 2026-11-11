@@ -1,0 +1,15 @@
+{
+  "id": "blue-cup",
+  "title": "Blue cup placement",
+  "description": "../blue-cup.md",
+  "backend_options": "../../blue-cup-exploration.json",
+  "seed_memory": "seed-memory",
+  "prompts": {
+    "common": "common.md",
+    "fresh": "fresh_r8_joint_transition.md",
+    "continuation": "continuation.md",
+    "rehearsal": "rehearsal.md",
+    "working_rehearsal": "working_rehearsal.md"
+  },
+  "history_lessons": null
+}

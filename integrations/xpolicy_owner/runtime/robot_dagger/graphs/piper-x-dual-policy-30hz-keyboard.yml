@@ -1,0 +1,150 @@
+nodes:
+  - id: realsense_multi
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.cameras.realsense_dora_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [image_left, image_head, image_right, status]
+    env:
+      REALSENSE_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      REALSENSE_CAMERA_PROFILE: "${PIPER_CAMERA_PROFILE:-}"
+      REALSENSE_DEVICE_INSTANCE: "${PIPER_DEVICE_INSTANCE:-../config/robot_instances/piper_x_dual_01.yml}"
+      # Optional observation-only IR packet sidechannel; disabled by default.
+      REALSENSE_STEREO_ADAPTER_ROOT: "${REALSENSE_STEREO_ADAPTER_ROOT:-}"
+      REALSENSE_STEREO_CALIBRATION: "${REALSENSE_STEREO_CALIBRATION:-}"
+      REALSENSE_STEREO_EXPORT_DIR: "${REALSENSE_STEREO_EXPORT_DIR:-}"
+      REALSENSE_STEREO_MAX_PACKETS: "${REALSENSE_STEREO_MAX_PACKETS:-120}"
+      REALSENSE_STEREO_INTERVAL_MS: "${REALSENSE_STEREO_INTERVAL_MS:-500}"
+      REALSENSE_DIAGNOSTICS: "${REALSENSE_DIAGNOSTICS:-0}"
+      REALSENSE_SDK_LOG_FILE: "${REALSENSE_SDK_LOG_FILE:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: piper_operator_ui
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.operator_ui_node
+    inputs:
+      tick: dora/timer/millis/50
+      robot_status: piper_x_dual_owner/status
+      policy_status: piper_x_dual_policy/status
+      model_info: piper_x_dual_policy/model_info
+      state_robot: piper_x_dual_owner/observation_state_robot
+      image_left: realsense_multi/image_left
+      image_head: realsense_multi/image_head
+      image_right: realsense_multi/image_right
+    outputs: [button_command, task, execution_config, rtc_config, rollout_config, transition_command, status]
+    env:
+      TASK: "${TASK:-Pick up one paper ball and place it in the trash bin.}"
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      PIPER_CONTROL_SOURCE: "keyboard"
+      PIPER_OPERATOR_UI_HOST: "127.0.0.1"
+      PIPER_OPERATOR_UI_PORT: "${PIPER_OPERATOR_UI_PORT:-8091}"
+      PIPER_OPERATOR_UI_AUTO_OPEN: "${PIPER_OPERATOR_UI_AUTO_OPEN:-1}"
+      PIPER_TASK_CATALOG_PATH: "${PIPER_TASK_CATALOG_PATH:-}"
+      PIPER_POLICY_ACTION_HORIZON: "${PIPER_POLICY_ACTION_HORIZON:-32}"
+      PIPER_POLICY_LABEL: "${PIPER_POLICY_LABEL:-Pi0.5 policy}"
+      POLICY_EXECUTE_CHUNK_SIZE: "${POLICY_EXECUTE_CHUNK_SIZE:-16}"
+      POLICY_EXECUTE_CHUNK_MODE: "${POLICY_EXECUTE_CHUNK_MODE:-auto}"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: piper_control_mux
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.control_mux_node
+    inputs:
+      tick: dora/timer/millis/50
+      keyboard_button_command: piper_operator_ui/button_command
+    outputs: [button_command, takeover]
+    env:
+      PIPER_CONTROL_SOURCE: "keyboard"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  # A 33 ms Dora timer is the closest integer-millisecond cadence to the
+  # descriptor's 30 Hz action contract. RTC stays opt-in through the UI.
+  - id: piper_x_dual_policy
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.policy_node
+    inputs:
+      tick: dora/timer/millis/33
+      control: piper_x_dual_owner/model_control
+      task: piper_operator_ui/task
+      execution_config: piper_operator_ui/execution_config
+      rtc_config: piper_operator_ui/rtc_config
+      state_robot: piper_x_dual_owner/observation_state_robot
+      image_camera_head: realsense_multi/image_head
+      image_camera_left: realsense_multi/image_left
+      image_camera_right: realsense_multi/image_right
+    outputs: [action_robot, model_info, status]
+    env:
+      POLICY_URL: "${POLICY_URL:-ws://127.0.0.1:19003}"
+      PIPER_OBSERVATION_SNAPSHOT_DIR: "${PIPER_OBSERVATION_SNAPSHOT_DIR:-}"
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      XPOLICY_ALLOW_NO_ACTION: "${XPOLICY_ALLOW_NO_ACTION:-0}"
+      TASK: "${TASK:-Pick up one paper ball and place it in the trash bin.}"
+      PIPER_TASK_CATALOG_PATH: "${PIPER_TASK_CATALOG_PATH:-}"
+      ROBOT_ID: "${ROBOT_ID:-piper_x_dual_01}"
+      MODEL_RETRY_SECONDS: "${MODEL_RETRY_SECONDS:-0.5}"
+      POLICY_ACTION_FREQUENCY_HZ: "${POLICY_ACTION_FREQUENCY_HZ:-30}"
+      ACTION_TRAJECTORY_TIME_SCALE: "${ACTION_TRAJECTORY_TIME_SCALE:-1}"
+      POLICY_EXECUTE_CHUNK_SIZE: "${POLICY_EXECUTE_CHUNK_SIZE:-16}"
+      POLICY_EXECUTE_CHUNK_MODE: "${POLICY_EXECUTE_CHUNK_MODE:-auto}"
+      POLICY_PREFETCH_ENABLED: "0"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: piper_x_dual_owner
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.dora_owner_node
+    inputs:
+      tick: dora/timer/millis/10
+      button_command: piper_control_mux/button_command
+      takeover: piper_control_mux/takeover
+      camera_status: realsense_multi/status
+      rollout_config: piper_operator_ui/rollout_config
+      transition_command: piper_operator_ui/transition_command
+      model_action: piper_x_dual_policy/action_robot
+      model_status: piper_x_dual_policy/status
+    outputs:
+      - status
+      - control_event
+      - takeover_event
+      - model_control
+      - episode_index
+      - episode_result
+      - observation_state_robot
+      - observation_cartesian_robot
+      - action_expert_proposed_robot
+      - action_expert_safe_robot
+      - action_model_robot
+      - action_selected_candidate_robot
+      - action_applied_robot
+      - control_mode
+      - selected_action_source
+      - label_valid
+    env:
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      PIPER_MODEL_FILTER_ENABLED: "${PIPER_MODEL_FILTER_ENABLED:-1}"
+      PIPER_MODEL_FILTER_ALPHA: "${PIPER_MODEL_FILTER_ALPHA:-0.6}"
+      PIPER_INITIALIZE_LEFT_GRIPPER_WIDTH_M: "${PIPER_INITIALIZE_LEFT_GRIPPER_WIDTH_M:-}"
+      PIPER_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      PIPER_DEVICE_INSTANCE: "${PIPER_DEVICE_INSTANCE:-../config/robot_instances/piper_x_dual_01.yml}"
+      PIPER_TRANSITION_POSE_LIBRARY_PATH: "${PIPER_TRANSITION_POSE_LIBRARY_PATH:-}"
+      PIPER_TRANSITION_POSE_LIBRARY_SHA256: "${PIPER_TRANSITION_POSE_LIBRARY_SHA256:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"

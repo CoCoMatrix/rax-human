@@ -1,0 +1,17 @@
+numpy==1.26.4
+scipy==1.15.3
+Pillow==11.3.0
+PyYAML==6.0.3
+msgpack==1.1.1
+msgpack-numpy==0.4.8
+websockets==15.0.1
+pydantic==2.11.7
+mink==1.2.0
+mujoco==3.11.0
+qpsolvers==4.13.0
+quadprog==0.1.13
+osqp==1.1.1
+pytest==8.4.2
+
+daqp==0.8.7
+yourdfpy==0.0.60

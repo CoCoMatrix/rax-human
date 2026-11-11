@@ -1,0 +1,13 @@
+{
+  "workspace_min": [
+    0.055,
+    -0.4,
+    0.17
+  ],
+  "workspace_max": [
+    0.5,
+    0.045,
+    0.36
+  ],
+  "note": "Existing operator-reviewed LEFT flange operating envelope reused as device policy; no cup targets or grasp parameters. Reach, collision and scene clearance must still be checked."
+}

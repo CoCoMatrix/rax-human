@@ -1,0 +1,6 @@
+RAX Human / Piper integration publication
+Derived from RAX: https://github.com/robot-agent-exploration/rax
+Upstream branch/source identities are recorded in UPSTREAM.json.
+Deployment-specific changes include Piper interfaces, supervised workflows, optional vision,
+independent software closeout, reproducible source snapshots and the scale-test Web.
+Third-party notices and licenses are preserved; see THIRD_PARTY_NOTICES.md.

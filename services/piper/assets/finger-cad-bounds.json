@@ -1,0 +1,37 @@
+{
+  "status": "CAD_nominal_not_physically_validated",
+  "physical_clearance_authority": false,
+  "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+  "finger_bounds": {
+    "1": {
+      "min": [
+        -0.02800000086426735,
+        -0.07649999856948853,
+        -6.383782507399936e-18
+      ],
+      "max": [
+        0.02800000086426735,
+        2.7755575615628914e-17,
+        0.026499999687075615
+      ],
+      "mesh_sha256": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d"
+    },
+    "2": {
+      "min": [
+        -0.02800000086426735,
+        -0.07649999856948853,
+        -5.421010862427522e-18
+      ],
+      "max": [
+        0.02800000086426735,
+        2.7755575615628914e-17,
+        0.026499999687075615
+      ],
+      "mesh_sha256": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606"
+    }
+  },
+  "limitations": [
+    "Installed pad shape and flange reference unresolved; do not use as collision clearance proof.",
+    "110mm physical-flange measurement differs from nominal TCP; neither is promoted to installed TCP."
+  ]
+}

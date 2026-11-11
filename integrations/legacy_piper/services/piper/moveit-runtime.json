@@ -1,0 +1,13 @@
+{
+  "root": "/home/ubuntu/code_junqi/moveit2-validation-20261102",
+  "binary": "/home/ubuntu/code_junqi/moveit2-validation-20261102/build/ik_server",
+  "urdf": "/home/ubuntu/code_junqi/moveit2-validation-20261102/dual_piper_x.urdf",
+  "srdf": "/home/ubuntu/code_junqi/moveit2-validation-20261102/dual_piper_x.srdf",
+  "files": {
+    "/home/ubuntu/code_junqi/moveit2-validation-20261102/build/ik_server": "71e03672e013c207035cd451ab82a98b33cb6e2a28eb70ff4877de26b095aa09",
+    "/home/ubuntu/code_junqi/moveit2-validation-20261102/ik_server.cpp": "b10eac8fa158df6f1941decf8a1622cb448bbd6925bc57774744703e0cbe5b79",
+    "/home/ubuntu/code_junqi/moveit2-validation-20261102/dual_piper_x.urdf": "b5c76cbaf681babb751076c3caaf5e7e1551d529ede4b0d380d2c15a3f9022f2",
+    "/home/ubuntu/code_junqi/moveit2-validation-20261102/dual_piper_x.srdf": "5d8bb952b840c5c81313bb31076413994159c4b7f2f04d0a829f596f3364d4ad",
+    "/home/ubuntu/code_junqi/moveit2-validation-20261102/env/lib/libmoveit_kdl_kinematics_plugin.so": "7da34786a190b5a122f837ad2c88ccc095b5bf6d1f06e7eb1fb40c28874f8efc"
+  }
+}

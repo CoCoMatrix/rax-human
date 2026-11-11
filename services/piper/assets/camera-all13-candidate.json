@@ -1,0 +1,221 @@
+{
+  "schema": "rax.piper.eye_to_hand_candidate.v1",
+  "T_base_camera": [
+    [
+      -0.016676558474787693,
+      -0.9997870619278373,
+      -0.012154143291059086,
+      0.2523087795091613
+    ],
+    [
+      -0.9994345921512982,
+      0.017023163241802336,
+      -0.02899496378012975,
+      -0.2721762188313748
+    ],
+    [
+      0.02919569161374791,
+      0.01166373503409468,
+      -0.9995056622532204,
+      0.7256526566607587
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "T_flange_board": [
+    [
+      0.9978606447021132,
+      -0.016251674448600994,
+      0.0633246937007995,
+      -0.11435881500863684
+    ],
+    [
+      -0.06358389175286756,
+      -0.015960816894793173,
+      0.9978488568082897,
+      -0.001617131992286593
+    ],
+    [
+      -0.015206000928679662,
+      -0.9997405340395416,
+      -0.016960015745553447,
+      0.28499335954359517
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "base_frame": "left_base_link",
+  "camera_frame": "global_d435_color_optical_frame",
+  "camera_serial": "262522073779",
+  "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+  "intrinsics_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+  "board_sha256": "eda5f538995ce57a4df3f0c9a197ccfedaf3f133c826db40cd76c171f9f7fda8",
+  "units": "m",
+  "samples": 13,
+  "fit_residuals": [
+    {
+      "position_m": 0.0050335371838264,
+      "angle_deg": 0.8111226365449019
+    },
+    {
+      "position_m": 0.001620183615876996,
+      "angle_deg": 0.19292085767531125
+    },
+    {
+      "position_m": 0.003810533583237911,
+      "angle_deg": 1.420509689601125
+    },
+    {
+      "position_m": 0.006535701202904306,
+      "angle_deg": 1.7339157969358598
+    },
+    {
+      "position_m": 0.008827841549920022,
+      "angle_deg": 1.780150694441761
+    },
+    {
+      "position_m": 0.006448807751102115,
+      "angle_deg": 1.2452093591953026
+    },
+    {
+      "position_m": 0.006950958267089512,
+      "angle_deg": 1.4021181122778608
+    },
+    {
+      "position_m": 0.012285255622945992,
+      "angle_deg": 1.8404300198828503
+    },
+    {
+      "position_m": 0.007824659370019424,
+      "angle_deg": 1.0855979621939829
+    },
+    {
+      "position_m": 0.010509100261850769,
+      "angle_deg": 1.0968904148810426
+    },
+    {
+      "position_m": 0.004399237393149483,
+      "angle_deg": 0.9828260587849776
+    },
+    {
+      "position_m": 0.005626435179188108,
+      "angle_deg": 1.098467382973152
+    },
+    {
+      "position_m": 0.015156033090337225,
+      "angle_deg": 0.6743401265708407
+    }
+  ],
+  "validation": {
+    "kind": "leave_one_out_cross_validation",
+    "independent_new_poses": 0,
+    "max_position_m": 0.018081505632386675,
+    "max_angle_deg": 2.048509912444099,
+    "rows": [
+      {
+        "sample_id": "2f617a17cdc74e33aa4062ff760edb31",
+        "position_m": 0.005635520792540262,
+        "angle_deg": 0.8920141839835491
+      },
+      {
+        "sample_id": "fe1f04dc985b4f57a71d1263c6f3bf78",
+        "position_m": 0.0017398254917478978,
+        "angle_deg": 0.23815085195028593
+      },
+      {
+        "sample_id": "8af92cf8ea2a40a892d419b335df694a",
+        "position_m": 0.0034430623991387774,
+        "angle_deg": 1.5439919765171481
+      },
+      {
+        "sample_id": "6eaa3b3dff264fc0880066ea95ae0eb7",
+        "position_m": 0.007201410770919185,
+        "angle_deg": 1.9567933810475011
+      },
+      {
+        "sample_id": "278f2c7ed664442aba415c6937faba48",
+        "position_m": 0.009568414848345674,
+        "angle_deg": 1.9353870079042914
+      },
+      {
+        "sample_id": "ae37554993444de2818dd9f6dec1b695",
+        "position_m": 0.007856535814212105,
+        "angle_deg": 1.4867875078524784
+      },
+      {
+        "sample_id": "9369d13cad524caca9e52e2c34e3cd91",
+        "position_m": 0.007955890604016566,
+        "angle_deg": 1.6574687194067708
+      },
+      {
+        "sample_id": "1ffea6ad0019499da835f934683c24cc",
+        "position_m": 0.01338448685552554,
+        "angle_deg": 2.048509912444099
+      },
+      {
+        "sample_id": "cd17782b45a74ff9b4143ba6292b165b",
+        "position_m": 0.008608368603656881,
+        "angle_deg": 1.2097850178087313
+      },
+      {
+        "sample_id": "3aa03d60967f4832936b41ac0fcfa6a6",
+        "position_m": 0.012420924220275933,
+        "angle_deg": 1.3630675129343173
+      },
+      {
+        "sample_id": "dc43155603fb4dbd8aa259f70dcb1876",
+        "position_m": 0.005505540741183385,
+        "angle_deg": 1.2084357093536002
+      },
+      {
+        "sample_id": "32d01bfebe9741bda832903cccf869f7",
+        "position_m": 0.008147122463647734,
+        "angle_deg": 1.2958070763312093
+      },
+      {
+        "sample_id": "c58232fa49604fa38692b96fe010006e",
+        "position_m": 0.018081505632386675,
+        "angle_deg": 1.146087885988873
+      }
+    ]
+  },
+  "rotation_singular_values": [
+    1.2385441816109752,
+    1.059044959204199,
+    0.16488012658663787
+  ],
+  "numerical_quality_pass": false,
+  "limits": {
+    "max_position_m": 0.003,
+    "max_angle_deg": 1,
+    "max_reprojection_px": 2
+  },
+  "candidate_only": true,
+  "physical_acceptance": false,
+  "motion_permit": false,
+  "method": "OpenCV PARK eye-to-hand, all 13; inversion of base<-flange input",
+  "limitation": "All samples were collected as fit. Leave-one-out is diagnostic, not prospective independent validation; TCP and depth scale not calibrated.",
+  "source_sha256": {
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170606046242874/sample.json": "6a7c5adbada007a8356257f037b76d799daa9e70c277d05976c97d1c7b10d124",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170614129002125/sample.json": "14aa1ffcdbb0a5bf6dbd05c305234c373754b6ab9d2ffa74a7eee57506a190ee",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170623306618532/sample.json": "f649d2611b9e1f5aa731c4175cfd9f694bcbe21355d103ff328774ad0be224c0",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170636169741815/sample.json": "42d87ef52289f8b833eb6dd53b1c69f49f07e159d0b994b16c29c15f11c24e90",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170647231359157/sample.json": "cf29ae02b833e2f8d6728e13556af560bc1842fe62df9c338287db82347c429e",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170654098904425/sample.json": "7d34bdc1401001354ec2b0230e6d93c8d4ca0fe761b6a84b6c4287dd660a36f4",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170673479341901/sample.json": "09a142221a503261f74a183d250bec32b31954f31dc31c3d8fee543ef1bcf3db",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170682828623148/sample.json": "545c8f682ec0d21c6544b32dc7872b5ce21ed20fa278b48dd2f5db7075f5b153",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170698187465323/sample.json": "e9d5743f53cb321c7ab5fed49ad6ccae27985994ce0ae431c3442a9288b863ee",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170719034044254/sample.json": "08c6b463ffd2a9b88f710f18f9cb48b986c68af430b295077750035b4362efd2",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170742614058345/sample.json": "a889072efb2334d78e5f2f6be7385717f954eb002a1be761172e06e72d3b19b2",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170762498283647/sample.json": "387ddc84a7ea419ff2c2bd29fbc7d95bfb2d809e363bb77e31f7eba61de732de",
+    "commissioning/calibration-manual-20261028/live03/capture/samples/1793170868734009479/sample.json": "cc504f47153e262e4e88d159aa625b2b44f74e115126552a1866a2c9156ee6f5"
+  }
+}

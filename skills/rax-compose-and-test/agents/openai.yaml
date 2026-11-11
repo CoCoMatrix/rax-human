@@ -1,0 +1,4 @@
+interface:
+  display_name: "RAX 合并与摆位测试"
+  short_description: "复用 Franka 函数演练与 main 合并路线，接续 Piper 多摆位测试与诊断"
+  default_prompt: "使用 $rax-compose-and-test 将已演练的函数合并成 main(ctx)，保留原版本并组织新摆位测试。"

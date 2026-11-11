@@ -1,0 +1,10 @@
+--- a/real_world/robots/piper_x_dual/dora_owner_node.py
++++ b/real_world/robots/piper_x_dual/dora_owner_node.py
+@@ -2480,6 +2480,7 @@
+                             "generation",
+                             "takeover",
+                             "recording",
++                            "rax_motion",
+                         )
+                     },
+                     sort_keys=True,

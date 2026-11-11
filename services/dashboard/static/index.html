@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAX Operator</title>
+<style>
+:root { --bg:#f6f7f9; --panel:#fff; --ink:#1d2329; --muted:#66707a; --line:#dde1e6; --accent:#2457c5;
+        --ok:#1f8a4c; --warn:#b7791f; --bad:#c62828; --code:#f0f2f5; }
+@media (prefers-color-scheme: dark) { :root { --bg:#14171b; --panel:#1d2126; --ink:#e6e9ec; --muted:#9aa4ae;
+        --line:#30363d; --accent:#6d9cff; --code:#262b31; } }
+* { box-sizing:border-box; }
+body { margin:0; font:14px/1.45 system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+header { display:flex; align-items:center; gap:16px; padding:10px 18px; background:var(--panel);
+         border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
+header h1 { font-size:17px; margin:0; flex:1; }
+main { display:grid; grid-template-columns:minmax(320px, 420px) 1fr; gap:14px; padding:14px; }
+@media (max-width:900px) { main { grid-template-columns:1fr; } }
+section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin-bottom:14px; }
+h2 { font-size:14px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+button { font:inherit; border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:6px;
+         padding:6px 12px; cursor:pointer; }
+button:hover:not(:disabled) { border-color:var(--accent); }
+button:disabled { opacity:.45; cursor:not-allowed; }
+button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+button.danger { background:var(--bad); color:#fff; border-color:var(--bad); font-weight:700; }
+button.big { padding:10px 18px; font-size:15px; }
+label { display:block; margin:6px 0 2px; color:var(--muted); font-size:12px; }
+input, select, textarea { width:100%; font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px;
+                          background:var(--bg); color:var(--ink); }
+textarea { min-height:70px; resize:vertical; }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+.session { padding:8px; border:1px solid var(--line); border-radius:6px; margin-bottom:6px; cursor:pointer; }
+.session.selected { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+.muted { color:var(--muted); font-size:12px; }
+.badge { display:inline-block; padding:1px 7px; border-radius:10px; font-size:12px; border:1px solid var(--line); }
+.badge.ok { color:var(--ok); border-color:var(--ok); } .badge.bad { color:var(--bad); border-color:var(--bad); }
+.badge.warn { color:var(--warn); border-color:var(--warn); }
+code, pre { background:var(--code); border-radius:4px; font:12px/1.4 ui-monospace, monospace; }
+code { padding:1px 4px; } pre { padding:8px; overflow:auto; max-height:360px; margin:0; white-space:pre-wrap; word-break:break-word; }
+.cams { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; }
+.cams figure { margin:0; } .cams img { width:100%; border-radius:4px; border:1px solid var(--line); }
+.cams figcaption { font-size:12px; color:var(--muted); }
+.tabs button { border-radius:6px 6px 0 0; } .tabs button.active { border-color:var(--accent); color:var(--accent); }
+.event { border-left:3px solid var(--line); padding:3px 8px; margin:4px 0; white-space:pre-wrap; word-break:break-word; }
+.event.assistant { border-color:var(--accent); } .event.tool_call { border-color:var(--warn); font-family:ui-monospace, monospace; font-size:12px; }
+.event.tool_result { border-color:var(--ok); font-family:ui-monospace, monospace; font-size:12px; color:var(--muted); }
+.event.tool_result.error { border-color:var(--bad); color:var(--bad); } .event.thinking { color:var(--muted); font-style:italic; }
+#activity { max-height:520px; overflow:auto; }
+.safety { border:2px solid var(--bad); }
+table.kv td { padding:1px 8px 1px 0; vertical-align:top; } table.kv td:first-child { color:var(--muted); white-space:nowrap; }
+#toast { position:fixed; bottom:16px; right:16px; max-width:480px; padding:10px 14px; border-radius:6px; display:none;
+         background:var(--ink); color:var(--bg); }
+#requests { margin:12px 16px 0; padding:12px 14px; border:2px solid var(--bad); border-radius:8px; background:var(--panel); }
+#requests h2 { margin:0 0 8px; color:var(--bad); }
+#requests .request { margin:8px 0; } #requests textarea { width:100%; min-height:48px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>RAX Operator</h1>
+  <span id="robot-badge" class="badge">robot ?</span>
+  <span id="running-badge" class="badge">no session running</span>
+  <button id="disarm-all" class="danger big" title="Disarm motion for every session and hold the arm">DISARM ALL</button>
+</header>
+<div id="requests" hidden></div>
+<main>
+  <div>
+    <section>
+      <h2>Sessions</h2>
+      <div id="sessions"><p class="muted">Loading...</p></div>
+    </section>
+    <section>
+      <h2>New session</h2>
+      <form id="new-session">
+        <label for="task">Task id</label><input id="task" name="task" required pattern="[A-Za-z0-9_-]+" placeholder="red_on_blue">
+        <label for="task_text">Task description (TASK.md)</label>
+        <textarea id="task_text" name="task_text" placeholder="Put the red cube on top of the blue cube."></textarea>
+        <div class="grid2">
+          <div><label for="effort">Effort</label>
+            <select id="effort" name="effort"><option>max</option><option>xhigh</option><option>high</option></select></div>
+          <div><label for="provider">Provider</label>
+            <select id="provider" name="provider"><option>codex-relay</option><option>claude-login</option><option>anthropic</option><option>openrouter</option></select></div>
+          <div><label for="model">Model (blank: provider default)</label><input id="model" name="model" placeholder="gpt-6-astra"></div>
+          <div><label for="session_hours">Session hours</label><input id="session_hours" name="session_hours" type="number" min="0.1" step="0.5" value="4"></div>
+          <div><label for="observation_profile">Observation</label>
+            <select id="observation_profile" name="observation_profile"><option>rgbd</option><option>rgb-only</option></select></div>
+          <div><label for="subagents">Subagents</label><input id="subagents" name="subagents" type="number" min="0" max="8" value="0"></div>
+        </div>
+        <p class="row" style="margin-top:10px"><button class="primary" type="submit">Create session</button></p>
+      </form>
+    </section>
+  </div>
+  <div>
+    <section id="detail"><h2>Session</h2><p class="muted">Select a session.</p></section>
+    <section class="safety" id="safety" hidden>
+      <h2>Motion safety</h2>
+      <div class="row">
+        <span id="motion-state" class="badge">?</span>
+        <button id="disarm" class="danger big">DISARM</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label style="display:flex; gap:6px; align-items:center; margin:0; color:var(--ink); font-size:14px">
+          <input type="checkbox" id="estop" style="width:auto"> A person is at the emergency stop and the workspace is clear</label>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <input id="arm-minutes" type="number" min="1" step="1" placeholder="expires after N minutes (optional)" style="max-width:280px">
+        <button id="arm" class="primary">ARM motion</button>
+      </div>
+    </section>
+    <section>
+      <h2>Robot</h2>
+      <div id="robot" class="muted">Loading...</div>
+    </section>
+    <section id="cameras-section" hidden>
+      <h2>Latest agent frame</h2>
+      <div id="frame-info" class="muted"></div>
+      <div id="cameras" class="cams"></div>
+    </section>
+    <section id="activity-section" hidden>
+      <h2>Agent activity</h2>
+      <div class="row tabs">
+        <button data-tab="transcript" class="active">Transcript</button>
+        <button data-tab="mcp">Robot calls</button>
+        <button data-tab="logs">Logs</button>
+      </div>
+      <div id="activity"></div>
+    </section>
+  </div>
+</main>
+<div id="toast"></div>
+<script src="/app.js"></script>
+</body>
+</html>

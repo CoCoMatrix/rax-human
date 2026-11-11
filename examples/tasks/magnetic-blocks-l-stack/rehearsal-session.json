@@ -1,0 +1,17 @@
+{
+  "id": "magnetic-blocks-l-stack",
+  "title": "Magnetic blocks L stack",
+  "agent_auto_compact_token_limit": null,
+  "description": "TASK_REHEARSAL.md",
+  "backend_options": "workspace-bounds.json",
+  "seed_memory": "seed-memory",
+  "history_lessons": null,
+  "prompts": {
+    "fresh": "fresh.md",
+    "common": "common.md",
+    "continuation": "unused.md",
+    "rehearsal": "rehearsal.md",
+    "working_rehearsal": "rehearsal.md"
+  },
+  "compact_rehearsal_brief": true
+}

@@ -1,0 +1,3 @@
+# Operator-side RAX .venv only. Keep the robot SDK and FFS environments unchanged.
+# The installed 5.0.0.93 wheel did not export calibrateHandEye; 4.11 does.
+opencv-python-headless==4.11.0.86

@@ -1,0 +1,380 @@
+{
+  "schema": "rax.demo.validation-summary.v1",
+  "captured_date": "2026-11-11",
+  "source": "Existing server Web records and REHEARSAL-DONE.json; no new hardware run",
+  "scope": "All four recorded rc10 Web runs; three successful and one failed. Not randomized coverage or a claimed generalization rate.",
+  "runs": [
+    {
+      "id": "web-main-20261110-163900-bd92c4",
+      "commit": "b4d3c1720ad635464fe099043ea4fd708870b902",
+      "version": "v0.4.0-rc10",
+      "outcome": "success",
+      "elapsed_s": 57.82610966800712,
+      "total_wall_s": 73.6819281578064,
+      "main_agent_calls": 0,
+      "auxiliary_visual_calls": 0,
+      "wrist_depth_calls": 0,
+      "human_assisted": false,
+      "stop_confirmed": true,
+      "metrics_complete": true,
+      "failed_step": null,
+      "why": "Release and retreat verified on this run",
+      "source_record_sha256": "4998062fc083eecaf7f2f349203de66ccd6d92620b602ffd094c174fd63debb8",
+      "source_report_sha256": "06fdf44a73165ce0ccc458c4b366f08cacec6345e1727c26bf132bd0e3a800ab",
+      "source_report_code_sha256": {
+        "approach_target.py": "0066405d91df94dde519c5ebbfa4054823c659963ef736a4c371a484cffdaa1e",
+        "checks.py": "a06ed0ba9d165e6ad0056313459260fbdc3f3b6aa63584f034bfc5161d194087",
+        "controller.py": "15c0dfa3fbb58c0bdfa92e84d36cfa00a1a09acd33627768c4f673c74b3265c1",
+        "depth_probe.py": "422bf2a76a17ffb221bd3f11a16d6cdbdd4a39ec388ad17d140c58ff065c4c65",
+        "execution.py": "21e0a3ac9156d45418e47a22df13287faa7eb3a759736f4dfacabbd74341bde3",
+        "geometry_probe.py": "b65349ef5aec62beb29adb61f9422630768f95ae1cf649aabb143baa7d01b857",
+        "maneuvers.py": "522df02fbf23acb84b5d5abba4a339c1ab14828fed73971024cc90577cceafa0",
+        "perception.py": "58f6a2e8662c37c18bb70c2c4c51d68a858d7a9c174e87c3d52a1c61d66235e6",
+        "placement.py": "a81ed625d0e605f9f76412ef48c5cf3489fadb2978af31ba8a81931d75979a32",
+        "rehearsal.py": "1d23401e49d3c68525854dac5df1f6980ceeece0e61ab298e38c58251ef50588",
+        "scene_geometry.py": "6bece740528993b40c8bb65e032765b94881faef7d71bbe56fde6eb78af83b07",
+        "scheduled.py": "635d7cb95dcb3babe483ff3c889803c019fd754bfeb0de27c88ba586001664c1",
+        "transport.py": "8dda651a31d6cff6ba29987fa558a232518487d0005da3cf15b2de2cdbc6e5ea"
+      },
+      "code_matches_packaged_python": true,
+      "source_stop_sha256": "acd1cd51d46afd93369edd524bac328f56fc28fca8af428d1a9fa85a2d657973",
+      "stages": [
+        {
+          "stage": "prepare",
+          "stage_elapsed_s": 28.284714697045274,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "hover",
+          "stage_elapsed_s": 3.0989180019823834,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "entry",
+          "stage_elapsed_s": 3.416829574969597,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "grasp",
+          "stage_elapsed_s": 5.703109099995345,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "trial_lift",
+          "stage_elapsed_s": 3.311560796923004,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "localize_coaster",
+          "stage_elapsed_s": 0.011415136978030205,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": null
+        },
+        {
+          "stage": "transfer_1",
+          "stage_elapsed_s": 4.607929537072778,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "lower_to_support",
+          "stage_elapsed_s": 2.2330141419079155,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "release",
+          "stage_elapsed_s": 2.5542611009441316,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "retreat_1",
+          "stage_elapsed_s": 4.594418567954563,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        }
+      ]
+    },
+    {
+      "id": "web-main-20261110-164047-5d1fb1",
+      "commit": "b4d3c1720ad635464fe099043ea4fd708870b902",
+      "version": "v0.4.0-rc10",
+      "outcome": "failed",
+      "elapsed_s": 35.98311358503997,
+      "total_wall_s": 51.883461236953735,
+      "main_agent_calls": 0,
+      "auxiliary_visual_calls": 0,
+      "wrist_depth_calls": 0,
+      "human_assisted": false,
+      "stop_confirmed": true,
+      "metrics_complete": true,
+      "failed_step": "hover",
+      "why": "No reachable clear modeled path",
+      "source_record_sha256": "f7ff59d1d3bca8b4ecc45ded9b94badef870c0839a6287df7a2a3a59648f4c05",
+      "source_report_sha256": "24f74082fa86d962d53a3e4b84829f4cdaafeb24de6218aedd72f59cee8991d1",
+      "source_report_code_sha256": {
+        "approach_target.py": "0066405d91df94dde519c5ebbfa4054823c659963ef736a4c371a484cffdaa1e",
+        "checks.py": "a06ed0ba9d165e6ad0056313459260fbdc3f3b6aa63584f034bfc5161d194087",
+        "controller.py": "15c0dfa3fbb58c0bdfa92e84d36cfa00a1a09acd33627768c4f673c74b3265c1",
+        "depth_probe.py": "422bf2a76a17ffb221bd3f11a16d6cdbdd4a39ec388ad17d140c58ff065c4c65",
+        "execution.py": "21e0a3ac9156d45418e47a22df13287faa7eb3a759736f4dfacabbd74341bde3",
+        "geometry_probe.py": "b65349ef5aec62beb29adb61f9422630768f95ae1cf649aabb143baa7d01b857",
+        "maneuvers.py": "522df02fbf23acb84b5d5abba4a339c1ab14828fed73971024cc90577cceafa0",
+        "perception.py": "58f6a2e8662c37c18bb70c2c4c51d68a858d7a9c174e87c3d52a1c61d66235e6",
+        "placement.py": "a81ed625d0e605f9f76412ef48c5cf3489fadb2978af31ba8a81931d75979a32",
+        "rehearsal.py": "1d23401e49d3c68525854dac5df1f6980ceeece0e61ab298e38c58251ef50588",
+        "scene_geometry.py": "6bece740528993b40c8bb65e032765b94881faef7d71bbe56fde6eb78af83b07",
+        "scheduled.py": "635d7cb95dcb3babe483ff3c889803c019fd754bfeb0de27c88ba586001664c1",
+        "transport.py": "8dda651a31d6cff6ba29987fa558a232518487d0005da3cf15b2de2cdbc6e5ea"
+      },
+      "code_matches_packaged_python": true,
+      "source_stop_sha256": "02e7aa4486a3c66bbc584ed44de89d50a17f580a31001bd228e35bd7a1678ba8",
+      "stages": [
+        {
+          "stage": "prepare",
+          "stage_elapsed_s": 29.376726687070914,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "hover",
+          "stage_elapsed_s": 6.605344632058404,
+          "ok": false,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        }
+      ]
+    },
+    {
+      "id": "web-main-20261110-164742-2a1b36",
+      "commit": "b4d3c1720ad635464fe099043ea4fd708870b902",
+      "version": "v0.4.0-rc10",
+      "outcome": "success",
+      "elapsed_s": 56.975356962997466,
+      "total_wall_s": 73.6684513092041,
+      "main_agent_calls": 0,
+      "auxiliary_visual_calls": 0,
+      "wrist_depth_calls": 0,
+      "human_assisted": false,
+      "stop_confirmed": true,
+      "metrics_complete": true,
+      "failed_step": null,
+      "why": "Release and retreat verified on this run",
+      "source_record_sha256": "4cee1d64563e2248688b20fef9890d44e9510d5ea16959b95b5d9239fd6dd5fa",
+      "source_report_sha256": "fe21adf552d88d118b27a60ef5a1881c183bb4970e9b573b8d7ea8f736c5c4d4",
+      "source_report_code_sha256": {
+        "approach_target.py": "0066405d91df94dde519c5ebbfa4054823c659963ef736a4c371a484cffdaa1e",
+        "checks.py": "a06ed0ba9d165e6ad0056313459260fbdc3f3b6aa63584f034bfc5161d194087",
+        "controller.py": "15c0dfa3fbb58c0bdfa92e84d36cfa00a1a09acd33627768c4f673c74b3265c1",
+        "depth_probe.py": "422bf2a76a17ffb221bd3f11a16d6cdbdd4a39ec388ad17d140c58ff065c4c65",
+        "execution.py": "21e0a3ac9156d45418e47a22df13287faa7eb3a759736f4dfacabbd74341bde3",
+        "geometry_probe.py": "b65349ef5aec62beb29adb61f9422630768f95ae1cf649aabb143baa7d01b857",
+        "maneuvers.py": "522df02fbf23acb84b5d5abba4a339c1ab14828fed73971024cc90577cceafa0",
+        "perception.py": "58f6a2e8662c37c18bb70c2c4c51d68a858d7a9c174e87c3d52a1c61d66235e6",
+        "placement.py": "a81ed625d0e605f9f76412ef48c5cf3489fadb2978af31ba8a81931d75979a32",
+        "rehearsal.py": "1d23401e49d3c68525854dac5df1f6980ceeece0e61ab298e38c58251ef50588",
+        "scene_geometry.py": "6bece740528993b40c8bb65e032765b94881faef7d71bbe56fde6eb78af83b07",
+        "scheduled.py": "635d7cb95dcb3babe483ff3c889803c019fd754bfeb0de27c88ba586001664c1",
+        "transport.py": "8dda651a31d6cff6ba29987fa558a232518487d0005da3cf15b2de2cdbc6e5ea"
+      },
+      "code_matches_packaged_python": true,
+      "source_stop_sha256": "e3af37be859686d95bce07d9aaffd94115e064d1f086f2dff1266a2495368116",
+      "stages": [
+        {
+          "stage": "prepare",
+          "stage_elapsed_s": 27.625045060995035,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "hover",
+          "stage_elapsed_s": 2.94323157297913,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "entry",
+          "stage_elapsed_s": 3.258401400060393,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "grasp",
+          "stage_elapsed_s": 5.752220419002697,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "trial_lift",
+          "stage_elapsed_s": 3.465431571006775,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "localize_coaster",
+          "stage_elapsed_s": 0.013656910043209791,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": null
+        },
+        {
+          "stage": "transfer_1",
+          "stage_elapsed_s": 4.188075206940994,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "lower_to_support",
+          "stage_elapsed_s": 2.4799679570132867,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "release",
+          "stage_elapsed_s": 2.6538924369961023,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "retreat_1",
+          "stage_elapsed_s": 4.585374363930896,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        }
+      ]
+    },
+    {
+      "id": "web-main-20261110-164932-b53382",
+      "commit": "b4d3c1720ad635464fe099043ea4fd708870b902",
+      "version": "v0.4.0-rc10",
+      "outcome": "success",
+      "elapsed_s": 57.81998703407589,
+      "total_wall_s": 73.8021011352539,
+      "main_agent_calls": 0,
+      "auxiliary_visual_calls": 0,
+      "wrist_depth_calls": 0,
+      "human_assisted": false,
+      "stop_confirmed": true,
+      "metrics_complete": true,
+      "failed_step": null,
+      "why": "Release and retreat verified on this run",
+      "source_record_sha256": "adb8baffe2ec8e76512013a2406d663083c4636959671bcc3155c346f51c6c33",
+      "source_report_sha256": "33faac536c86fc60beb733224f4c4fc5e53d766d2bc84b5cbc08bee7839d66eb",
+      "source_report_code_sha256": {
+        "approach_target.py": "0066405d91df94dde519c5ebbfa4054823c659963ef736a4c371a484cffdaa1e",
+        "checks.py": "a06ed0ba9d165e6ad0056313459260fbdc3f3b6aa63584f034bfc5161d194087",
+        "controller.py": "15c0dfa3fbb58c0bdfa92e84d36cfa00a1a09acd33627768c4f673c74b3265c1",
+        "depth_probe.py": "422bf2a76a17ffb221bd3f11a16d6cdbdd4a39ec388ad17d140c58ff065c4c65",
+        "execution.py": "21e0a3ac9156d45418e47a22df13287faa7eb3a759736f4dfacabbd74341bde3",
+        "geometry_probe.py": "b65349ef5aec62beb29adb61f9422630768f95ae1cf649aabb143baa7d01b857",
+        "maneuvers.py": "522df02fbf23acb84b5d5abba4a339c1ab14828fed73971024cc90577cceafa0",
+        "perception.py": "58f6a2e8662c37c18bb70c2c4c51d68a858d7a9c174e87c3d52a1c61d66235e6",
+        "placement.py": "a81ed625d0e605f9f76412ef48c5cf3489fadb2978af31ba8a81931d75979a32",
+        "rehearsal.py": "1d23401e49d3c68525854dac5df1f6980ceeece0e61ab298e38c58251ef50588",
+        "scene_geometry.py": "6bece740528993b40c8bb65e032765b94881faef7d71bbe56fde6eb78af83b07",
+        "scheduled.py": "635d7cb95dcb3babe483ff3c889803c019fd754bfeb0de27c88ba586001664c1",
+        "transport.py": "8dda651a31d6cff6ba29987fa558a232518487d0005da3cf15b2de2cdbc6e5ea"
+      },
+      "code_matches_packaged_python": true,
+      "source_stop_sha256": "cef5477c5cb4807a5c2849b596a2004acef1948bac29da9beb0af57cd677e830",
+      "stages": [
+        {
+          "stage": "prepare",
+          "stage_elapsed_s": 28.74496194603853,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "hover",
+          "stage_elapsed_s": 3.6629349559079856,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "entry",
+          "stage_elapsed_s": 3.3621426089666784,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "grasp",
+          "stage_elapsed_s": 5.654522008961067,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "trial_lift",
+          "stage_elapsed_s": 3.4111367209115997,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "localize_coaster",
+          "stage_elapsed_s": 0.01247963891364634,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": null
+        },
+        {
+          "stage": "transfer_1",
+          "stage_elapsed_s": 3.4916490589966998,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "lower_to_support",
+          "stage_elapsed_s": 2.3180089980596676,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "release",
+          "stage_elapsed_s": 2.5540716289542615,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        },
+        {
+          "stage": "retreat_1",
+          "stage_elapsed_s": 4.5985463270917535,
+          "ok": true,
+          "visual_calls": 0,
+          "wrist_depth_calls": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "junqi.piper.mast_setting.v1",
+  "joint_name": "global_camera_mast_upper_joint",
+  "joint_type": "fixed",
+  "urdf_zero_total_tilt_deg": 90.0,
+  "total_forward_tilt_deg": 90.0,
+  "joint_position_rad": 0.0,
+  "source": "fixed_v12_operator_horizontal_downward",
+  "approximate": true,
+  "calibration_status": "nominal_urdf_not_calibrated",
+  "include_in_action14": false
+}

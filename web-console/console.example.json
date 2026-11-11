@@ -1,0 +1,8 @@
+{
+  "host": "ubuntu@192.168.200.102",
+  "root": "/home/ubuntu/code_junqi/rax-piper-franka-20261104",
+  "python": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/.venv/bin/python",
+  "remote_port": 8781,
+  "local_port": 8781,
+  "connect_timeout_s": 75
+}

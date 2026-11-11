@@ -1,0 +1,20 @@
+schema: xpolicy.realsense-capture-profile/v1
+label: Dual-PiPER three-camera RGB 1280x720 at 30 Hz
+cameras:
+  required_roles: [camera_head, camera_left, camera_right]
+  startup:
+    max_attempts: 3
+    retry_delay_seconds: 1.0
+    readiness_seconds: 0.5
+  recovery:
+    frame_timeout_ms: 3000
+    max_frame_age_ms: 1000
+    max_attempts: 3
+    retry_delay_seconds: 1.0
+  color:
+    width: 1280
+    height: 720
+    fps: 30
+    encoding: bgr8
+  depth:
+    enabled: false

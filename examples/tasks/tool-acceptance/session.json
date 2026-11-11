@@ -1,0 +1,14 @@
+{
+  "id": "tool-acceptance",
+  "title": "Supervised empty tool characterization",
+  "description": "TASK.md",
+  "backend_options": "../../blue-cup-exploration.json",
+  "seed_memory": "../../blue-cup-memory",
+  "prompts": {
+    "common": "../blue-cup/common.md",
+    "fresh": "../blue-cup/fresh.md",
+    "continuation": "../blue-cup/continuation.md",
+    "rehearsal": "../blue-cup/rehearsal.md",
+    "working_rehearsal": "../blue-cup/working_rehearsal.md"
+  }
+}

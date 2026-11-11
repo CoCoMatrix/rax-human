@@ -1,0 +1,4 @@
+interface:
+  display_name: "RAX 逐函数演练"
+  short_description: "按 Franka 原生流程演练可写函数，减少重复视觉调用并记录耗时与恢复证据"
+  default_prompt: "使用 $rax-rehearse-functions，核对当前可写副本和实际函数入口，按 RAX 原生流程逐函数演练，普通规则优先、Gemini 按需，保留冻结版本并记录耗时与问题。"

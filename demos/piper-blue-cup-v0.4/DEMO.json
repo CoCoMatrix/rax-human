@@ -1,0 +1,57 @@
+{
+  "schema": "rax.demo.snapshot.v1",
+  "name": "Piper blue cup to coaster",
+  "version": "v0.4.0-rc10",
+  "exported_date": "2026-11-11",
+  "original_code_commit": "b4d3c1720ad635464fe099043ea4fd708870b902",
+  "original_workspace": "workspaces/blue-cup/20261109-v0.4-merged-candidate",
+  "entrypoint": "code/blue_cup/controller.py:main(ctx)",
+  "controller_source_unchanged": true,
+  "kind": "sequential_python_functions_not_continuous_trajectory",
+  "files_sha256": {
+    "code/blue_cup/QUALITATIVE_WRIST.md": "169a9fdae320f8a95e174d46ee3e4f5d328bdc2ab0a3f47d85c74830d1a98806",
+    "code/blue_cup/README.md": "1210f728435f50acdfba027d79dfd9646c1610359c8b99600908bc33c3af5620",
+    "code/blue_cup/RULES_FIRST.md": "50d7e59b818d1806776f0a060b4c6ce0dc74ffe3a65b855d33d184f7d6c7dea5",
+    "code/blue_cup/approach_target.py": "0066405d91df94dde519c5ebbfa4054823c659963ef736a4c371a484cffdaa1e",
+    "code/blue_cup/checks/preparation_freshness.py": "db7c3a2dc17cfecbc30b07c77e792f39083512bee59337ce33e3207fd18d3561",
+    "code/blue_cup/checks.py": "a06ed0ba9d165e6ad0056313459260fbdc3f3b6aa63584f034bfc5161d194087",
+    "code/blue_cup/controller.py": "15c0dfa3fbb58c0bdfa92e84d36cfa00a1a09acd33627768c4f673c74b3265c1",
+    "code/blue_cup/depth_probe.py": "422bf2a76a17ffb221bd3f11a16d6cdbdd4a39ec388ad17d140c58ff065c4c65",
+    "code/blue_cup/execution.py": "21e0a3ac9156d45418e47a22df13287faa7eb3a759736f4dfacabbd74341bde3",
+    "code/blue_cup/geometry_probe.py": "b65349ef5aec62beb29adb61f9422630768f95ae1cf649aabb143baa7d01b857",
+    "code/blue_cup/maneuvers.py": "522df02fbf23acb84b5d5abba4a339c1ab14828fed73971024cc90577cceafa0",
+    "code/blue_cup/perception.py": "58f6a2e8662c37c18bb70c2c4c51d68a858d7a9c174e87c3d52a1c61d66235e6",
+    "code/blue_cup/placement.py": "a81ed625d0e605f9f76412ef48c5cf3489fadb2978af31ba8a81931d75979a32",
+    "code/blue_cup/rehearsal.py": "1d23401e49d3c68525854dac5df1f6980ceeece0e61ab298e38c58251ef50588",
+    "code/blue_cup/scene_geometry.py": "6bece740528993b40c8bb65e032765b94881faef7d71bbe56fde6eb78af83b07",
+    "code/blue_cup/scheduled.py": "635d7cb95dcb3babe483ff3c889803c019fd754bfeb0de27c88ba586001664c1",
+    "code/blue_cup/transport.py": "8dda651a31d6cff6ba29987fa558a232518487d0005da3cf15b2de2cdbc6e5ea",
+    "run_no_agent.py": "d29faf579e2c4e60de709887090661f4e96733a08f601ea338e7b556e7cbfe36"
+  },
+  "validation_summary": "validation-runs.json",
+  "validation_summary_sha256": "592b5c5bbff62a2346ca9a6c6b5897ddc66aee370229780f901adbe7d37e6867",
+  "required_host": "Existing adapted Piper RAX/XPolicy runtime; not a standalone hardware driver",
+  "hardware_action_on_install": false,
+  "parameters": {
+    "sdk_speed_percent": 50,
+    "effective_joint_peak_deg_s": 17,
+    "joint_acceleration_deg_s2": 40,
+    "grasp_gap_m": 0.003,
+    "trial_lift_m": 0.04,
+    "entry_tcp_below_rim_m": 0.04,
+    "joint_state_tolerance_rad": 0.01,
+    "settling_window_s": 0.3,
+    "settling_min_samples": 4,
+    "max_single_pose_translation_m": 0.4,
+    "workspace_min_m": [
+      0.055,
+      -0.4,
+      0.17
+    ],
+    "workspace_max_m": [
+      0.5,
+      0.045,
+      0.36
+    ]
+  }
+}

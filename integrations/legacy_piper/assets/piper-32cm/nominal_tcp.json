@@ -1,0 +1,150 @@
+{
+  "schema": "junqi.piper.nominal_grasp_tcp_candidate.v1",
+  "candidate_id": "piper_v12_distal_inner_contact_centroid_link6_v1",
+  "source": "v12_unchanged_v11_gripper_cad_nominal",
+  "status": "candidate_only_not_installed",
+  "tcp_measured": false,
+  "physical_acceptance": false,
+  "no_dispatch_authority": true,
+  "motion_execution_authorized_by_this_file": false,
+  "auto_activate": false,
+  "selection_required": "explicit FK/IK frame selection; separate from existing runtime calibration",
+  "definition": "Midpoint of area-weighted centroids of the two distal inward flat contact faces in the supplied v9 gripper CAD.",
+  "translation_unit": "m",
+  "transform_convention": "Column vectors: p_parent = T_parent_tcp @ p_tcp_homogeneous",
+  "orientation_definition": "Identity relative to each side link6; +Z approach toward fingers, +X jaw opening toward finger1, +Y right-handed completion.",
+  "left": {
+    "parent_frame": "left_link6",
+    "child_frame": "left_nominal_grasp_tcp",
+    "translation_m": [
+      0.0,
+      0.0,
+      0.13728958057167262
+    ],
+    "rotation_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "T_parent_tcp": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.13728958057167262
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "right": {
+    "parent_frame": "right_link6",
+    "child_frame": "right_nominal_grasp_tcp",
+    "translation_m": [
+      0.0,
+      0.0,
+      0.13728958057167262
+    ],
+    "rotation_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "T_parent_tcp": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.13728958057167262
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "gripper_width_semantics": {
+    "quantity": "full inner gap in the nominal CAD",
+    "unit": "m",
+    "urdf_range_m": [
+      0.0,
+      0.1
+    ],
+    "mimic_finger1_multiplier": 0.5,
+    "mimic_finger2_multiplier": -0.5,
+    "tcp_depends_on_width": false,
+    "do_not_use_virtual_gripper_link_origin_as_tcp": true
+  },
+  "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+  "source_manifest": {
+    "path": "source-manifest.json",
+    "sha256": "2ea52134ea717a6a5a39039c17079dcc7875ff7ed86603aa62a90a0bf523b1fa",
+    "note": "Historical v9 CAD derivation evidence, retained as provenance."
+  },
+  "evidence": "evidence/gripper-contact-audit.json",
+  "limitations": [
+    "CAD numerical precision is not physical accuracy.",
+    "Requires supplied finger geometry and mounting to match the physical hardware.",
+    "No measured table plane, camera calibration, object contact model or collision clearance is supplied.",
+    "The existing head-camera calibration and runtime tcp null values must not be overwritten by implicitly loading this candidate."
+  ],
+  "revision_provenance": {
+    "prior_urdf_sha256": "53cb1afc01523b03f073f9462c57a314ca0ab6176d384a006af1cd100563112f",
+    "prior_candidate_sha256": "66b4924cab08ebc42e0a93f6697e4aeb928ce814b693a90ee52acebb9e5cbe35",
+    "arm_and_finger_geometry_unchanged": true
+  }
+}

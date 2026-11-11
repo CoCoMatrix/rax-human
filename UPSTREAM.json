@@ -1,0 +1,39 @@
+{
+  "repository": "https://github.com/robot-agent-exploration/rax",
+  "branch": "real/franka",
+  "commit": "8858d7f3e34eff382abae738cf0578d2726a9a0a",
+  "retrieved_date": "2026-11-04",
+  "scope": "Franka workflow with necessary Piper, camera and Codex adapters",
+  "memory_format": "unchanged upstream experience-memory source",
+  "compaction": "Codex native; no custom summary layer, hooks, deduplication or threshold",
+  "hardware_acceptance": "read-only cameras/depth/joint feedback and one supervised left-J1 half-degree round trip with owner Stop/rest verification passed; no grasp, right-arm active motion, full-pose IK motion or task acceptance",
+  "unchanged_memory_sha256": {
+    "agent_skills/task/experience-memory/SKILL.md": "c80046f1039357bf4e9038990fe92f337f764ab3afa88157598eb83d16232dcd",
+    "agent_skills/task/experience-memory/references/format.md": "ad07e33d451283f9b23ebf6c91964435b6526410b92d129d4203ab955714e99c"
+  },
+  "continual_learning": {
+    "merge_reference": {
+      "branch": "real/rainbow",
+      "commit": "36c926ca3cf15921c6fc746a4bf309c26b0aa3c4"
+    },
+    "skill_reference": {
+      "branch": "main",
+      "commit": "db744f5950582c7c301f249192c0ed3c76517dd8"
+    },
+    "checker": {
+      "repository": "https://github.com/robot-agent-exploration/skills-lib",
+      "commit": "39dfd7695feb46c3def466638a554db076a46012",
+      "source": "scripts/check_skills.py",
+      "local": "services/skill_library_check.py",
+      "sha256": "d4be5e2b41e7791aff0f216efb5b2e454580fbb60d8f0cacf7cc9175da0d8f02"
+    },
+    "adaptations": [
+      "stable configured per-robot root",
+      "session branch identity includes root hash",
+      "read-only origin mount in Codex sandbox",
+      "host object materialization rejects links/submodules before reading checker inputs",
+      "full library validation with pinned skills-lib checker",
+      "no model substitution, hardware connection or external push"
+    ]
+  }
+}

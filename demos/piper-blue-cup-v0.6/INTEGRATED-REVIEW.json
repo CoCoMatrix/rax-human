@@ -1,0 +1,92 @@
+{
+  "offline_only": true,
+  "hardware_started": false,
+  "chunks": [
+    {
+      "name": "approach",
+      "ok": true,
+      "samples": 489,
+      "duration_s": 16.3,
+      "review_s": 2.0020060900133103,
+      "contract_passed": true,
+      "collision": {
+        "collision_checked": true,
+        "cad_clear": true,
+        "contacts": [],
+        "expected_gripper_contacts": [
+          {
+            "links": [
+              "right_gripper_link1",
+              "right_gripper_link2"
+            ],
+            "distance_m": 0.0019999995590969837,
+            "rule": "opposing fingers within commanded jaw width",
+            "jaw_width_m": 0.0020000000949949026
+          }
+        ],
+        "margin_m": 0.003,
+        "collision_objects": 30,
+        "checked_pairs": 406,
+        "environment_boxes": 1,
+        "physical_calibration_validated": false,
+        "hardware_execution_approved": false,
+        "limitation": "CAD sampled check only; no cable, payload, unseen obstacle or continuous sweep certification",
+        "geometry_identity": {
+          "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+          "cad_bounds_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+          "tool_calibration_sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+          "representation": "link6_axis_aligned_finger_envelopes_v1"
+        },
+        "environment_checked": true,
+        "exact_static_pairs_reused": 56,
+        "checked_samples": 490,
+        "total_samples": 490,
+        "whole_path_checked": true,
+        "workspace_clear": true
+      }
+    },
+    {
+      "name": "transfer_lower",
+      "ok": true,
+      "samples": 101,
+      "duration_s": 3.3666666666666667,
+      "review_s": 0.3970181099139154,
+      "contract_passed": true,
+      "collision": {
+        "collision_checked": true,
+        "cad_clear": true,
+        "contacts": [],
+        "expected_gripper_contacts": [
+          {
+            "links": [
+              "right_gripper_link1",
+              "right_gripper_link2"
+            ],
+            "distance_m": 0.0019999995590969837,
+            "rule": "opposing fingers within commanded jaw width",
+            "jaw_width_m": 0.0020000000949949026
+          }
+        ],
+        "margin_m": 0.003,
+        "collision_objects": 30,
+        "checked_pairs": 406,
+        "environment_boxes": 1,
+        "physical_calibration_validated": false,
+        "hardware_execution_approved": false,
+        "limitation": "CAD sampled check only; no cable, payload, unseen obstacle or continuous sweep certification",
+        "geometry_identity": {
+          "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+          "cad_bounds_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+          "tool_calibration_sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+          "representation": "link6_axis_aligned_finger_envelopes_v1"
+        },
+        "environment_checked": true,
+        "exact_static_pairs_reused": 56,
+        "checked_samples": 102,
+        "total_samples": 102,
+        "whole_path_checked": true,
+        "workspace_clear": true
+      }
+    }
+  ]
+}

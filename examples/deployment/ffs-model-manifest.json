@@ -1,0 +1,11 @@
+{
+  "schema": "junqi.piper.ffs_model_manifest.v1",
+  "upstream_commit": "476f4249561f7c79ca707326954f9255643412a6",
+  "upstream_dir": "upstream",
+  "model_id": "20-30-48",
+  "checkpoint": "weights/20-30-48/model_best_bp2_serialize.pth",
+  "config": "weights/20-30-48/cfg.yaml",
+  "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+  "config_sha256": "d45afe99b176454d5aff416edf16c8da6a99579f8f374b927f37907442a7d6bc",
+  "source_model_folder_url": "https://drive.google.com/drive/folders/1WWT0I8VB1k7cA2LqnjhUHOux8Sz-BZMw"
+}

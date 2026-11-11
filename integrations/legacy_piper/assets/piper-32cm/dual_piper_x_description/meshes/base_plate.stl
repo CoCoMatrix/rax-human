@@ -1,0 +1,86 @@
+solid dual_piper_x_base_plate
+  facet normal 0 0 -1
+    outer loop
+      vertex -0.1 -0.4 0
+      vertex -0.1 0.4 0
+      vertex 0.1 0.4 0
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -0.1 -0.4 0
+      vertex 0.1 0.4 0
+      vertex 0.1 -0.4 0
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -0.1 -0.4 0.008
+      vertex 0.1 -0.4 0.008
+      vertex 0.1 0.4 0.008
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -0.1 -0.4 0.008
+      vertex 0.1 0.4 0.008
+      vertex -0.1 0.4 0.008
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -0.1 -0.4 0
+      vertex 0.1 -0.4 0
+      vertex 0.1 -0.4 0.008
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -0.1 -0.4 0
+      vertex 0.1 -0.4 0.008
+      vertex -0.1 -0.4 0.008
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -0.1 0.4 0
+      vertex -0.1 0.4 0.008
+      vertex 0.1 0.4 0.008
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -0.1 0.4 0
+      vertex 0.1 0.4 0.008
+      vertex 0.1 0.4 0
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -0.1 -0.4 0
+      vertex -0.1 -0.4 0.008
+      vertex -0.1 0.4 0.008
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -0.1 -0.4 0
+      vertex -0.1 0.4 0.008
+      vertex -0.1 0.4 0
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 0.1 -0.4 0
+      vertex 0.1 0.4 0
+      vertex 0.1 0.4 0.008
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 0.1 -0.4 0
+      vertex 0.1 0.4 0.008
+      vertex 0.1 -0.4 0.008
+    endloop
+  endfacet
+endsolid dual_piper_x_base_plate

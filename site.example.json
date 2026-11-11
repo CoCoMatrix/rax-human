@@ -1,0 +1,18 @@
+{
+  "legacy_root": "integrations/legacy_piper",
+  "owner_root": "integrations/xpolicy_owner",
+  "host_python": ".venv/bin/python",
+  "owner_python": ".venv-owner/bin/python",
+  "dora": ".venv-owner/bin/dora",
+  "policy_adapter_root": "integrations/policy_adapter",
+  "ffs_python": ".venv-ffs/bin/python",
+  "head_calibration": "services/piper/assets/head-stereo-calibration.json",
+  "ffs_manifest": "runtime/models/fast-foundation-stereo/model-manifest.json",
+  "ffs_warmup_packet": "runtime/calibration/ffs-warmup",
+  "moveit_manifest": "runtime/moveit/manifest.json",
+  "key_file": "~/.config/rax-human/main-key.py",
+  "relay_base_url": "https://YOUR-RELAY.example/v1",
+  "agent_runtime": ".venv-agent",
+  "gemini_key_file": "~/.config/rax-human/gemini-key.py",
+  "vision_proxy": "http://127.0.0.1:7892"
+}

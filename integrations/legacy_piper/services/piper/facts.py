@@ -1,0 +1,15 @@
+TOOLS = ('piper_status','piper_observe','piper_pixel_to_position','piper_fk','piper_check','piper_check_path','piper_nominal_frames','piper_preview_joints',
+         'piper_preview_path','piper_preview_gripper','piper_move_joints','piper_move_eef','piper_gripper','piper_hold','piper_stream','piper_solve_ik')
+FACTS = dict(name='dual Piper (live capabilities reported by piper_status)',status='piper_status',observe='piper_observe',
+    move='piper_move_eef',gripper='piper_gripper',pixel='piper_pixel_to_position',tools=TOOLS,
+    overview_camera='head',overview='D435 RGB, exact FFS stereo packet when available',cameras=('head','left','right'),
+    body='fixed dual 6-DoF arms**; left parallel gripper, right fingers absent',move_joints='piper_move_joints',
+    neutral='Prepare is an operator-only formal-owner operation; use measured feedback, never zero all absolute joints from agent code',
+    motion_example='ctx.value("piper_move_eef", arm="left", position=[x,y,z])',grasp_example=None,
+    stream='piper_stream',look_around=None,read_tools=('piper_status','piper_observe','piper_stream','piper_fk','piper_check','piper_check_path','piper_nominal_frames','piper_solve_ik'),
+    safety=('Default NO_SEND refuses motion. SUPERVISED_EXPLORATION supports the explicitly qualified bounded MCP motion tools when armed.',
+            'Read the coordinate-frame fields: FFS gives RGB optical positions and, when configured, explicitly labelled provisional left-base positions. Effective grasp TCP and scene clearance are not certified.',
+            'RGB-only HTTP frames cannot be paired with unrelated depth. Stale frames and holes must be rejected; do not fill them.',
+            'With motion_bridge, piper_hold(mode=cancel) after completed motion verifies measured rest and retains the healthy owner. Active cancellation or mode=stop_command sends Stop and latches FAULT; operator recovery is required. Acknowledgement alone is not measured rest. No SDK or second CAN writer.'),
+    first_reads=(('robot-interface','Piper transport, units, calibration and commissioning blockers'),),
+    model_dir='robot-models/piper',model_note='32cm nominal URDF; physical calibration pending')

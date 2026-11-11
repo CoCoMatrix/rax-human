@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xpolicylab"
+version = "0.0.1"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.23",
+    "pyyaml>=6",
+    "opencv-python-headless>=4.8",
+    "h5py>=3.8",
+    "websockets>=13.0",
+    "msgpack>=1.0.8",
+    "msgpack-numpy>=0.4.8",
+    "pydantic>=2.5",
+]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "scipy>=1.14", "pillow==11.2.1"]
+
+[project.optional-dependencies]
+gr3-dora = [
+    "dora-rs==0.5.0",
+    "pyarrow>=14",
+]
+gr3-output = [
+    "fourier-robot-descriptions==0.2.7",
+    "mink>=1.2,<2",
+    "scipy>=1.14",
+]
+gr3-aurora = [
+    "fourier-aurora-client==0.1.4.dev221",
+]
+astribot-s1 = [
+    "pyserial>=3.5",
+]
+eval-ui = [
+    "gradio>=6,<7",
+]
+piper-x-dual = [
+    "pillow==11.2.1",
+    "dora-rs==0.5.0",
+    "mink>=1.2,<2",
+    "pyarrow>=14",
+    "pyserial>=3.5",
+    "python-can==4.6.1",
+    "pyrealsense2==2.58.3.10794",
+    "pyAgxArm==1.0.0",
+]
+
+[project.scripts]
+xpolicylab-gr3-dora = "real_world.robots.gr3.dora_node:main"
+xpolicylab-gr3-aurora-state = "real_world.robots.gr3.aurora_state_node:main"
+xpolicylab-gr3-safety = "real_world.robots.gr3.safety_node:main"
+xpolicylab-gr3-operator = "real_world.robots.gr3.operator_node:main"
+xpolicylab-gr3-lifecycle = "real_world.robots.gr3.lifecycle_node:main"
+xpolicylab-gr3-output = "real_world.robots.gr3.output_node:main"
+xpolicylab-qnexo-controls = "real_world.qnexo_dora_node:main"
+xpolicylab-tianji-probe = "real_world.robots.tianji.probe:main"
+xpolicylab-tianji-reset-error = "real_world.robots.tianji.reset_error:main"
+xpolicylab-piper-x-dual-probe = "real_world.robots.piper_x_dual.probe:main"
+xpolicylab-piper-x-dual-write-canary = "real_world.robots.piper_x_dual.write_canary:main"
+xpolicylab-piper-x-dual-dora = "real_world.robots.piper_x_dual.dora_owner_node:main"
+xpolicylab-piper-x-dual-retarget = "real_world.robots.piper_x_dual.retarget_node:main"
+xpolicylab-realsense-dora = "real_world.cameras.realsense_dora_node:main"
+xpolicylab-recap = "learning.recap.cli:main"
+xpolicylab-eval = "learning.recap.console.cli:main"
+xpolicylab-eval-ui = "learning.recap.console.ui:main"
+xpolicylab-model-registry = "learning.recap.console.model_registry:main"
+
+[tool.setuptools]
+py-modules = ["XPolicyLab"]
+
+[tool.uv.sources]
+fourier-aurora-client = { path = "third_party/robot_sdks/fourier_aurora/dist/fourier_aurora_client-0.1.4.dev221-py3-none-any.whl" }
+pyagxarm = { path = "third_party/robot_sdks/pyagxarm" }
+
+[tool.setuptools.package-data]
+"real_world.robots.gr3" = ["profile.yml"]
+"real_world.robots.tianji" = ["profile.yml", "README.md"]
+"real_world.robots.astribot_s1" = [
+    "profile.yml",
+    "README.md",
+    "requirements-owner.txt",
+]
+"real_world.robots.piper_x_dual" = [
+    "profile.yml",
+    "README.md",
+    "description/*.urdf",
+    "description/*.md",
+    "description/LICENSE",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["client_server*", "learning*", "real_world*", "utils*"]
+exclude = ["policy*", "build*", "scripts*", "__pycache__*", "tests*"]

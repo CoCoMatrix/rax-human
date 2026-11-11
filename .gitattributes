@@ -1,0 +1,5 @@
+# Preserve audited CAD bytes and make reviews usable; do not normalize assets.
+*.stl binary
+*.dae binary
+*.jpg binary
+*.png binary

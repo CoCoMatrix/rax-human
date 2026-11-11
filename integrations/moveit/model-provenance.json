@@ -1,0 +1,12 @@
+{
+  "source": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/assets/piper-32cm/dual_piper_x_description/urdf/dual_piper_x.urdf",
+  "source_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+  "changes": [
+    "Mesh URI resolution only",
+    "SRDF left arm chain, exemptions copied from current qualified collision checker"
+  ],
+  "kinematic_chain_changed": false,
+  "joint_limits_changed": false,
+  "exemptions": 59,
+  "hardware_writes": 0
+}

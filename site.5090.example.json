@@ -1,0 +1,18 @@
+{
+  "legacy_root": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025",
+  "owner_root": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/task60-20261029/owner-runtime-xpolicy-prepare15-open",
+  "host_python": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/.venv/bin/python",
+  "owner_python": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/task60-20261029/owner-runtime-xpolicy-prepare15-open/.xpolicy/envs/piper_x_dual/bin/python",
+  "dora": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/task60-20261029/owner-runtime-xpolicy-prepare15-open/runtime/robot_dagger/.venv/bin/dora",
+  "policy_adapter_root": "/home/ubuntu/code_junqi/GPT-as-Policy",
+  "ffs_python": "/home/ubuntu/code_junqi/GPT-as-Policy/.venv-ffs5090/bin/python",
+  "head_calibration": "/home/ubuntu/code_junqi/migration/ffs-live-20260918/camera/head-stereo-calibration.json",
+  "ffs_manifest": "/home/ubuntu/code_junqi/migration/ffs-live-20260918/intake/fast-foundation-stereo/model-manifest.json",
+  "ffs_warmup_packet": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/services/piper/assets/ffs-warmup-r8",
+  "moveit_manifest": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/services/piper/assets/moveit-runtime.json",
+  "key_file": "/home/ubuntu/code_junqi/key.py",
+  "relay_base_url": "https://YOUR-RELAY.example/v1",
+  "agent_runtime": "/home/ubuntu/code_junqi/rax-piper-agent-isolated",
+  "gemini_key_file": "/home/ubuntu/code_junqi/gemini-key.py",
+  "vision_proxy": "http://127.0.0.1:7892"
+}

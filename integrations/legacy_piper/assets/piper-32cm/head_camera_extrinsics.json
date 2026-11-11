@@ -1,0 +1,92 @@
+{
+  "schema": "junqi.piper.tabletop_geometry.v1",
+  "source": "operator_reported_32cm_boom_and_mount_20261023",
+  "calibration_status": "nominal_urdf_not_calibrated",
+  "physical_acceptance": false,
+  "hardware_access": false,
+  "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+  "mast_configuration": {
+    "schema": "junqi.piper.mast_setting.v1",
+    "joint_name": "global_camera_mast_upper_joint",
+    "joint_type": "fixed",
+    "urdf_zero_total_tilt_deg": 90.0,
+    "total_forward_tilt_deg": 90.0,
+    "joint_position_rad": 0.0,
+    "source": "fixed_v12_operator_horizontal_downward",
+    "approximate": true,
+    "calibration_status": "nominal_urdf_not_calibrated",
+    "include_in_action14": false
+  },
+  "camera_role": "camera_head",
+  "parent_frame": "dual_base_link",
+  "child_frame": "global_d435_color_optical_frame",
+  "transform_convention": "p_base = T_base_camera @ p_camera_homogeneous",
+  "translation_unit": "m",
+  "T_base_camera": [
+    [
+      2.9982959371596505e-28,
+      -1.0,
+      4.8966500924867046e-12,
+      0.32
+    ],
+    [
+      -1.0,
+      2.3976582465313225e-23,
+      4.8965888601467475e-12,
+      0.015
+    ],
+    [
+      -4.8965888601467475e-12,
+      -4.8966500924867046e-12,
+      -1.0,
+      0.648
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "camera_forward_axis_in_base": [
+    4.8967496724117154e-12,
+    4.896638650109253e-12,
+    -1.0
+  ],
+  "camera_optical_axes": "x_right_y_down_z_forward",
+  "table_plane_in_base": {
+    "normal": [
+      0,
+      0,
+      1
+    ],
+    "offset_m": 0.082,
+    "table_z_m": -0.082,
+    "source": "operator_prior_base_height_not_refitted"
+  },
+  "tcp": {
+    "left": {
+      "parent_frame": "left_link6",
+      "position_m": null,
+      "orientation": null,
+      "status": "not_measured"
+    },
+    "right": {
+      "parent_frame": "right_link6",
+      "position_m": null,
+      "orientation": null,
+      "status": "not_measured"
+    }
+  },
+  "usage": "Operator-reported 32cm mount installed in GPT-Policy. Optical-center offset, height, yaw, TCP and image reprojection remain uncalibrated. No physical acceptance.",
+  "motion_execution_authorized_by_this_file": false,
+  "operator_constraints": {
+    "upper_mast_from_vertical_deg": 90.0,
+    "optical_axis": "vertical_down",
+    "camera_mount_pitch_rad": 0.0,
+    "boom_length_m": 0.32,
+    "root_to_camera_mount_m": 0.32,
+    "measurement_source": "user reported; optical center offset and full extrinsics not surveyed"
+  },
+  "previous_geometry_backup": "/home/ubuntu/code_junqi/migration/urdf-v12-horizontal-downward-20260921/backup-files/shared/piper/head_camera_extrinsics.json"
+}

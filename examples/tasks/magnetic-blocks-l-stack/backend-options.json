@@ -1,0 +1,11 @@
+{
+  "address": "127.0.0.1:8091",
+  "motion_enabled": false,
+  "agent_image_width": 640,
+  "collision_legacy_root": "/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025",
+  "stream_enabled": true,
+  "stream_rgb_hz": 5,
+  "stream_robot_hz": 10,
+  "stream_depth_hz": 1,
+  "stream_window_s": 600
+}
