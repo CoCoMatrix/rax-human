@@ -1,0 +1,5417 @@
+[
+  {
+    "call_id": "0ab4f88bca5a4decbdb7b68c8e282b1f",
+    "tool": "status",
+    "arguments": {},
+    "duration_s": 0.0031049251556396484,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 15.693,
+        "remaining_seconds": 1784.307,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "eacc04f630c34f5aa9fad6507858fb5f",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.12292933464050293,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "910ef64b39b1446badf42d8bfc00e15d",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 26.314,
+        "remaining_seconds": 1773.686,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "da3101c35ac44bdfb54b26ae6d28fb48",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "duration_s": 0.002404928207397461,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 47.899,
+        "remaining_seconds": 1752.101,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "fe0171d6a4284b26bb12c242b16f2519",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "910ef64b39b1446badf42d8bfc00e15d",
+      "pixels": [
+        [
+          285,
+          286
+        ],
+        [
+          270,
+          265
+        ],
+        [
+          315,
+          310
+        ],
+        [
+          460,
+          284
+        ],
+        [
+          440,
+          265
+        ],
+        [
+          485,
+          310
+        ],
+        [
+          617,
+          281
+        ],
+        [
+          600,
+          260
+        ],
+        [
+          640,
+          310
+        ],
+        [
+          290,
+          350
+        ],
+        [
+          460,
+          350
+        ],
+        [
+          615,
+          350
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.0063436031341552734,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "910ef64b39b1446badf42d8bfc00e15d",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 47.908,
+        "remaining_seconds": 1752.092,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "2e8115812d2e41789e026a9aaa95ae91",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.29
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "duration_s": 0.27013254165649414,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 78.882,
+        "remaining_seconds": 1721.118,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "3d4d6063177a43c698f59145abe67095",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.32
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "duration_s": 0.10320734977722168,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "54c950e1e1ce4fcfaaf682e61c643d3d",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.282,
+        -0.163,
+        0.29
+      ],
+      "quaternion_xyzw": [
+        0.9961947,
+        0,
+        0.0871557,
+        0
+      ],
+      "seed": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "duration_s": 0.10247087478637695,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "34437c82f72b4a9ca3c0f2f733849d1c",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.29
+      ],
+      "quaternion_xyzw": [
+        0.70710678,
+        0.70710678,
+        0,
+        0
+      ],
+      "seed": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "duration_s": 0.10340118408203125,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "acbe1687959f46a9bec4c3ec8dfcdac6",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        -0.2407174124263554,
+        0.8568034772142598,
+        -0.7777280292188623,
+        0.7498687153307217,
+        8.10714723731805e-11,
+        -1.026115574006532
+      ]
+    },
+    "duration_s": 0.0021042823791503906,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 90.926,
+        "remaining_seconds": 1709.074,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "a8eb2e0c0f2747d487f79f42186a55f3",
+    "tool": "piper_check_path",
+    "arguments": {
+      "start14": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.0003,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "target14": [
+        -0.4814348248527108,
+        1.7136069544285195,
+        -1.5554560584377246,
+        1.4997374306614435,
+        1.62142944746361e-10,
+        -2.052231148013064,
+        0.0003,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ]
+    },
+    "duration_s": 3.0435595512390137,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 93.973,
+        "remaining_seconds": 1706.027,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "8b0d2f7e44814e58bbc9fb02b8df1ea4",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        -0.4814348248527108,
+        1.7136069544285195,
+        -1.5554560584377246,
+        1.4997374306614435,
+        1.62142944746361e-10,
+        -2.052231148013064
+      ]
+    },
+    "duration_s": 0.001998424530029297,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 93.979,
+        "remaining_seconds": 1706.021,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "2f4cb26752834c3cb1bec46c4dba542e",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": false
+    },
+    "duration_s": 0.07317900657653809,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "954cd8c9e994440f8b2016db49241ebe",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 107.384,
+        "remaining_seconds": 1692.616,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "b0646ab83eee4c76b854c6cf1038d0d6",
+    "tool": "piper_move_joints",
+    "arguments": {
+      "joints": [
+        -0.2407174124263554,
+        0.8568034772142598,
+        -0.7777280292188623,
+        0.7498687153307217,
+        8.10714723731805e-11,
+        -1.026115574006532
+      ],
+      "observe_after": true
+    },
+    "duration_s": 16.37029218673706,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.23917992069330293,
+        0.8552287867697413,
+        -0.7767587836000764,
+        0.7490604083709264,
+        0.0,
+        -1.0263408666352656,
+        0.0003,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 131.143,
+        "remaining_seconds": 1668.857,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "54e5c2919219492e804ca5538bf8029b"
+  },
+  {
+    "call_id": "5a020c6ecbc148b68f4d8534e1936ff6",
+    "tool": "piper_move_joints",
+    "arguments": {
+      "joints": [
+        -0.4814348248527108,
+        1.7136069544285195,
+        -1.5554560584377246,
+        1.4997374306614435,
+        1.62142944746361e-10,
+        -2.052231148013064
+      ],
+      "observe_after": true
+    },
+    "duration_s": 16.614134550094604,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0003,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 157.675,
+        "remaining_seconds": 1642.325,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "e869cca3ad8e4e478f39c9e4516f575d"
+  },
+  {
+    "call_id": "09311240fc9b4cec9ab112648c41b554",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.01,
+      "observe_after": true
+    },
+    "duration_s": 3.89426326751709,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0095,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 172.256,
+        "remaining_seconds": 1627.744,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "77461fffe3df41e8a92a6101de78ab29"
+  },
+  {
+    "call_id": "c0565bbbc18e41cf94cbfb9d7e9af52f",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.8751959800720215,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "3ac41b30a1b846a4921fedef9ef47c26",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 260.411,
+        "remaining_seconds": 1539.589,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "c454693c8871462e934cc33ffceb5dd2",
+    "tool": "status",
+    "arguments": {},
+    "duration_s": 0.004945993423461914,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 260.421,
+        "remaining_seconds": 1539.579,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "2bda0acddc9d4486a5acebdbc64d945d",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.019,
+      "observe_after": true
+    },
+    "duration_s": 3.3944993019104004,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0184,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 274.921,
+        "remaining_seconds": 1525.079,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "663d43276fa043c78d7a53707a7d48a9"
+  },
+  {
+    "call_id": "49910f66ffdd41cb93ef8c1c6ba52e16",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.028,
+      "observe_after": true
+    },
+    "duration_s": 3.796661138534546,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0277,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 286.422,
+        "remaining_seconds": 1513.578,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "5e3043306b124ccab9d3ed9712e873df"
+  },
+  {
+    "call_id": "c455ad0b66a146908ae9e44b459ee98c",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.037,
+      "observe_after": true
+    },
+    "duration_s": 3.7459306716918945,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0366,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 296.399,
+        "remaining_seconds": 1503.601,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "ac5955d893cf4aadaa5bf0b8f8ffec11"
+  },
+  {
+    "call_id": "2fdaec13fded41f2bf222cc397eb76af",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.046,
+      "observe_after": true
+    },
+    "duration_s": 3.6106696128845215,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0455,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 309.48,
+        "remaining_seconds": 1490.52,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "5c1a3b9cf025496293a8b33d33684c8f"
+  },
+  {
+    "call_id": "6f8d3bf582c64c20a4bfda7044035167",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.055,
+      "observe_after": true
+    },
+    "duration_s": 3.541579246520996,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0547,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 320.979,
+        "remaining_seconds": 1479.021,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "47f6a0ebd4414c479d55bcae04c56d2d"
+  },
+  {
+    "call_id": "6bf67e1c7dfa4afda1f2f17ebb1777c8",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.064,
+      "observe_after": true
+    },
+    "duration_s": 3.4926156997680664,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.06369999999999999,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 331.96,
+        "remaining_seconds": 1468.04,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "5658a6e094bf4ebda76061df0b188402"
+  },
+  {
+    "call_id": "f5380595c83d4f28a405c9ae07d890c6",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.073,
+      "observe_after": true
+    },
+    "duration_s": 3.3362276554107666,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0.0,
+        -2.0524897470528116,
+        0.0725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 343.004,
+        "remaining_seconds": 1456.996,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "44bab2c603b840d087b451b6534565ab"
+  },
+  {
+    "call_id": "e96dff719ea3421088009ec3aedc651d",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.27
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.1982245445251465,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7139831386285116,
+        -1.485694072467653,
+        1.4280109406892405,
+        0.0,
+        -2.0524897470528116,
+        0.0725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 356.082,
+        "remaining_seconds": 1443.918,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "46191acdbb7846e2a27dce1c924f7a78"
+  },
+  {
+    "call_id": "37c08d1162b043eaaf4a8e6713bf397d",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.255
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.890230894088745,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7190969533368547,
+        -1.437051746214571,
+        1.3748307583809734,
+        0.0,
+        -2.0524897470528116,
+        0.0725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 371.087,
+        "remaining_seconds": 1428.913,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "10c13a6f5eab41af871ac7ba62dd479c"
+  },
+  {
+    "call_id": "a764f5ecbf2949db92be94e50534bd57",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.24
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.9400837421417236,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7271778277735887,
+        -1.3904689084788426,
+        1.3208128180317489,
+        0.0,
+        -2.0524897470528116,
+        0.0725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 383.624,
+        "remaining_seconds": 1416.376,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "8977f51214aa4aefb20a953c6bd40f6d"
+  },
+  {
+    "call_id": "b30be48aa5194c7bb4b56a09a6e77a26",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.22
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.6883559226989746,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7419782198305005,
+        -1.3356481166737006,
+        1.2506505821015768,
+        0.0,
+        -2.0524897470528116,
+        0.0725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 398.734,
+        "remaining_seconds": 1401.266,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "d6b73f1748a54940bb72f5a65f78703d"
+  },
+  {
+    "call_id": "0c6a1204b3d0409882aefce044d3a89d",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.063,
+      "observe_after": true
+    },
+    "duration_s": 3.288883924484253,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7419782198305005,
+        -1.3356481166737006,
+        1.2506505821015768,
+        0.0,
+        -2.0524897470528116,
+        0.0629,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 416.274,
+        "remaining_seconds": 1383.726,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "c658d8f06c7a434d89df5c8335d1e308"
+  },
+  {
+    "call_id": "3fd779b5e6274348a96cba5af20eae10",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.059,
+      "observe_after": true
+    },
+    "duration_s": 2.8409461975097656,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7419782198305005,
+        -1.3356481166737006,
+        1.2506505821015768,
+        0.0,
+        -2.0524897470528116,
+        0.0591,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 429.29,
+        "remaining_seconds": 1370.71,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "6511562ffbfd4a70b914fc4e38cb7ac0"
+  },
+  {
+    "call_id": "c0695286f727474281742710367ec228",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.056,
+      "observe_after": true
+    },
+    "duration_s": 2.4337503910064697,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7419782198305005,
+        -1.3356481166737006,
+        1.2506505821015768,
+        0.0,
+        -2.0524897470528116,
+        0.055999999999999994,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 440.777,
+        "remaining_seconds": 1359.223,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "2f0844f520034e49b707a3296ab3afd3"
+  },
+  {
+    "call_id": "81f39d8f18dd41c6a4d245f94318e5c6",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.23
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.991981029510498,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7362186332989193,
+        -1.3609204842425786,
+        1.2842656234949874,
+        0.0,
+        -2.0524897470528116,
+        0.055999999999999994,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 451.818,
+        "remaining_seconds": 1348.182,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "92d371d4e45047478d916717fdf5937a"
+  },
+  {
+    "call_id": "4ca3bfff4db545f09c95f9d4304e1337",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "92d371d4e45047478d916717fdf5937a",
+      "pixels": [
+        [
+          495,
+          290
+        ],
+        [
+          499,
+          310
+        ],
+        [
+          610,
+          280
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.00694727897644043,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "92d371d4e45047478d916717fdf5937a",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 466.829,
+        "remaining_seconds": 1333.171,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "854b7086098941829c98176c434c75dc",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.065,
+      "observe_after": true
+    },
+    "duration_s": 3.3546009063720703,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7351539824552027,
+        -1.3609204842425786,
+        1.2842656234949874,
+        0.0,
+        -2.0524897470528116,
+        0.0648,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 492.385,
+        "remaining_seconds": 1307.615,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "1cbce1b859ce46119c6de0a69a044aeb"
+  },
+  {
+    "call_id": "072dcb9807d94c75b0be9838400a5664",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.215
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.793712615966797,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7460448369876471,
+        -1.3231166526443812,
+        1.2327784105611548,
+        0.0,
+        -2.0524897470528116,
+        0.0648,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 503.436,
+        "remaining_seconds": 1296.564,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "69c4eba55f2b4ca5b63e1d66a0fa6953"
+  },
+  {
+    "call_id": "30f67be014ae4177928cffdba4c48139",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.056,
+      "observe_after": true
+    },
+    "duration_s": 3.6499481201171875,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7460448369876471,
+        -1.3231166526443812,
+        1.2327784105611548,
+        0.0,
+        -2.0524897470528116,
+        0.055999999999999994,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 514.944,
+        "remaining_seconds": 1285.056,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "00b4fd3addd144c38cab07d5ae56a35a"
+  },
+  {
+    "call_id": "c035894ae0c848f18adb9df29fba18c6",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.053,
+      "observe_after": true
+    },
+    "duration_s": 2.8874638080596924,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7460448369876471,
+        -1.3231166526443812,
+        1.2327784105611548,
+        0.0,
+        -2.0524897470528116,
+        0.0533,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 526.455,
+        "remaining_seconds": 1273.545,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "82f70e01a814400a8a52ad2e21d01772"
+  },
+  {
+    "call_id": "5649d71714774ded8de2b673c1affb24",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.225
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.6868343353271484,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7395347588777086,
+        -1.3468356771789844,
+        1.2666377980498449,
+        0.0,
+        -2.0524897470528116,
+        0.0533,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 539.519,
+        "remaining_seconds": 1260.481,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "4a4e03e3db33410bb7a18426267a9c69"
+  },
+  {
+    "call_id": "185f5d5461094ce99a8af09e23f8446e",
+    "tool": "status",
+    "arguments": {},
+    "duration_s": 0.004471778869628906,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 611.3,
+        "remaining_seconds": 1188.7,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "ec52398d55594b3dbe000ab86d549f8c",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.8709836006164551,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "5513f0b0eb9840a396f41df26c136f97",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 612.178,
+        "remaining_seconds": 1187.822,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "9e909bee114c45129c8c1275e4d23b71",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "5513f0b0eb9840a396f41df26c136f97",
+      "pixels": [
+        [
+          495,
+          285
+        ],
+        [
+          500,
+          305
+        ],
+        [
+          500,
+          320
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.0060312747955322266,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "5513f0b0eb9840a396f41df26c136f97",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 628.761,
+        "remaining_seconds": 1171.239,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "3ffebe570fd042dc9f0abc6b8fcbf732",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.062,
+      "observe_after": true
+    },
+    "duration_s": 3.446831703186035,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7395347588777086,
+        -1.3468356771789844,
+        1.2666377980498449,
+        0.0,
+        -2.0524897470528116,
+        0.061599999999999995,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 653.757,
+        "remaining_seconds": 1146.243,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "87e9c41dc9c34902a4cd4f2ff2eb0a18"
+  },
+  {
+    "call_id": "ce453cf537394b8a92a3a7ad0d6828ca",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.205
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.9419398307800293,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7557488676287358,
+        -1.2972508731298253,
+        1.1984652374669462,
+        0.0,
+        -2.0524897470528116,
+        0.061599999999999995,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 662.777,
+        "remaining_seconds": 1137.223,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "cbd19794a04646118db6fa2f8c65469c"
+  },
+  {
+    "call_id": "b5a2544a7eb0472ca7f54c7fec324989",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.053,
+      "observe_after": true
+    },
+    "duration_s": 3.188753128051758,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7557488676287358,
+        -1.2972508731298253,
+        1.1984652374669462,
+        0.0,
+        -2.0524897470528116,
+        0.0533,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 672.294,
+        "remaining_seconds": 1127.706,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "83e555db350f4d0f8a3ac7ff12b6a302"
+  },
+  {
+    "call_id": "f8852791af6a4229a094f19127196927",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.05,
+      "observe_after": true
+    },
+    "duration_s": 2.7379839420318604,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7557488676287358,
+        -1.2972508731298253,
+        1.1984652374669462,
+        0.0,
+        -2.0524897470528116,
+        0.0509,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 681.312,
+        "remaining_seconds": 1118.688,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "a14c8bb2af0b4e35b622def75f27d83e"
+  },
+  {
+    "call_id": "643ea2bca6074f3cbbb26ed3000a6644",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.215
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.5402534008026123,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7469349549061644,
+        -1.3209698976644284,
+        1.2323246249556363,
+        0.0,
+        -2.0524897470528116,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 691.309,
+        "remaining_seconds": 1108.691,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "75abd4859eef4025a241fd8ac2ad0ae0"
+  },
+  {
+    "call_id": "3d53769a62da4f449b17b74579580332",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "75abd4859eef4025a241fd8ac2ad0ae0",
+      "pixels": [
+        [
+          495,
+          285
+        ],
+        [
+          500,
+          305
+        ],
+        [
+          500,
+          320
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.007294416427612305,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "75abd4859eef4025a241fd8ac2ad0ae0",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 702.908,
+        "remaining_seconds": 1097.092,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "2ddefee4f0fd4c7aa88cecfca59dee1a",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.245
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.2956364154815674,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.725816470957033,
+        -1.404798061637716,
+        1.336765127394977,
+        0.0,
+        -2.0524897470528116,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 731.363,
+        "remaining_seconds": 1068.637,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "f65f4897c8654988b8c07a4dbddf9ea7"
+  },
+  {
+    "call_id": "993113e6476a45fd8e2ba390f31132ad",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.163,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.3968071937561035,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.47991318442088077,
+        1.714733630206869,
+        -1.5176335977791495,
+        1.463266591579526,
+        0.0,
+        -2.0524897470528116,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 742.882,
+        "remaining_seconds": 1057.118,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "2dd6e8287976408fa9bf55f365435da9"
+  },
+  {
+    "call_id": "36322231400b427aa0c54e528c71fe0b",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.133,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.148346424102783,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.4040088152516474,
+        1.668883830756978,
+        -1.4614689024499719,
+        1.451258726325805,
+        0.0,
+        -1.973932477420547,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 760.407,
+        "remaining_seconds": 1039.593,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "029326d5f20e43b6804bbccf6f2306a6"
+  },
+  {
+    "call_id": "5c304712e64f4887a012ecb99098c169",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.108,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.5883047580718994,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.636891945567922,
+        -1.42197210147734,
+        1.4439981566375086,
+        0.0,
+        -1.9045032797762125,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 771.431,
+        "remaining_seconds": 1028.569,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "dc64af4f8e654679838086aebac869f5"
+  },
+  {
+    "call_id": "eb87b251c7d148e48e49ac0d4db1a1e9",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.108,
+        0.25
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.2440550327301025,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6454091523176544,
+        -1.3251761411617347,
+        1.3375679788508943,
+        0.0,
+        -1.9045032797762125,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 783.97,
+        "remaining_seconds": 1016.03,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "5916fb3a9f6e4dedbcd550afca7b9375"
+  },
+  {
+    "call_id": "b010af5bbaf24b7793dcb42e4067d63d",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.108,
+        0.225
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.2486329078674316,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6622690328919194,
+        -1.2534605621972876,
+        1.2482769343188644,
+        0.0,
+        -1.9045032797762125,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 796.515,
+        "remaining_seconds": 1003.485,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "add25c6e38fc4d16961e9a3e0c830d5a"
+  },
+  {
+    "call_id": "aa05c6f3da944d54a334e571a4963dc1",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.108,
+        0.205
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.789663553237915,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6820436133170151,
+        -1.2016766432906159,
+        1.1765788086469373,
+        0.0,
+        -1.9045032797762125,
+        0.051199999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 808.05,
+        "remaining_seconds": 991.95,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "1f0b34c4557e49e6bc046e72a1822c2d"
+  },
+  {
+    "call_id": "04a30c32df06489e926bc08d43dd721f",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "1f0b34c4557e49e6bc046e72a1822c2d",
+      "pixels": [
+        [
+          422,
+          277
+        ],
+        [
+          428,
+          298
+        ],
+        [
+          432,
+          320
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.006492137908935547,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "1f0b34c4557e49e6bc046e72a1822c2d",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 816.159,
+        "remaining_seconds": 983.841,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "eb884f0e7abd44a39fa6939d6b8e37b6",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.06,
+      "observe_after": true
+    },
+    "duration_s": 3.594144582748413,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6820436133170151,
+        -1.2016766432906159,
+        1.1765788086469373,
+        0.0,
+        -1.9045032797762125,
+        0.059699999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 828.625,
+        "remaining_seconds": 971.375,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "b727c8505c5746359c040fb8de75525a"
+  },
+  {
+    "call_id": "cd7e1ef4c0a644adbac2e9684dc3a053",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.069,
+      "observe_after": true
+    },
+    "duration_s": 3.5434837341308594,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6820436133170151,
+        -1.2016766432906159,
+        1.1765788086469373,
+        0.0,
+        -1.9045032797762125,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 840.662,
+        "remaining_seconds": 959.338,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "9aec1897379f414f902e6af0a904e796"
+  },
+  {
+    "call_id": "b0509ecea5004969bdda64bd319e4765",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.108,
+        0.25
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.797943115234375,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6472766546172881,
+        -1.3233609987396606,
+        1.3362415286193787,
+        0.0,
+        -1.9045032797762125,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 853.661,
+        "remaining_seconds": 946.339,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "159c853e81534637b732f57dc9ee2b82"
+  },
+  {
+    "call_id": "f8222374c2ea42d58bb64c3611ccb8de",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.108,
+        0.29
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.649900436401367,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.33386403261399533,
+        1.6353560558261668,
+        -1.4555696895782309,
+        1.4787476620447155,
+        0.0,
+        -1.9045032797762125,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 871.203,
+        "remaining_seconds": 928.797,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "422fddd5a1814fada9d5aab526bab68c"
+  },
+  {
+    "call_id": "bb1182a401c24e02b4812bc56c868266",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.19,
+        0.29
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 0.10511946678161621,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "4c21b7ce0edf47338f8623859b760609",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.15,
+        0.29
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.33386403261399533,
+        1.6353560558261668,
+        -1.4555696895782309,
+        1.4800741122762315,
+        0,
+        -1.9045032797762125
+      ]
+    },
+    "duration_s": 0.003996849060058594,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 903.816,
+        "remaining_seconds": 896.184,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "5d8d6266a3134a73bd13220bfd32454a",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.175,
+        0.285
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.33386403261399533,
+        1.6353560558261668,
+        -1.4555696895782309,
+        1.4800741122762315,
+        0,
+        -1.9045032797762125
+      ]
+    },
+    "duration_s": 0.0026671886444091797,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 903.823,
+        "remaining_seconds": 896.177,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "a8d2a442ed604979811f01be5167766b",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.315,
+        -0.27,
+        0.285
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.33386403261399533,
+        1.6353560558261668,
+        -1.4555696895782309,
+        1.4800741122762315,
+        0,
+        -1.9045032797762125
+      ]
+    },
+    "duration_s": 0.10282588005065918,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "5bac0dc053fc4633a822743a7f51c7ed",
+    "tool": "piper_check_path",
+    "arguments": {
+      "start14": [
+        -0.33386403261399533,
+        1.6353560558261668,
+        -1.4555696895782309,
+        1.4800741122762315,
+        0,
+        -1.9045032797762125,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "target14": [
+        -0.5111713067157287,
+        1.734481829096525,
+        -1.5642560282425064,
+        1.4876625259408653,
+        1.3863349799547414e-09,
+        -2.081967629883404,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ]
+    },
+    "duration_s": 0.04827284812927246,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 916.81,
+        "remaining_seconds": 883.19,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "c72cb17de4124275ad6946e99e8be189",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.9530973434448242,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "74aba59885544d2db2908e9a20cfa069",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 917.767,
+        "remaining_seconds": 882.233,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "6c4d8291c8284dee858997839a92fc5e",
+    "tool": "piper_move_joints",
+    "arguments": {
+      "joints": [
+        -0.5111713067157287,
+        1.734481829096525,
+        -1.5642560282425064,
+        1.4876625259408653,
+        1.3863349799547414e-09,
+        -2.081967629883404
+      ],
+      "observe_after": true
+    },
+    "duration_s": 4.14992618560791,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0.0,
+        -2.0811131467855186,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 930.299,
+        "remaining_seconds": 869.701,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "e15cf4add88048b695d2f776445ae5a2"
+  },
+  {
+    "call_id": "038a04e17c904f149e2a24b9bd58489b",
+    "tool": "status",
+    "arguments": {},
+    "duration_s": 0.0028858184814453125,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1005.109,
+        "remaining_seconds": 794.891,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "c59f4e369ba84a1e940c4c57f677b510",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.8719606399536133,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "e18e40e63c8947ccb887009917d39e53",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1005.985,
+        "remaining_seconds": 794.015,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "a48c09a3a5224598aaa429885b9cff6a",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "e18e40e63c8947ccb887009917d39e53",
+      "pixels": [
+        [
+          619,
+          282
+        ],
+        [
+          612,
+          292
+        ],
+        [
+          626,
+          278
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.007408857345581055,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "e18e40e63c8947ccb887009917d39e53",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1015.78,
+        "remaining_seconds": 784.22,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "562c9e34a54d4d0e9927a9d444970f57",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.313,
+        -0.22,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10400056838989258,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "6e2cb2588eba4bf1ad38e8d99236edbd",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.273,
+        0.275
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10367250442504883,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "99e39c300f2c47e99e19de44080f1b04",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.215,
+        0.255
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10435962677001953,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "3877c80550aa4571adb82d22644e6870",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.273,
+        0.245
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10233950614929199,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "3ba60c80735c426b9b61f3bb6e3b7fb6",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.33,
+        -0.273,
+        0.26
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10346078872680664,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "9124d6ea40314364ac2cdf3ab805809c",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10262894630432129,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "8134d4e15e7b45cba4ffb4f38eb1747e",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10409307479858398,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "6669b7de9fd443eea2eb5f764ffaf524",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.175,
+        0.285
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10225653648376465,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "752884f202f3402691de1861468c6865",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.003114938735961914,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1054.303,
+        "remaining_seconds": 745.697,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "ed2a9e76260945b099d0ec86b9e37171",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -1.7811131467855186
+      ]
+    },
+    "duration_s": 0.0021402835845947266,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1054.31,
+        "remaining_seconds": 745.69,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "fcd168adf44849659147febc577b072b",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.1871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.0017819404602050781,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1054.315,
+        "remaining_seconds": 745.685,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "ddb62807ac1348ba825dc9e0fa536e19",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.272,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        0.9961946980917455,
+        -0.08715574274765817,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -1.9065802215860856
+      ]
+    },
+    "duration_s": 0.10262250900268555,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "8f8c3db192fd4177b3babc3b0bf36f7d",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.273,
+        0.279
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -0.5103168199906221
+      ]
+    },
+    "duration_s": 0.10460686683654785,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "48b7add4f8694a5b88387253de930887",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.335
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10376262664794922,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "daef03704f1d432eaa951e48ef750d6b",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.205
+      ],
+      "quaternion_xyzw": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10320425033569336,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "65b673a239bd416fa74c195534e6fc9b",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.335
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.10449576377868652,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "9fcd5763a7764b81bf74759c3a78fb76",
+    "tool": "piper_check_path",
+    "arguments": {
+      "start14": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "target14": [
+        -0.65,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ]
+    },
+    "duration_s": 0.04117584228515625,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1099.775,
+        "remaining_seconds": 700.225,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "fad8403ae28c4c989d8317c29f77228a",
+    "tool": "piper_fk",
+    "arguments": {
+      "joints": [
+        -0.65,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.001668691635131836,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1099.781,
+        "remaining_seconds": 700.219,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "aa064c78a52d40f986194ba09134d740",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.312,
+        -0.176,
+        0.285
+      ],
+      "quaternion_xyzw": [
+        0.9238795325112867,
+        -0.3826834323650898,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.0031528472900390625,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1112.316,
+        "remaining_seconds": 687.684,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "c76a415337624581a46083ae22d854ee",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.27
+      ],
+      "quaternion_xyzw": [
+        0.9238795325112867,
+        -0.3826834323650898,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.0032196044921875,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1112.323,
+        "remaining_seconds": 687.677,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "816826eafe9743519eb4c46551e406f5",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.28
+      ],
+      "quaternion_xyzw": [
+        0.984807753012208,
+        -0.17364817766693033,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186
+      ]
+    },
+    "duration_s": 0.1043252944946289,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "bad6b670ebe34c4788b031f185e83e15",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.271
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.7174766610633988,
+        1.9617565563103014,
+        -1.8315558069112126,
+        1.5276875772427116,
+        6.98375072528792e-10,
+        -1.5028748208336766
+      ]
+    },
+    "duration_s": 0.003989219665527344,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1121.512,
+        "remaining_seconds": 678.488,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "9f888181a2ee4ccf85d1f01b510e4935",
+    "tool": "piper_check_path",
+    "arguments": {
+      "start14": [
+        -0.5105786193784212,
+        1.7338798921012468,
+        -1.563256504426281,
+        1.4871601490393282,
+        0,
+        -2.0811131467855186,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "target14": [
+        -0.5136060229411878,
+        1.736281328487558,
+        -1.5666101443964793,
+        1.488217142762785,
+        2.545001097343201e-10,
+        -1.2990041826004006,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ]
+    },
+    "duration_s": 0.19811606407165527,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1121.714,
+        "remaining_seconds": 678.286,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "53ff40814ab94a249736aff452db712f",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.9579641819000244,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "5c115100a1a54dae95eeb9d0bf1a879d",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1134.139,
+        "remaining_seconds": 665.861,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "a52f5a55912648a18101e00abe660e54",
+    "tool": "piper_move_joints",
+    "arguments": {
+      "joints": [
+        -0.5136060229411878,
+        1.736281328487558,
+        -1.5666101443964793,
+        1.488217142762785,
+        2.545001097343201e-10,
+        -1.2990041826004006
+      ],
+      "observe_after": true
+    },
+    "duration_s": 12.193505048751831,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.5119225229024568,
+        1.7346827435571641,
+        -1.5655079791613538,
+        1.4871601490393282,
+        0.0,
+        -1.2995896143274976,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1152.674,
+        "remaining_seconds": 647.326,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "455728126ac54c57ad42622f7e1982a0"
+  },
+  {
+    "call_id": "404d2ac9ca774c0f95127a8b48bf3092",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.225,
+        0.285
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.5119225229024568,
+        1.7346827435571641,
+        -1.5655079791613538,
+        1.4871601490393282,
+        0,
+        -1.2995896143274976
+      ]
+    },
+    "duration_s": 0.0033843517303466797,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1165.588,
+        "remaining_seconds": 634.412,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "bdf17db55a2e4312994bee29089c807e",
+    "tool": "piper_check_path",
+    "arguments": {
+      "start14": [
+        -0.5119225229024568,
+        1.7346827435571641,
+        -1.5655079791613538,
+        1.4871601490393282,
+        0,
+        -1.2995896143274976,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "target14": [
+        -0.6217541716324833,
+        1.842009982654439,
+        -1.7105196563551097,
+        1.526398000452286,
+        4.749522980181867e-10,
+        -0.6217541680065125,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ]
+    },
+    "duration_s": 0.23178839683532715,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1165.823,
+        "remaining_seconds": 634.177,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "99cc3a0e293e4daca1609fc5fa59cae2",
+    "tool": "piper_move_joints",
+    "arguments": {
+      "joints": [
+        -0.6217541716324833,
+        1.842009982654439,
+        -1.7105196563551097,
+        1.526398000452286,
+        4.749522980181867e-10,
+        -0.6217541680065125
+      ],
+      "observe_after": true
+    },
+    "duration_s": 10.941756010055542,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.6203772826213845,
+        1.8404671495205407,
+        -1.7094452825733262,
+        1.5265522302568404,
+        0.0,
+        -0.6230825429619757,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1183.232,
+        "remaining_seconds": 616.768,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "80db4c24b0614ebe8318d3c28b5d2211"
+  },
+  {
+    "call_id": "520e62d2ff594e46a5c1d80acfce2c39",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.285
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 0.10586810111999512,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "8747221be8664e70a680fbf9dce60873",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.275
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.7174756139195981,
+        1.9619165133735914,
+        -1.8354587881554396,
+        1.5314306017461885,
+        3.30227210191078e-10,
+        -0.7174756102923792
+      ]
+    },
+    "duration_s": 0.003564596176147461,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": false,
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1203.375,
+        "remaining_seconds": 596.625,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "05470ab8b3ea408abac19b0d13e8b389",
+    "tool": "piper_check_path",
+    "arguments": {
+      "start14": [
+        -0.6203772826213845,
+        1.8404671495205407,
+        -1.7094452825733262,
+        1.5265522302568404,
+        0,
+        -0.6230825429619757,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "target14": [
+        -0.7174756141768943,
+        1.9627409163817389,
+        -1.8513514178911306,
+        1.546498828473732,
+        3.3022721121606964e-10,
+        -0.7174756105496753,
+        0.0687,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ]
+    },
+    "duration_s": 0.07422423362731934,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1203.453,
+        "remaining_seconds": 596.547,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "00e3ea6933744a8c92d80e119f0b6f8e",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.8032786846160889,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "019d3657af55419ebf3aff9e81849463",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1204.261,
+        "remaining_seconds": 595.739,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "19424e97a9fb44daae0617a4a73b3314",
+    "tool": "piper_move_joints",
+    "arguments": {
+      "joints": [
+        -0.7174756141768943,
+        1.9627409163817389,
+        -1.8513514178911306,
+        1.546498828473732,
+        3.3022721121606964e-10,
+        -0.7174756105496753
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.743523597717285,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9616104529014669,
+        -1.8506773256447073,
+        1.546675876532335,
+        0.0,
+        -0.7172605093995897,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1215.29,
+        "remaining_seconds": 584.71,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "42f5b44cdb734f3fbb4bfedc5011a22d"
+  },
+  {
+    "call_id": "417e3d53a2264717b4d6222471d1fcdb",
+    "tool": "status",
+    "arguments": {},
+    "duration_s": 0.002533435821533203,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1289.412,
+        "remaining_seconds": 510.588,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "b64cb778f7fb490694b44c068a776854",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 1.0255286693572998,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1290.443,
+        "remaining_seconds": 509.557,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "f2ca5fee5c79442dbbc79f357c624ce2",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "pixels": [
+        [
+          296,
+          302
+        ],
+        [
+          280,
+          286
+        ],
+        [
+          310,
+          320
+        ],
+        [
+          386,
+          298
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.007822275161743164,
+    "event": "mcp_error",
+    "error": {
+      "reason": "No valid depth in requested window",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "58158b2e58904f3d991c52414e496ded",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "pixels": [
+        [
+          274,
+          320
+        ]
+      ],
+      "radius": 5
+    },
+    "duration_s": 0.009822368621826172,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1305.202,
+        "remaining_seconds": 494.798,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "c7311209ec6148a884d533aa9fc52bd9",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "pixels": [
+        [
+          286,
+          290
+        ]
+      ],
+      "radius": 5
+    },
+    "duration_s": 0.007627725601196289,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1315.084,
+        "remaining_seconds": 484.916,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "4a56d4ea90e842dbaa6d155164b660aa",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "pixels": [
+        [
+          306,
+          320
+        ]
+      ],
+      "radius": 5
+    },
+    "duration_s": 0.007238626480102539,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1315.095,
+        "remaining_seconds": 484.905,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "298a5b8cad274096b4d0ee6b625c57d5",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "pixels": [
+        [
+          298,
+          300
+        ]
+      ],
+      "radius": 5
+    },
+    "duration_s": 0.0057525634765625,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "3f6dc9a39ee548f3a7588d571f7fb80c",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1315.104,
+        "remaining_seconds": 484.896,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "ed04e67750ed4e4c906b6efb53100822",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.245
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.3951637744903564,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9616104529014669,
+        -1.7419956731230204,
+        1.4365805073165328,
+        0.0,
+        -0.7172605093995897,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1318.503,
+        "remaining_seconds": 481.497,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "23622eb57c624be9af657541d98cec15"
+  },
+  {
+    "call_id": "56b8dbb6fecf4206aa18db82f62350f4",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.225
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.5982251167297363,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9681379843039257,
+        -1.6783435153027872,
+        1.3648998349371255,
+        0.0,
+        -0.7172605093995897,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1327.978,
+        "remaining_seconds": 472.022,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "367dda76275740bf8bf97bfff986fda9"
+  },
+  {
+    "call_id": "9426d6d58dba4f3bb291a739b3adb3e9",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.205
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.149172782897949,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9785052400607719,
+        -1.6216377679054914,
+        1.2961687689935888,
+        0.0,
+        -0.7172605093995897,
+        0.0687,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1338.003,
+        "remaining_seconds": 461.997,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "21b11279d46f43309a0a863a7117a880"
+  },
+  {
+    "call_id": "6ce36ac59608436595e49f20ccd998bc",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.059,
+      "observe_after": true
+    },
+    "duration_s": 3.843806743621826,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9785052400607719,
+        -1.6216377679054914,
+        1.2961687689935888,
+        0.0,
+        -0.7172605093995897,
+        0.059,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1350.039,
+        "remaining_seconds": 449.961,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "f673114c2e7d42919b29d44a6b758969"
+  },
+  {
+    "call_id": "a44831aeedb84964a9c2ac0b932a6257",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.053,
+      "observe_after": true
+    },
+    "duration_s": 2.9905779361724854,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9785052400607719,
+        -1.6216377679054914,
+        1.2961687689935888,
+        0.0,
+        -0.7172605093995897,
+        0.0533,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1362.023,
+        "remaining_seconds": 437.977,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "31fa49e7a7ee43158bdd6c9e5f83f224"
+  },
+  {
+    "call_id": "0c51318d8a9c4977b2e3d5af838565cd",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.05,
+      "observe_after": true
+    },
+    "duration_s": 2.941990852355957,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9785052400607719,
+        -1.6216377679054914,
+        1.2961687689935888,
+        0.0,
+        -0.7172605093995897,
+        0.051,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1371.524,
+        "remaining_seconds": 428.476,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "33c5679042e34f6ca430958f58233567"
+  },
+  {
+    "call_id": "f91b373cffc84b6ea2a27a9917e86ffc",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.215
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.6949429512023926,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9724489475563518,
+        -1.645461512195214,
+        1.325926632740092,
+        0.0,
+        -0.7172605093995897,
+        0.0509,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1381.57,
+        "remaining_seconds": 418.43,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "db3d42114af84cac8f07507deeccbefe"
+  },
+  {
+    "call_id": "4863f77cb2284e4ca1a6d0fd1499a34e",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.245
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.2974236011505127,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9621340516770651,
+        -1.7367422320745174,
+        1.4303845884719528,
+        0.0,
+        -0.7172605093995897,
+        0.051,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1393.058,
+        "remaining_seconds": 406.942,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "3dd38d0ab0b44e2fbd18a203f62874f5"
+  },
+  {
+    "call_id": "abf1d66e54d14ebe80766d52458f1840",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.274,
+        0.275
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.091717481613159,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.7171034297669102,
+        1.9610694008333487,
+        -1.8484433042021546,
+        1.5421380204771498,
+        0.0,
+        -0.7172605093995897,
+        0.0511,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1405.147,
+        "remaining_seconds": 394.853,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "ccdd50de3e2e46df81499638005445ff"
+  },
+  {
+    "call_id": "ed00721480264e669c6e234606db9f02",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.314,
+        -0.225,
+        0.29
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.448941469192505,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.6230476363769357,
+        1.8429978769359323,
+        -1.7287660773929034,
+        1.5415271552389518,
+        0.0,
+        -0.6224018645536978,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1420.181,
+        "remaining_seconds": 379.819,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "7ac618be0e8d47fc9ebf2608f503769b"
+  },
+  {
+    "call_id": "d1b4a50bd13345c687ba67a07824ea74",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.31,
+        -0.175,
+        0.295
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.6973671913146973,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.5142612641001292,
+        1.7290976899507824,
+        -1.5932761675605835,
+        1.5204959377524199,
+        0.0,
+        -0.5148197694607674,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1439.742,
+        "remaining_seconds": 360.258,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "82226f1bb284452cb241b65c523f1a67"
+  },
+  {
+    "call_id": "3663ca09dde94162a0cd5523af5a2a2a",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.305,
+        -0.125,
+        0.295
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.6482675075531006,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.3903254339160119,
+        1.632231916465097,
+        -1.4725168366150958,
+        1.4960962348095392,
+        0.0,
+        -0.3898192884329335,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1450.773,
+        "remaining_seconds": 349.227,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "bb69f558ee4c4844bcb9af6efc74632f"
+  },
+  {
+    "call_id": "b75e5f977c3842dfae714996f36db68a",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.075,
+        0.295
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.6453497409820557,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.24281020553745114,
+        1.5744615182240849,
+        -1.4040824766443984,
+        1.4861304047806516,
+        0.0,
+        -0.2418677277413742,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1463.245,
+        "remaining_seconds": 336.755,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "3285578f0b674e709d0859719c8e1fd6"
+  },
+  {
+    "call_id": "a926522b4c5e410596b048eecaeb3200",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.295
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.9664130210876465,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5558563083978252,
+        -1.383784297443704,
+        1.484821407841656,
+        0.0,
+        -0.158824961931484,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1474.342,
+        "remaining_seconds": 325.658,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "a861309100f84f40bc3c1abe6c5ba133"
+  },
+  {
+    "call_id": "a5a1bca6d3084258a28a3089ff1aed46",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.28
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.6918067932128906,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5558563083978252,
+        -1.3309880875708757,
+        1.4292501244581566,
+        0.0,
+        -0.158824961931484,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1486.311,
+        "remaining_seconds": 313.689,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "b08f25163e5343ab89b2d640e685492a"
+  },
+  {
+    "call_id": "f551e03bbe21403197e2f2182a01a1df",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.267
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.6386771202087402,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5597658459222923,
+        -1.2858364198217824,
+        1.379857306626717,
+        0.0,
+        -0.158824961931484,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1496.803,
+        "remaining_seconds": 303.197,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "4eabde672d924c3d9eff5ccd16941d28"
+  },
+  {
+    "call_id": "28142148caa64d42940572a96dba4219",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.265
+      ],
+      "observe_after": true
+    },
+    "duration_s": 2.7422478199005127,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5597658459222923,
+        -1.2795532345146028,
+        1.3729807093738593,
+        0.0,
+        -0.158824961931484,
+        0.0513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1525.344,
+        "remaining_seconds": 274.656,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "5d2048ccfbcf43df874e8ddd00988385"
+  },
+  {
+    "call_id": "c6fc4a93cb0b4dca8d094a669d0dbc46",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.06,
+      "observe_after": true
+    },
+    "duration_s": 3.6990487575531006,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5597658459222923,
+        -1.2795532345146028,
+        1.3729807093738593,
+        0.0,
+        -0.158824961931484,
+        0.059699999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1538.369,
+        "remaining_seconds": 261.631,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "c2c5be3393b649aa8edba12181a9d4bc"
+  },
+  {
+    "call_id": "21ddacd58ac54502800c0cef6028bf6c",
+    "tool": "piper_gripper",
+    "arguments": {
+      "width_m": 0.069,
+      "observe_after": true
+    },
+    "duration_s": 3.544301986694336,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5597658459222923,
+        -1.2795532345146028,
+        1.3729807093738593,
+        0.0,
+        -0.158824961931484,
+        0.0686,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1552.926,
+        "remaining_seconds": 247.074,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "c20b4abccc5e4335ba0c5e4c2ecf275e"
+  },
+  {
+    "call_id": "4d7a08ac8b40448ab23df107b864cc85",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.3
+      ],
+      "observe_after": true
+    },
+    "duration_s": 3.296505928039551,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "executed": true,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "final14": [
+        -0.1607971839862376,
+        1.5545996713363892,
+        -1.3983577966978569,
+        1.4976670311363343,
+        0.0,
+        -0.158824961931484,
+        0.0686,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ],
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1565.018,
+        "remaining_seconds": 234.982,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": "274698d9681043bcb9fed67bd0ad398d"
+  },
+  {
+    "call_id": "27add99b8d6948fdaf8bd65ff04fb355",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.9730653762817383,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "da4ec2d2be364967a6a6efac40a5052a",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1629.633,
+        "remaining_seconds": 170.367,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "d1fcbf00e05c4bd1a7d51e2173e90320",
+    "tool": "piper_move_pose",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.33
+      ],
+      "observe_after": true
+    },
+    "duration_s": 0.10489535331726074,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "83feb653d47740a3bd71043a0965546a",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.32
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.1607971839862376,
+        1.5545996713363892,
+        -1.3983577966978569,
+        1.4976670311363343,
+        0,
+        -0.158824961931484
+      ]
+    },
+    "duration_s": 0.10423088073730469,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "e171e5c4086649699241754630cea074",
+    "tool": "piper_solve_ik",
+    "arguments": {
+      "position": [
+        0.304,
+        -0.049,
+        0.315
+      ],
+      "quaternion_xyzw": [
+        0.7071067811865476,
+        -0.7071067811865476,
+        0,
+        0
+      ],
+      "seed": [
+        -0.1607971839862376,
+        1.5545996713363892,
+        -1.3983577966978569,
+        1.4976670311363343,
+        0,
+        -0.158824961931484
+      ]
+    },
+    "duration_s": 0.10259318351745605,
+    "event": "mcp_error",
+    "error": {
+      "reason": "MOVEIT_NO_IK_SOLUTION",
+      "no_action_executed": true,
+      "control_uncertain": false
+    },
+    "result": {},
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "09ab87ea9f42444b8e6508c7d269e037",
+    "tool": "piper_hold",
+    "arguments": {},
+    "duration_s": 0.3538510799407959,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1673.947,
+        "remaining_seconds": 126.053,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "4cd701947ddb4777a0d12c79885f3fed",
+    "tool": "request_operator",
+    "arguments": {
+      "kind": "help",
+      "message": "Please inspect without touching: is green wholly supported on top of red, with red/orange side-by-side and fronts aligned, and are the open gripper fingers clear of all blocks? Green was released and flange withdrew to z=.300m. Further vertical withdrawal .330/.320/.315m was refused by IK before dispatch; head view remains arm-occluded. Need only these visible geometry/clearance facts; please do not reset or move objects.",
+      "timeout_s": 1
+    },
+    "duration_s": 1.005523920059204,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1674.956,
+        "remaining_seconds": 125.044,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "dac84cf7acac4089b3adde834924da50",
+    "tool": "piper_pixel_to_position",
+    "arguments": {
+      "camera": "head",
+      "frame_id": "da4ec2d2be364967a6a6efac40a5052a",
+      "pixels": [
+        [
+          270,
+          336
+        ],
+        [
+          380,
+          286
+        ]
+      ],
+      "radius": 3
+    },
+    "duration_s": 0.007967233657836914,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "da4ec2d2be364967a6a6efac40a5052a",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1685.534,
+        "remaining_seconds": 114.466,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "5a6719a4ed69470d9cd1936ec3669ab6",
+    "tool": "request_operator",
+    "arguments": {
+      "request_id": "6eed09acb0b9",
+      "timeout_s": 1
+    },
+    "duration_s": 1.0039949417114258,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1707.263,
+        "remaining_seconds": 92.737,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "974f8828e1d44abbbcd7c3b90972958b",
+    "tool": "skill_library_merge",
+    "arguments": {
+      "message": "Manual magnetic-block exploration evidence only; no controller or verified skill. Records retention outcomes and unresolved final support/clearance."
+    },
+    "duration_s": 0.053945302963256836,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1746.982,
+        "remaining_seconds": 53.018,
+        "finish_reserve_seconds": 60,
+        "phase": "wind_down",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      },
+      "merged": false
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "3a75f0130b694a708518af37080f15f0",
+    "tool": "piper_observe",
+    "arguments": {
+      "cameras": [
+        "head",
+        "left",
+        "right"
+      ],
+      "require_depth": true
+    },
+    "duration_s": 0.7752768993377686,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "frame_id": "63d843b4c9bf4db7b3c16b1899f95a37",
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1758.33,
+        "remaining_seconds": 41.67,
+        "finish_reserve_seconds": 60,
+        "phase": "wind_down",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    },
+    "observation_frame_id": null
+  },
+  {
+    "call_id": "8046198ae5ea49e3b1dd07ee6478b783",
+    "tool": "skill_library_merge",
+    "arguments": {
+      "message": "Manual supervised evidence added to existing draft IK comparison skill; onsite success confirmation and camera-only verification limitations recorded. No code run or promotion claimed."
+    },
+    "duration_s": 0.06031298637390137,
+    "event": "mcp_result",
+    "error": {},
+    "result": {
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 1782.466,
+        "remaining_seconds": 17.534,
+        "finish_reserve_seconds": 60,
+        "phase": "wind_down",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      },
+      "merged": true,
+      "library_main": "9c6cb4be81a94c47493f5462a190151a44b51df7",
+      "previous_main": "5c6beb0048c7c53ae3968d2e7129999e8e96cbef",
+      "changed_files": 1
+    },
+    "observation_frame_id": null
+  }
+]

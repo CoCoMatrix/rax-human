@@ -1,0 +1,2 @@
+# QNexo controller (STM32 virtual COM port) with the stable path used by Dora.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", MODE="0660", GROUP="plugdev", SYMLINK+="qnbot", TAG+="uaccess"

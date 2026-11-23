@@ -1,0 +1,235 @@
+{
+  "status": "COMPOSED CANDIDATE",
+  "source_commit": "c8a3fc6643814ac8d22291a7a5e82137a6ce1875",
+  "source_identity": "references/composition-source/R8-SOURCE.json",
+  "baseline": "output/composition/BASELINE.json",
+  "preexisting_dirty_status": " M README.md\n M controller.py\n M stack_checks.py\n M verify_offline.py\n?? README-R8.md\n?? test_closeout_r8.py\n",
+  "optimization_analysis_only": false,
+  "supported_stage_ordering": [
+    "initial_state",
+    "open_empty_gripper",
+    "orange_entry (read-only)",
+    "empty_joint_waypoint x3",
+    "approach orange",
+    "close_grasp orange",
+    "trial_lift orange",
+    "transport orange raise",
+    "plan_base_placement (read-only)",
+    "transport orange transfer",
+    "lower_to_support intermediate",
+    "lower_to_support final",
+    "release orange",
+    "retreat orange",
+    "empty_inspection x2",
+    "green_pregrasp",
+    "refresh_stack_support (read-only)",
+    "approach green with new history root",
+    "close_grasp green",
+    "trial_lift green",
+    "transport green raise 1",
+    "transport green lateral 1",
+    "transport green raise 2",
+    "transport green lateral 3",
+    "green_stack_lower",
+    "green_stack_release",
+    "green_stack_retreat"
+  ],
+  "call_audit": {
+    "hardware_calls": 0,
+    "camera_calls": 0,
+    "gemini_calls": 0,
+    "main_runtime_primary_agent_calls": 0,
+    "note": "Offline verification; predecessor authoring usage is recorded in COMPOSITION-v0.2.json"
+  },
+  "outstanding_physical_qualifications": [
+    "No archived R8 green release/retreat motion receipt; positive automatic release and retreat remain physically unqualified.",
+    "No current composition hardware/model run, unattended pass or generalized-layout validation.",
+    "Fresh neutral entry/candidate selection and new-layout calculations need separately authorized physical checks.",
+    "Depth/TCP accuracy, collision/environment completeness and visual support interpretation remain provisional."
+  ],
+  "qualification": "offline_checked_not_physically_qualified",
+  "operator_reported_facts": [
+    {
+      "text": "\u7eff\u8272\u5df2\u7a33\u5b9a\u843d\u5728\u7ea2\u5757\u4e0a\uff0c\u5927\u4f53\u5bf9\u9f50\uff0c\u53ef\u4ee5\u539f\u4f4d\u5f20\u722a",
+      "source": "references/composition-source/operator/ff43deacefc7.reply.json",
+      "scope": "historical pose only; not a future autonomous predicate"
+    },
+    {
+      "text": "\u76ee\u524d\u8fd9\u4e2a\u6d41\u7a0b\u5df2\u7ecf\u6f14\u7ec3\u6210\u529f\u6253\u901a\u4e86",
+      "source": "COMPOSE_REQUEST.md and current user request",
+      "scope": "operator-reported rehearsal success; no unattended test or missing receipt inferred"
+    }
+  ],
+  "source_closeout_commit": "bd9713baa7d67281ad62a2499e617324614cf4ff",
+  "development_validation": [
+    {
+      "name": "portable",
+      "command": [
+        "python",
+        "code/magnetic_blocks/verify_offline.py",
+        "--portable"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working",
+      "exit_code": 0,
+      "started_unix": 1794398613.2055838,
+      "elapsed_s": 0.5583891870919615,
+      "log": "output/composition/portable.log",
+      "tests_run": 79,
+      "error_records": 0,
+      "failure_records": 0,
+      "skipped_records": 0
+    },
+    {
+      "name": "composition",
+      "command": [
+        "python",
+        "code/magnetic_blocks/verify_offline.py",
+        "--composition"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working",
+      "exit_code": 0,
+      "started_unix": 1794398613.7642026,
+      "elapsed_s": 0.8144004109781235,
+      "log": "output/composition/composition.log",
+      "tests_run": 13,
+      "error_records": 0,
+      "failure_records": 0,
+      "skipped_records": 0
+    },
+    {
+      "name": "full-suite",
+      "command": [
+        "python",
+        "code/magnetic_blocks/verify_offline.py"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working",
+      "exit_code": 1,
+      "started_unix": 1794398614.5786874,
+      "elapsed_s": 1.23294450098183,
+      "log": "output/composition/full-suite.log",
+      "tests_run": 118,
+      "error_records": 28,
+      "failure_records": 0,
+      "skipped_records": 0
+    },
+    {
+      "name": "compile",
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "code/magnetic_blocks"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working",
+      "exit_code": 0,
+      "started_unix": 1794398615.8120205,
+      "elapsed_s": 0.025587941985577345,
+      "log": "output/composition/compile.log",
+      "tests_run": null,
+      "error_records": 0,
+      "failure_records": 0,
+      "skipped_records": 0
+    },
+    {
+      "name": "main-preview",
+      "command": [
+        "python",
+        "code/magnetic_blocks/controller.py"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working",
+      "exit_code": 0,
+      "started_unix": 1794398615.8376539,
+      "elapsed_s": 0.06280236097518355,
+      "log": "output/composition/main-preview.log",
+      "tests_run": null,
+      "error_records": 0,
+      "failure_records": 0,
+      "skipped_records": 0
+    },
+    {
+      "name": "step-preview",
+      "command": [
+        "python",
+        "code/magnetic_blocks/rehearse_step.py",
+        "--function",
+        "green_stack_release",
+        "--inputs",
+        "output/r8-inputs/stack-release-01.json",
+        "--output",
+        "output/composition/PREVIEW-NOT-EXECUTED.json"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working",
+      "exit_code": 0,
+      "started_unix": 1794398615.900506,
+      "elapsed_s": 0.05931829905603081,
+      "log": "output/composition/step-preview.log",
+      "tests_run": null,
+      "error_records": 0,
+      "failure_records": 0,
+      "skipped_records": 0
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.2-composed-working/code/magnetic_blocks",
+      "exit_code": 0,
+      "started_unix": 1794398615.9598694,
+      "elapsed_s": 0.0013991110026836395,
+      "log": "output/composition/diff-check.log",
+      "tests_run": null,
+      "error_records": 0,
+      "failure_records": 0,
+      "skipped_records": 0
+    }
+  ],
+  "validation": [
+    {
+      "name": "full-suite",
+      "exit_code": 0,
+      "elapsed_s": 2.085553628974594,
+      "tests": 129,
+      "log": "full-suite.log"
+    },
+    {
+      "name": "compile",
+      "exit_code": 0,
+      "elapsed_s": 0.016980543034151196,
+      "tests": null,
+      "log": "compile.log"
+    },
+    {
+      "name": "preview",
+      "exit_code": 0,
+      "elapsed_s": 0.06210030696820468,
+      "tests": null,
+      "log": "preview.log"
+    },
+    {
+      "name": "diff-check",
+      "exit_code": 0,
+      "elapsed_s": 0.002018166007474065,
+      "tests": null,
+      "log": "diff-check.log"
+    }
+  ],
+  "host_review": [
+    "See README.md for this refinement; predecessor review archived in COMPOSITION-v0.2.json"
+  ],
+  "candidate": "v0.2.1-qualitative-working",
+  "source_composed_commit": "0bafd82f420de5e293b6cd421a6c3c46e8f8f179",
+  "refinement": {
+    "qualitative_support_reuse": true,
+    "reuse_max_age_s": 30,
+    "head_and_wrist_change_check": true,
+    "merged_high_green_lateral_legs": true,
+    "loaded_lateral_limit_m": 0.4,
+    "sample_spacing_m": 0.003,
+    "no_live_test": true
+  },
+  "target_image_generalization": "analysis_only"
+}

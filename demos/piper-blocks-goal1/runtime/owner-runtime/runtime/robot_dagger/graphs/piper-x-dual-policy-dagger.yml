@@ -1,0 +1,135 @@
+nodes:
+  # One process owns all configured D435 devices. It starts them strictly in
+  # profile order and continuously drains earlier streams while later streams
+  # initialize, avoiding the observed parallel-start USB starvation.
+  - id: realsense_multi
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.cameras.realsense_dora_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [image_left, image_head, image_right, status]
+    env:
+      REALSENSE_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      REALSENSE_CAMERA_PROFILE: "${PIPER_CAMERA_PROFILE:-}"
+      REALSENSE_DEVICE_INSTANCE: "${PIPER_DEVICE_INSTANCE:-../config/robot_instances/piper_x_dual_01.yml}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: exo_driver_node
+    build: uv pip install --python ../.venv/bin/python -e ../../qnexo/source
+    path: ../.venv/bin/exo_driver_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [exo_data]
+    env:
+      EXO_RETRY_SECONDS: "2.0"
+
+  # Robot-independent QNexo forward kinematics. Buttons and pedals remain in
+  # qnexo_controls; this node only converts 14 exoskeleton joints to two poses.
+  - id: qnexo_fk
+    path: ../.venv/bin/qnexo-fk
+    inputs:
+      exo_data: exo_driver_node/exo_data
+    outputs: [ee_pose, status]
+    env:
+      EXO_TIMEOUT_SECONDS: "${EXO_TIMEOUT_SECONDS:-0.2}"
+
+  - id: qnexo_controls
+    path: ../.venv/bin/xpolicylab-qnexo-controls
+    inputs:
+      exo_data: exo_driver_node/exo_data
+      tick: dora/timer/millis/100
+    outputs: [button_command, takeover, review_input, status]
+    env:
+      PYTHONPATH: ""
+
+  # Piper-specific mapping: fixed takeover anchors and QNexo endpoint deltas
+  # become warm-started URDF/Mink joint targets on the host. The latest target
+  # replaces older work and is dispatched on arrival by the owner; firmware
+  # Cartesian IK is not used for teleoperation.
+  - id: piper_x_dual_retarget
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.retarget_node
+    inputs:
+      tick: dora/timer/millis/10
+      ee_pose: qnexo_fk/ee_pose
+      robot_state: piper_x_dual_owner/observation_state_robot
+      takeover: qnexo_controls/takeover
+    outputs: [expert_action, status]
+    env:
+      PIPER_DAGGER_EXPERT_SOURCE: "${PIPER_DAGGER_EXPERT_SOURCE:-qnexo}"
+      PIPER_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      EXO_TIMEOUT_SECONDS: "${EXO_TIMEOUT_SECONDS:-0.2}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  # Robot-independent WebSocket transport and 30 Hz ActionChunk scheduler.
+  # This node owns no SDK/CAN handle; the Piper owner remains the sole writer.
+  - id: piper_x_dual_policy
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.policy_node
+    inputs:
+      tick: dora/timer/millis/33
+      control: piper_x_dual_owner/model_control
+      state_robot: piper_x_dual_owner/observation_state_robot
+      image_camera_head: realsense_multi/image_head
+      image_camera_left: realsense_multi/image_left
+      image_camera_right: realsense_multi/image_right
+    outputs: [action_robot, model_info, status]
+    env:
+      POLICY_URL: "${POLICY_URL:-ws://127.0.0.1:19003}"
+      TASK: "${TASK:-Stack the second cube on top of the first cube, then place the cone on top of the second cube.}"
+      ROBOT_ID: "${ROBOT_ID:-piper_x_dual_01}"
+      MODEL_RETRY_SECONDS: "${MODEL_RETRY_SECONDS:-0.5}"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  # Unique Piper owner for both CAN writers. Hardware writes remain off by
+  # default and can only dispatch an EXPERT takeover action when explicitly
+  # enabled for a supervised run. The owner submits the retargeter's complete
+  # joint and gripper target unchanged to the two-bus SDK write boundary.
+  - id: piper_x_dual_owner
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.dora_owner_node
+    inputs:
+      tick: dora/timer/millis/10
+      exo_data: exo_driver_node/exo_data
+      button_command: qnexo_controls/button_command
+      takeover: qnexo_controls/takeover
+      camera_status: realsense_multi/status
+      expert_action: piper_x_dual_retarget/expert_action
+      model_action: piper_x_dual_policy/action_robot
+      model_status: piper_x_dual_policy/status
+    outputs:
+      - status
+      - control_event
+      - takeover_event
+      - model_control
+      - episode_index
+      - episode_result
+      - observation_state_robot
+      - observation_cartesian_robot
+      - action_expert_proposed_robot
+      - action_expert_safe_robot
+      - action_model_robot
+      - action_selected_candidate_robot
+      - action_applied_robot
+      - control_mode
+      - selected_action_source
+      - label_valid
+    env:
+      PIPER_DAGGER_EXPERT_SOURCE: "${PIPER_DAGGER_EXPERT_SOURCE:-qnexo}"
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      PIPER_MODEL_FILTER_ENABLED: "${PIPER_MODEL_FILTER_ENABLED:-1}"
+      PIPER_MODEL_FILTER_ALPHA: "${PIPER_MODEL_FILTER_ALPHA:-0.6}"
+      PIPER_INITIALIZE_LEFT_GRIPPER_WIDTH_M: "${PIPER_INITIALIZE_LEFT_GRIPPER_WIDTH_M:-}"
+      PIPER_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      PIPER_DEVICE_INSTANCE: "${PIPER_DEVICE_INSTANCE:-../config/robot_instances/piper_x_dual_01.yml}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}:${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}/runtime/qnexo/source/src"

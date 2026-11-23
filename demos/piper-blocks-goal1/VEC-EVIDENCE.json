@@ -1,0 +1,31 @@
+{
+ "change": "Planner._check per-sample finger/payload geometry computed for all samples at once (numpy); comparisons, order and messages unchanged",
+ "dual_implementation_check": {
+  "planning_runs": 6,
+  "calls_compared": 24569,
+  "differences": 0,
+  "sensitivity": "a 1e-12 m change in a reported clearance was detected in 361 of 361 accepted calls"
+ },
+ "paired_23_scene_planning": {
+  "scenes": 23,
+  "static_equal": 23,
+  "both_planned": 19,
+  "plan_equal": 14,
+  "same_layout_order": 18,
+  "outcome_diff": 0,
+  "planning_s_both_planned": [
+   601.1,
+   497.4
+  ],
+  "reduction": 0.173,
+  "note": "Search is time-sliced; with faster checks some scenes reach a different (also fully checked) candidate first, as start1 does against itself under different machine load."
+ },
+ "strict_replay_of_recorded_runs": {
+  "runs": 19,
+  "identical": 19
+ },
+ "controller_tests": {
+  "summary": "190 failed, 375 passed, 1 warning, 16 errors, 36 subtests passed in 6.58s",
+  "same_failure_set_as_start1": true
+ }
+}

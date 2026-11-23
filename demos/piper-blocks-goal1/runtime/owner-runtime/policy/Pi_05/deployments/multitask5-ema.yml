@@ -1,0 +1,56 @@
+schema: xpolicylab.piper-deployment/v1
+name: multitask5-ema
+label: Pi0.5 Piper multitask5 EMA step 20000
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/michael_dev/model-store/models/pi05/piper-dual-arm-multitask5-20260825-v1/step-20000
+  required: [checkpoint/params/manifest.ocdbt, contract.json, task_catalog.json]
+  verifier: policy/Pi_05/verify_piper_multitask_bundle.py
+policy:
+  action_frequency_hz: 15
+  action_horizon: 16
+  default_execute_chunk: 4
+  default_execute_mode: auto
+server:
+  default_mode: managed
+  script: policy/Pi_05/serve_piper_multitask5.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Pick up the paper ball and place it in the bin.
+  inline: null
+  catalog_path: task_catalog.json
+setup:
+  script: policy/Pi_05/setup_piper_multitask5.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: weikang/deploy/piper_dual_arm/pi05_multitask/20260825_v1/piper_multitask5_20260825_pi05_ema_step20000_ckpt
+  expected_bytes: 12448636696
+  threads: 8
+  metadata:
+    family: pi05
+    robot: dual_piper
+    task: piper_multitask5_20260825_v1
+    step: 20000
+    params_semantics: ema
+qualification:
+  supported: true
+  verifier: policy/Pi_05/verify_piper_multitask_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 300
+  image_width: 1920
+  image_height: 1080
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_pi05_piper_multitask.py
+  smoke_script: policy/Pi_05/smoke_piper_multitask5.py

@@ -1,0 +1,12 @@
+{
+  "exact_match_required": true,
+  "canonical_prompts": [
+    "Pick up the brown bottled water and place it on the coaster."
+  ],
+  "tasks": [
+    {
+      "task_index": 0,
+      "task": "Pick up the brown bottled water and place it on the coaster."
+    }
+  ]
+}

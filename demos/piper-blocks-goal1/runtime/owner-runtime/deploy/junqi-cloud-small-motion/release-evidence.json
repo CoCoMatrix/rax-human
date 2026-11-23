@@ -1,0 +1,108 @@
+{
+  "action_shape": [
+    541,
+    14
+  ],
+  "artifacts_sha256": {
+    "monitor.py": "1e6f5d0e65880f47e2edaca676ea9e2451294ccbcf4e580bce7f5d1f0e8b5490",
+    "plan.json": "45bf7f883c60efc4793da7c0fa1941a60bde9e8df2f6e956e7c38a9d5b36a85b",
+    "shadow/graph.log": "ca779c607885f778d5039cc81a297218c1a275c8d6e90804bdc1fe7d20c25d97",
+    "shadow/report.json": "22ee36625579694036ef07e497778466712ea6afb260f7476568f0e0547c401c",
+    "verification.txt": "f7a2a1be1f435abe47b27327acd36088312c9d4b4cfb85ca2a5e0ea5ab8b0f4a"
+  },
+  "created_ns": 1789641259856523622,
+  "fixed_execute_steps": 541,
+  "hardware_motion_qualified": false,
+  "no_send_real_cloud_shadow_passed": true,
+  "offline_validation": {
+    "first_last_exactly_measured": true,
+    "grippers_constant": true,
+    "max_joint_acceleration_rad_s2": 0.12533962726593018,
+    "max_joint_excursion_rad": 0.22939172387123108,
+    "max_joint_velocity_rad_s": 0.12073997408151627,
+    "max_orientation_error_rad": 5.513429646692164e-07,
+    "max_position_error_m": 8.303816566962811e-07,
+    "minimum_flange_height_m": 0.22480459040998976,
+    "passed": true,
+    "validated_rows": 541
+  },
+  "one_shot_server": true,
+  "plan_sha256": "45bf7f883c60efc4793da7c0fa1941a60bde9e8df2f6e956e7c38a9d5b36a85b",
+  "rtc": "disabled",
+  "scene_operator_confirmed": "empty_grippers_clear_5cm_emergency_stop_accessible",
+  "schema": "junqi.bounded_motion_release.v1",
+  "shadow_receipt": {
+    "images": {
+      "camera_head": {
+        "dtype": "uint8",
+        "encoding": "rgb8",
+        "sha256": "a2b27598aa7e3469565284436b4a8596fdb42f5a11a609cac89fc6292cee69b3",
+        "shape": [
+          720,
+          1280,
+          3
+        ]
+      },
+      "camera_left": {
+        "dtype": "uint8",
+        "encoding": "rgb8",
+        "sha256": "846cea2a9fd151145247c3ad6edf3e34c1f8683c1c70aae48af041793cf4716a",
+        "shape": [
+          720,
+          1280,
+          3
+        ]
+      },
+      "camera_right": {
+        "dtype": "uint8",
+        "encoding": "rgb8",
+        "sha256": "c02024a158d4ba4ab6c4b2b23282e7dc4762a52e811ff065bc31581684d9cbcf",
+        "shape": [
+          720,
+          1280,
+          3
+        ]
+      }
+    },
+    "input_sha256": "c09c6ca9eb1b1e8d8658569440be00703c87aea0402b403f4b20208655311cce",
+    "instruction": "Raise both arms 2 cm, reach forward 2 cm, and return once.",
+    "max_initial_gripper_drift_m": 0.0,
+    "max_initial_joint_drift_rad": 0.0,
+    "observation_age_ns_at_validation": 1287131445,
+    "observation_timestamp_ns": 1789641206367246055,
+    "output_action_shape": [
+      541,
+      14
+    ],
+    "output_actions_sha256_float32_le": "c9729a5c85ba2bf239b2b1127fe2179c1a94bb130d672d4a29c8814a9b146529",
+    "plan_sha256": "45bf7f883c60efc4793da7c0fa1941a60bde9e8df2f6e956e7c38a9d5b36a85b",
+    "received_monotonic_ns": 188489499633807,
+    "received_time_ns": 1789641207647427681,
+    "robot_id": "piper_x_dual_01",
+    "schema_version": "junqi.bounded_policy_receipt.v1",
+    "sequence": 1493,
+    "server_hostname": "dsw-1060641-66b84f5769-7626m",
+    "state": {
+      "dtype": "float32",
+      "sha256": "f92c7151818eee237dc6f85c75bcabc4dfcdf0771851c8c3f9e1afbf1d7b9693",
+      "shape": [
+        14
+      ]
+    }
+  },
+  "shadow_rollout": {
+    "active_max_control_steps": 0,
+    "active_rollout_id": 0,
+    "last": {
+      "completed_timestamp_ns": 1789641226077579430,
+      "max_control_steps": 541,
+      "model_steps": 541,
+      "rollout_id": 1,
+      "termination_reason": "pigey_rollout_limit"
+    },
+    "model_steps": 541,
+    "pending_max_control_steps": 0,
+    "rollout_id": 1
+  },
+  "stage": "contract_complete_for_authorized_supervised_canary"
+}

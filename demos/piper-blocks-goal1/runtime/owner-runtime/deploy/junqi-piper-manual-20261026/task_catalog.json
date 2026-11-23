@@ -1,0 +1,6 @@
+{
+  "exact_match_required": true,
+  "canonical_prompts": [
+    "Manual Piper controls only; no autonomous task or policy execution."
+  ]
+}

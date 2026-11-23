@@ -1,0 +1,995 @@
+"""Public Manipulator class -- the v1.0 entry point.
+
+A :class:`Manipulator` is the user-facing handle for a robot arm. Construct
+one via :meth:`Manipulator.from_urdf`, then call :meth:`.fk` and :meth:`.ik`
+for the common path. The dispatched solver auto-routes based on the arm's
+kinematic topology; users do not need to know which solver is firing.
+
+Example::
+
+    import ssik
+
+    arm = ssik.Manipulator.from_urdf(
+        "tests/fixtures/ur5.urdf", base="base_link", ee="ee_link"
+    )
+    T = arm.fk([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+    sols = arm.solve(T, max_solutions=1, q_seed=q_prev)
+    # sols is a list[Solution]; empty iff no IK closed within tolerance.
+
+The class is intentionally tiny: factory + fk + solve + a handful of
+properties. Power users who need solver-specific knobs pass them via
+``solver_kwargs``; power users who need the underlying :class:`KinBody`
+can reach :attr:`kinbody`.
+"""
+
+from __future__ import annotations
+
+import importlib
+import inspect
+import warnings
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Literal, overload
+
+import numpy as np
+from numpy.typing import ArrayLike, NDArray
+
+from ssik._kinbody import JointSpec, KinBody, build_kinbody
+from ssik.core.diagnostic import Diagnostic
+from ssik.core.dispatcher import DispatchPlan, dispatch
+from ssik.core.solution import Solution
+from ssik.core.solver_registry import SOLVERS
+from ssik.core.tolerances import DEFAULT_TOLERANCE_POLICY, TolerancePolicy
+from ssik.kinematics.poe_fk import poe_forward_kinematics
+
+if TYPE_CHECKING:
+    from types import ModuleType
+
+    from ssik.chart import PathTrack, SelfMotionManifold
+    from ssik.tracker import Tracker
+
+__all__ = ["Manipulator"]
+
+
+def _trans(v: NDArray[np.float64]) -> NDArray[np.float64]:
+    m = np.eye(4)
+    m[:3, 3] = v
+    return m
+
+
+def _transx(a: float) -> NDArray[np.float64]:
+    m = np.eye(4)
+    m[0, 3] = a
+    return m
+
+
+def _transz(d: float) -> NDArray[np.float64]:
+    m = np.eye(4)
+    m[2, 3] = d
+    return m
+
+
+def _rotx(alpha: float) -> NDArray[np.float64]:
+    c, s = np.cos(alpha), np.sin(alpha)
+    m = np.eye(4)
+    m[1, 1] = c
+    m[1, 2] = -s
+    m[2, 1] = s
+    m[2, 2] = c
+    return m
+
+
+def _coerce_limits(limits: ArrayLike | None, n: int) -> list[tuple[float, float] | None]:
+    """Normalise an optional ``(N, 2)`` limits array to a per-joint list."""
+    if limits is None:
+        return [None] * n
+    arr = np.asarray(limits, dtype=np.float64)
+    if arr.shape != (n, 2):
+        raise ValueError(f"limits must be (N, 2) for N={n}; got {arr.shape}")
+    return [(float(lo), float(hi)) for lo, hi in arr]
+
+
+class Manipulator:
+    """Public IK + FK handle for a robot arm.
+
+    Construct via the factory classmethods (e.g. :meth:`from_urdf`), then use
+    :meth:`fk` and :meth:`ik` for the common path. The dispatched analytical
+    solver auto-routes based on the arm's kinematic topology -- users do not
+    need to import or name a specific solver.
+
+    .. note::
+        The constructor signature ``Manipulator(kinbody)`` is the escape hatch
+        for callers who already have a :class:`KinBody` (e.g. from a custom
+        loader). Most users should use :meth:`from_urdf` instead.
+    """
+
+    __slots__ = (
+        "_kb",
+        "_plan",
+        "_policy",
+        "_prebuilt",
+        "_solver_module",
+        "_solver_params",
+        "_warned_cold_coverage",
+    )
+
+    def __init__(
+        self,
+        kinbody: KinBody,
+        *,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    ) -> None:
+        """Wrap a pre-built :class:`KinBody`.
+
+        :param kinbody: a POE-normalised :class:`KinBody`. If you have a URDF,
+            use :meth:`from_urdf` instead -- it builds the KinBody for you.
+        :param policy: tolerance policy used by the topology dispatcher.
+            Defaults to :data:`~ssik.core.tolerances.DEFAULT_TOLERANCE_POLICY`.
+        """
+        self._kb: KinBody = kinbody
+        self._policy: TolerancePolicy = policy
+        self._plan: DispatchPlan = dispatch(kinbody, policy=policy)
+        self._solver_module: ModuleType = importlib.import_module(
+            SOLVERS[self._plan.solver_name].module_path
+        )
+        # The dispatched solver is fixed here, so its parameter set never changes;
+        # cache it once instead of re-inspecting the signature on every solve().
+        self._solver_params: frozenset[str] = frozenset(
+            inspect.signature(self._solver_module.solve).parameters
+        )
+        # Guards the one-time cold-coverage warning (#328).
+        self._warned_cold_coverage: bool = False
+        # Set only by :meth:`from_prebuilt`, which routes solve() back to the
+        # artifact's own solver. ``__slots__`` has no class-level default, so
+        # this has to be assigned on every construction path.
+        self._prebuilt: ModuleType | None = None
+
+    # ------------------------------------------------------------------
+    # Factories
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def from_urdf(
+        cls,
+        path: str | Path,
+        *,
+        base: str | None = None,
+        ee: str | None = None,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+        xacro_args: dict[str, str] | None = None,
+    ) -> Manipulator:
+        """Load a URDF (or xacro) and build a :class:`Manipulator` for the chain
+        between ``base`` and ``ee``.
+
+        The kinematic chain is POE-normalised internally so the dispatcher
+        can match the arm's topology against the solver roster.
+
+        Ingestion mirrors ``ssik add-arm``: the URDF is stripped to a
+        mesh-free, kinematics-only copy before loading, so vendor URDFs that
+        reference meshes by an unresolvable ``package://`` path (ABB, FANUC,
+        ...) load without a ROS workspace on disk. Xacro descriptions
+        (``.xacro`` / ``*.urdf.xacro``, or a ``.urdf`` with a xacro namespace)
+        are expanded automatically via ``xacrodoc`` (``pip install ssik[xacro]``).
+
+        :param path: path to the URDF or xacro file.
+        :param base: name of the base link in the URDF. When omitted, the base
+            of the longest actuated chain is auto-detected.
+        :param ee: name of the end-effector link in the URDF. When omitted, the
+            kinematic flange of the longest actuated chain is auto-detected
+            (trailing fixed ``tool0`` / gripper frames are skipped).
+        :param policy: tolerance policy. Defaults to
+            :data:`~ssik.core.tolerances.DEFAULT_TOLERANCE_POLICY`.
+        :param xacro_args: substitution args for parametrized xacro descriptions
+            (e.g. ``{"ur_type": "ur10e"}``); ignored for plain URDFs.
+
+        :raises FileNotFoundError: if ``path`` doesn't exist.
+        :raises ValueError: if ``base`` or ``ee`` are not link names in the URDF,
+            or (when auto-detecting) if the URDF has no actuated joints.
+        :raises ImportError: if the optional dependency ``urchin`` is not
+            installed (``pip install ssik[urdf]``).
+        """
+        # Imported lazily so the urchin dependency is only required when
+        # from_urdf is actually called (it's an optional extra).
+        from ssik._urdf import load_urdf_kinbody_robust, suggest_base_ee
+
+        # urchin raises ValueError on missing files; rewrite to the more
+        # idiomatic FileNotFoundError for the public API contract.
+        path_obj = Path(path)
+        if not path_obj.exists():
+            raise FileNotFoundError(f"URDF file not found: {path_obj}")
+
+        # Auto-detect base/ee (longest actuated chain) when not given, so the
+        # library entry point is as one-click as ``ssik add-arm``.
+        if base is None or ee is None:
+            det_base, det_ee, _notes = suggest_base_ee(path, xacro_args)
+            base = base if base is not None else det_base
+            ee = ee if ee is not None else det_ee
+
+        kb = load_urdf_kinbody_robust(path, base, ee, xacro_args=xacro_args)
+        return cls(kb, policy=policy)
+
+    @classmethod
+    def from_prebuilt(
+        cls,
+        name: str,
+        *,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    ) -> Manipulator:
+        """Build a :class:`Manipulator` on one of the arms ssik ships, by name.
+
+        This is the supported way to reach the chart API on a prebuilt arm
+        (#587). A shipped artifact exposes ``solve`` and ``fk``, but
+        :meth:`self_motion` and :meth:`solve_path` live here, so before this
+        constructor the only route was the artifact's private baked KinBody --
+        which ``docs/semver_policy.md`` explicitly places outside the semver
+        contract. ``ssik.list_arms()`` is the catalog; this turns a row of it
+        into an arm you can ask for its self-motion manifold.
+
+        :meth:`solve` on the result is the **artifact's** solver, not the live
+        one. That matters: the artifact bakes per-arm work the live path redoes
+        on every call, and on the Panda the two measure 0.089 ms against 3.627
+        ms for the same 502 solutions. So the object is not a slower stand-in
+        for ``import panda_ik`` -- it is that same solver, with the chart API
+        attached. The two cases that cannot be delegated fall back to the live
+        path: ``explain=True`` (artifacts do not build a :class:`Diagnostic`)
+        and any ``solver_kwargs`` beyond ``native`` (artifacts take a fixed
+        parameter set). Everything else -- :meth:`fk`, :meth:`self_motion`,
+        :meth:`solve_path`, the introspection properties -- is computed here
+        from the artifact's own geometry.
+
+        Four spellings resolve, tried in that order, so an exact catalog name
+        can never be shadowed by an abbreviation::
+
+            Manipulator.from_prebuilt("franka_panda_ik")   # list_arms() name
+            Manipulator.from_prebuilt("panda_ik")          # module basename
+            Manipulator.from_prebuilt("panda")             # either, without _ik
+
+        Imports exactly the one artifact named, so this stays as lazy as
+        ``list_arms()`` itself (#421).
+
+        :param name: the arm, in any of the spellings above.
+        :param policy: tolerance policy for the dispatcher and for the live
+            fallback. Defaults to
+            :data:`~ssik.core.tolerances.DEFAULT_TOLERANCE_POLICY`.
+
+        :raises ValueError: if no arm matches (the message lists near misses),
+            or if an abbreviation matches several (it lists them all).
+        """
+        from ssik.prebuilt import _resolve_arm
+
+        _canonical, module = _resolve_arm(name)
+        arm = cls(module._KB, policy=policy)
+        arm._prebuilt = module
+        return arm
+
+    @classmethod
+    def from_mjcf(
+        cls,
+        path: str | Path,
+        *,
+        base: str | None = None,
+        ee: str | None = None,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    ) -> Manipulator:
+        """Load a MuJoCo MJCF and build a :class:`Manipulator` for the chain
+        between two bodies.
+
+        The MJCF is compiled by ``mujoco`` (resolving ``<default>`` classes,
+        ``<compiler>`` angle/coordinate settings, ``<include>``, keyframes), and
+        the POE-normalised chain is read straight off the compiled model, so no
+        XML is hand-parsed. Solvers and the dispatcher are format-agnostic: the
+        resulting arm is identical in form to one from :meth:`from_urdf`.
+
+        Only single-DOF joints (``hinge`` -> revolute, ``slide`` -> prismatic)
+        are supported; ``ball`` / ``free`` joints raise. ``q=0`` corresponds to
+        MuJoCo's reference ``qpos0``.
+
+        :param path: path to the ``.xml`` / ``.mjcf`` model file.
+        :param base: name of the base body. When omitted, the base of the
+            longest actuated chain is auto-detected (for multi-limb robots pass
+            an explicit ``base``/``ee`` to select a limb).
+        :param ee: name of the end-effector body. When omitted, the flange of
+            the longest actuated chain is auto-detected (trailing gripper/tool
+            bodies are skipped).
+        :param policy: tolerance policy. Defaults to
+            :data:`~ssik.core.tolerances.DEFAULT_TOLERANCE_POLICY`.
+
+        :raises FileNotFoundError: if ``path`` doesn't exist.
+        :raises ValueError: if ``base``/``ee`` are not body names, or ``ee`` is
+            not a descendant of ``base``.
+        :raises NotImplementedError: on ball/free joints.
+        :raises ImportError: if the optional dependency ``mujoco`` is not
+            installed (``pip install ssik[mjcf]``).
+        """
+        # Imported lazily so the mujoco dependency is only required when
+        # from_mjcf is actually called (it's an optional extra).
+        from ssik._mjcf import load_mjcf_kinbody_normalized, suggest_base_ee_mjcf
+
+        path_obj = Path(path)
+        if not path_obj.exists():
+            raise FileNotFoundError(f"MJCF file not found: {path_obj}")
+
+        if base is None or ee is None:
+            det_base, det_ee, _notes = suggest_base_ee_mjcf(path)
+            base = base if base is not None else det_base
+            ee = ee if ee is not None else det_ee
+
+        kb = load_mjcf_kinbody_normalized(path, base, ee)
+        return cls(kb, policy=policy)
+
+    @classmethod
+    def from_axes(
+        cls,
+        joint_axes: ArrayLike,
+        offsets: ArrayLike,
+        *,
+        limits: ArrayLike | None = None,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    ) -> Manipulator:
+        """Build from ik-geo / EAIK product-of-exponentials ``H, P`` parameters.
+
+        :param joint_axes: ``(N, 3)`` unit rotation axes in the base frame at
+            zero configuration (ik-geo ``H``).
+        :param offsets: ``(N + 1, 3)`` inter-joint translation vectors in the
+            base frame at zero (ik-geo ``P``): ``offsets[0]`` is base -> joint 0,
+            ``offsets[i]`` is joint ``i-1`` -> joint ``i``, and ``offsets[N]`` is
+            joint ``N-1`` -> end-effector.
+        :param limits: optional ``(N, 2)`` per-joint ``(lower, upper)`` ranges.
+        :param policy: tolerance policy for the dispatcher.
+
+        Reproduces ``FK = prod_i [Trans(P[i]) Rot(H[i], q_i)] . Trans(P[N])`` --
+        the same convention as :class:`eaik.HPRobot`.
+        """
+        h = np.asarray(joint_axes, dtype=np.float64)
+        p = np.asarray(offsets, dtype=np.float64)
+        n = h.shape[0]
+        if h.shape != (n, 3):
+            raise ValueError(f"joint_axes must be (N, 3); got {h.shape}")
+        if p.shape != (n + 1, 3):
+            raise ValueError(f"offsets must be (N + 1, 3) for N={n}; got {p.shape}")
+        lim = _coerce_limits(limits, n)
+        specs = [
+            JointSpec(
+                parent_link_T=_trans(p[i]),
+                axis=h[i],
+                joint_type="revolute",
+                child_link_T=_trans(p[n]) if i == n - 1 else None,
+                limits=lim[i],
+            )
+            for i in range(n)
+        ]
+        return cls(build_kinbody(specs), policy=policy)
+
+    @classmethod
+    def from_transforms(
+        cls,
+        joint_trafos: ArrayLike,
+        joint_axis: ArrayLike = (0.0, 0.0, 1.0),
+        *,
+        limits: ArrayLike | None = None,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    ) -> Manipulator:
+        """Build from per-joint zero-pose homogeneous transforms (EAIK
+        ``HomogeneousRobot``).
+
+        :param joint_trafos: ``(N + 1, 4, 4)`` relative zero-pose transforms:
+            ``joint_trafos[i]`` maps frame ``i-1`` to frame ``i`` (``[0]`` is
+            base -> joint 0), and ``joint_trafos[N]`` maps joint ``N-1`` -> EE.
+        :param joint_axis: rotation axis in each joint's local frame: one ``(3,)``
+            axis shared by every joint (default Z), or ``(N, 3)``, one per joint
+            -- a UR arm's joints turn about ``z, y, y, y, z, y`` in their own
+            frames, and folding that into the transforms instead would move the
+            flange rotation off the last one.
+        :param limits: optional ``(N, 2)`` per-joint ``(lower, upper)`` ranges.
+        :param policy: tolerance policy for the dispatcher.
+        """
+        t = np.asarray(joint_trafos, dtype=np.float64)
+        if t.ndim != 3 or t.shape[1:] != (4, 4):
+            raise ValueError(f"joint_trafos must be (N + 1, 4, 4); got {t.shape}")
+        n = t.shape[0] - 1
+        axis = np.asarray(joint_axis, dtype=np.float64)
+        if axis.shape == (3,):
+            axes = np.broadcast_to(axis, (n, 3))
+        elif axis.shape == (n, 3):
+            axes = axis
+        else:
+            raise ValueError(f"joint_axis must be (3,) or ({n}, 3); got {axis.shape}")
+        lim = _coerce_limits(limits, n)
+        specs = [
+            JointSpec(
+                parent_link_T=t[i],
+                axis=axes[i],
+                joint_type="revolute",
+                child_link_T=t[n] if i == n - 1 else None,
+                limits=lim[i],
+            )
+            for i in range(n)
+        ]
+        return cls(build_kinbody(specs), policy=policy)
+
+    @classmethod
+    def from_dh(
+        cls,
+        dh_alpha: ArrayLike,
+        dh_a: ArrayLike,
+        dh_d: ArrayLike,
+        *,
+        limits: ArrayLike | None = None,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    ) -> Manipulator:
+        """Build from standard (distal) Denavit-Hartenberg parameters (EAIK
+        ``DhRobot``). All joints revolute; the joint variable is the Z rotation.
+
+        Per-joint link transform is the classic
+        ``Rot_z(theta_i) . Trans_z(d_i) . Trans_x(a_i) . Rot_x(alpha_i)``.
+
+        :param dh_alpha: ``(N,)`` link twists (rad).
+        :param dh_a: ``(N,)`` link lengths (m).
+        :param dh_d: ``(N,)`` link offsets (m).
+        :param limits: optional ``(N, 2)`` per-joint ``(lower, upper)`` ranges.
+        :param policy: tolerance policy for the dispatcher.
+        """
+        alpha = np.asarray(dh_alpha, dtype=np.float64)
+        a = np.asarray(dh_a, dtype=np.float64)
+        d = np.asarray(dh_d, dtype=np.float64)
+        n = alpha.shape[0]
+        if not (alpha.shape == (n,) and a.shape == (n,) and d.shape == (n,)):
+            raise ValueError(
+                f"dh_alpha / dh_a / dh_d must be equal-length 1-D; got "
+                f"{alpha.shape}, {a.shape}, {d.shape}"
+            )
+        lim = _coerce_limits(limits, n)
+        z_axis = np.array([0.0, 0.0, 1.0])
+        specs = [
+            JointSpec(
+                parent_link_T=np.eye(4),
+                axis=z_axis,
+                joint_type="revolute",
+                # theta (the joint's Z rotation) is applied first; the fixed
+                # remainder of the standard-DH link transform is the child T.
+                child_link_T=_transz(float(d[i])) @ _transx(float(a[i])) @ _rotx(float(alpha[i])),
+                limits=lim[i],
+            )
+            for i in range(n)
+        ]
+        return cls(build_kinbody(specs), policy=policy)
+
+    # ------------------------------------------------------------------
+    # Introspection
+    # ------------------------------------------------------------------
+
+    @property
+    def dof(self) -> int:
+        """Number of joints in the chain."""
+        return len(self._kb.joints)
+
+    @property
+    def joint_limits(self) -> list[tuple[float, float] | None]:
+        """Per-joint ``(lower, upper)`` limits, or ``None`` for unconstrained.
+
+        Units are radians for revolute joints, metres for prismatic. Joints
+        without explicit limits in the source URDF are ``None`` (typically
+        continuous revolute joints).
+        """
+        return [j.limits for j in self._kb.joints]
+
+    @property
+    def dispatch_plan(self) -> DispatchPlan:
+        """Diagnostic info on which analytical solver was selected and why.
+
+        Useful for understanding why a given arm dispatches to a particular
+        solver (the ``reason`` field is a multi-line user-facing explanation).
+        """
+        return self._plan
+
+    @property
+    def kinbody(self) -> KinBody:
+        """The underlying POE-normalised :class:`KinBody`.
+
+        Power-user escape hatch for callers who need to invoke a specific
+        solver, run codegen, or interact with the kinematics primitives
+        directly. Most users should not need this.
+        """
+        return self._kb
+
+    @property
+    def solver_name(self) -> str:
+        """Dotted name of the dispatched solver, e.g. ``"ikgeo.three_parallel"``."""
+        return self._plan.solver_name
+
+    def __repr__(self) -> str:
+        mod = self._prebuilt
+        origin = f", prebuilt {mod.__name__.rpartition('.')[2]}" if mod is not None else ""
+        return (
+            f"<Manipulator: {self.dof}-DOF, dispatched to "
+            f"{self._plan.solver_name} (tier {self._plan.tier}){origin}>"
+        )
+
+    def prepare(self) -> None:
+        """Do this arm's one-time per-arm preparation now, not on first use.
+
+        For an arm dispatched to ``ikgeo.general_6r`` this is the symbolic
+        Raghavan-Roth derivation that the Python solver needs and the numeric
+        tensor that the native backend needs, which together take seconds to a
+        minute on the first call. Both are kept in memory for this process and
+        written to the per-arm preparation cache on disk, so a later process
+        on the same machine, or a container started from an image built after
+        calling this, loads them in milliseconds (``docs/api.md``, "Per-arm
+        preparation cache"). For every other solver, and for an arm from
+        :meth:`from_prebuilt` (whose artifact ships this work baked), there is
+        nothing to prepare and this returns at once.
+
+        Calling it again is cheap and changes nothing. It never changes what
+        :meth:`solve` returns, only when the preparation cost is paid.
+        """
+        if self._prebuilt is not None or self._plan.solver_name != "ikgeo.general_6r":
+            return
+        from ssik._native import rr_native_geometry
+        from ssik.kinematics.poe_to_dh import poe_to_dh
+        from ssik.solvers.ikgeo._raghavan_roth import _cached_best_leftvar
+
+        # The Python solver's AE-3 pick derives every linearity choice; then the
+        # native tensor for the chosen one (a cache hit skips its derivation).
+        alpha, a, d = poe_to_dh(self._kb).to_dh_tuple()
+        _cached_best_leftvar(tuple(alpha.tolist()), tuple(a.tolist()), tuple(d.tolist()))
+        rr_native_geometry(self._kb)
+
+    # ------------------------------------------------------------------
+    # Forward kinematics
+    # ------------------------------------------------------------------
+
+    def fk(self, q: ArrayLike) -> NDArray[np.float64]:
+        """Forward kinematics: return the 4x4 SE(3) pose at config ``q``.
+
+        :param q: joint vector of length :attr:`dof`. Float-castable
+            (list, tuple, numpy array all work).
+
+        :returns: 4x4 numpy array. Top-left 3x3 is the end-effector
+            rotation matrix; column 3 (rows 0..2) is the position.
+
+        :raises ValueError: if ``len(q) != dof``.
+        """
+        q_arr = np.asarray(q, dtype=np.float64)
+        if q_arr.shape != (self.dof,):
+            raise ValueError(f"fk expected q of shape ({self.dof},), got {q_arr.shape}")
+        result: NDArray[np.float64] = poe_forward_kinematics(self._kb, q_arr)
+        return result
+
+    # ------------------------------------------------------------------
+    # Self-motion charts (redundant 7R)
+    # ------------------------------------------------------------------
+
+    def self_motion(self, T_target: ArrayLike, *, native: bool = True) -> SelfMotionManifold:
+        """The self-motion manifold at ``T_target``, as charts (redundant 7R only).
+
+        Returns a :class:`~ssik.chart.SelfMotionManifold`: every closed-form branch
+        ``q(t)`` of ``FK^-1(T_target)`` with a stable label and its domain, plus
+        the inverse map ``locate(q)``. See :mod:`ssik.chart` for the per-family
+        meaning of the label and the redundancy coordinate.
+
+        :param native: use the C++ extension when available (default); ``False``
+            forces the pure-Python reference.
+        :raises NotImplementedError: when the dispatched solver has no
+            closed-form chart (6R arms, approximate-class 7R, joint-lock 7R).
+        """
+        from ssik.chart import charts as _charts
+
+        return _charts(
+            self._kb,
+            T_target,
+            solver_name=self._plan.solver_name,
+            policy=self._policy,
+            native=native,
+        )
+
+    def solve_path(
+        self,
+        poses: ArrayLike,
+        *,
+        q0: ArrayLike | None = None,
+        native: bool = True,
+        max_step: float = 0.5,
+    ) -> PathTrack:
+        """Solve a sequence of poses in one call, carrying chart labels along it.
+
+        Every branch at ``poses[0]`` (or only those through ``q0``, one start or
+        ``(k, dof)`` of them) is
+        continued pose to pose by label lookup; see :func:`ssik.chart.track_all`.
+        Chart-capable arms only, as :meth:`self_motion`.
+
+        :param poses: ``(N, 4, 4)`` pose path. A closed path (last pose equal
+            to the first) exposes the monodromy as ``result.permutation``.
+        :raises NotImplementedError: when the dispatched solver has no
+            closed-form chart.
+        """
+        from ssik.chart import track_all
+
+        return track_all(
+            self._kb,
+            poses,
+            q0=q0,
+            solver_name=self._plan.solver_name,
+            policy=self._policy,
+            native=native,
+            max_step=max_step,
+        )
+
+    def tracker(
+        self,
+        q0: ArrayLike,
+        *,
+        max_joint_speed: float | ArrayLike | None = None,
+        jump_threshold: float = 0.5,
+        allow_jump: bool = False,
+        respect_limits: bool = True,
+        native: bool = True,
+        t0: float | None = None,
+    ) -> Tracker:
+        """A streaming IK :class:`~ssik.Tracker` on this arm, starting at ``q0``.
+
+        Shorthand for ``ssik.Tracker(self, q0, ...)``; the parameters are the
+        constructor's. Feed it one pose at a time with ``update(T, t)``.
+        """
+        from ssik.tracker import Tracker
+
+        return Tracker(
+            self,
+            q0,
+            max_joint_speed=max_joint_speed,
+            jump_threshold=jump_threshold,
+            allow_jump=allow_jump,
+            respect_limits=respect_limits,
+            native=native,
+            t0=t0,
+        )
+
+    # ------------------------------------------------------------------
+    # Inverse kinematics
+    # ------------------------------------------------------------------
+
+    @overload
+    def solve(
+        self,
+        T_target: ArrayLike,
+        *,
+        explain: Literal[False] = False,
+        max_solutions: int | None = None,
+        q_seed: ArrayLike | None = None,
+        respect_limits: bool | Literal["wrap"] = True,
+        allow_refinement: bool = False,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+        refinement_max_iters: int = 15,
+        seed_metric: str = "wrap_linf",
+        seed_tolerance: float | None = None,
+        allow_rescue: bool = True,
+        enumerate_windings: bool = True,
+        **solver_kwargs: Any,
+    ) -> list[Solution]: ...
+
+    @overload
+    def solve(
+        self,
+        T_target: ArrayLike,
+        *,
+        explain: Literal[True],
+        max_solutions: int | None = None,
+        q_seed: ArrayLike | None = None,
+        respect_limits: bool | Literal["wrap"] = True,
+        allow_refinement: bool = False,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+        refinement_max_iters: int = 15,
+        seed_metric: str = "wrap_linf",
+        seed_tolerance: float | None = None,
+        allow_rescue: bool = True,
+        enumerate_windings: bool = True,
+        **solver_kwargs: Any,
+    ) -> tuple[list[Solution], Diagnostic]: ...
+
+    def solve(
+        self,
+        T_target: ArrayLike,
+        *,
+        explain: bool = False,
+        max_solutions: int | None = None,
+        q_seed: ArrayLike | None = None,
+        respect_limits: bool | Literal["wrap"] = True,
+        allow_refinement: bool = False,
+        policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+        refinement_max_iters: int = 15,
+        seed_metric: str = "wrap_linf",
+        seed_tolerance: float | None = None,
+        allow_rescue: bool = True,
+        enumerate_windings: bool = True,
+        **solver_kwargs: Any,
+    ) -> list[Solution] | tuple[list[Solution], Diagnostic]:
+        """Inverse kinematics: find every ``q`` such that ``fk(q) ≈ T_target``.
+
+        :param T_target: 4x4 SE(3) target pose.
+        :param explain: when ``True``, returns ``(sols, Diagnostic)``
+            instead of just ``sols``. The diagnostic carries dispatch +
+            filter attribution for triaging empty-list failures. Default
+            ``False`` preserves the v1.0 return signature.
+        :param max_solutions: optional cap on returned IKs (post-dedup,
+            post-limits filter). ``None`` = full redundancy enumeration.
+            ``1`` combined with ``q_seed`` is the trajectory-tracking idiom.
+            On 7R jointlock arms the cap also short-circuits the lock-sweep
+            internally for a 10-15x speedup.
+        :param q_seed: optional length-:attr:`dof` seed. When provided,
+            returned solutions are sorted by distance from ``q_seed``
+            (closest first, via ``seed_metric``); with ``max_solutions``
+            this returns the nearest configs to the seed. On jointlock-7R
+            arms it also drives the lock-outward-from-seed fast path (#331).
+        :param seed_metric: distance used to rank against ``q_seed``.
+            ``"wrap_linf"`` (default) minimises the largest single-joint
+            wrap-to-pi move (holds the branch during tracking); ``"wrap_l2"``
+            minimises the summed move. Ignored when ``q_seed`` is ``None``.
+        :param seed_tolerance: optional max per-joint deviation from ``q_seed``
+            (radians, wrap-to-pi). When set, only solutions with every joint
+            within ``seed_tolerance`` are returned -- a hard tracking guarantee
+            that may return an empty list. ``None`` (default) keeps the
+            best-effort behaviour. Requires ``q_seed``.
+        :param respect_limits: when ``True`` (default), solutions outside
+            URDF joint limits are dropped. Pass ``False`` for the raw
+            geometric set (analysis / debugging), or ``"wrap"`` for the full
+            geometric set with each joint wrapped into its range where a
+            ``+- 2*pi`` representative exists and nothing dropped.
+        :param enumerate_windings: when ``True`` (default since v6.0, #562),
+            a joint whose limits span more than one turn (UR-family
+            ``[-2*pi, 2*pi]``) contributes every
+            in-limit ``q_i + 2*pi*k`` representative, as a Cartesian product
+            across such joints. These are finite-limit lifts of the same
+            geometric branch, not new branches, but they are distinct
+            admissible configurations that differ in distance and in the
+            motions available from the robot's current state. Counts rise
+            accordingly: a UR pose goes from 8 solutions to 256. Pass
+            ``False`` for one representative per geometric branch, which is
+            the pre-6.0 result set and the cheaper path. Requires
+            ``respect_limits``; ``max_solutions`` and ``q_seed`` still return
+            the same top-k they would from the complete set.
+        :param allow_refinement: opt into Newton polish for near-miss
+            algebraic candidates. Default ``False`` -- the algebraic
+            path is already at machine precision on tier-0 / SRS arms.
+            Set ``True`` on tier-2 RR arms to recover edge-case
+            candidates whose algebraic FK drifts above ``fk_atol``.
+            Independent of the polish ``general_6r`` always applies to
+            candidates that already pass (``docs/api.md``, "Polished
+            general_6r solutions").
+        :param allow_rescue: when ``True`` (default), if the analytical
+            path returns no solutions for a target within the arm's reach
+            (a measure-zero rank-deficient ridge), recover the IK via the
+            T-perturbation rescue (#319) -- matching the baked ``ssik build``
+            artifact's coverage so ``from_urdf`` isn't a worse "try before
+            you build" path (#328). Set ``False`` for a guaranteed
+            analytical-only result.
+        :param policy: tolerance policy. Rarely customised. Defaults to
+            :data:`~ssik.core.tolerances.DEFAULT_TOLERANCE_POLICY`.
+        :param refinement_max_iters: cap on Newton iterations per candidate
+            when ``allow_refinement=True``.
+        :param solver_kwargs: forwarded verbatim to the dispatched solver
+            for power users (``swivel_samples`` for SRS-class,
+            ``linearity_joint`` for RR, etc.).
+
+        :returns: list of :class:`Solution`, one per analytical IK branch.
+            Empty list iff no candidate FK-closed within
+            ``policy.subproblem_numerical`` (or all IKs were filtered by
+            ``respect_limits=True``). Check ``if not sols:`` for
+            "unreachable target". When ``explain=True``, returns
+            ``(sols, Diagnostic)`` -- inspect ``Diagnostic.summary()``
+            to attribute empty-list failures.
+
+        :raises TypeError: if ``T_target`` or ``q_seed`` is not an array of
+            real numbers, or ``max_solutions`` is not an integer.
+        :raises ValueError: if ``T_target`` is not a finite ``(4, 4)`` rigid
+            transform, ``q_seed`` is not a finite ``(dof,)`` vector, or
+            ``max_solutions`` is negative. The exact rules, the same on every
+            backend, are in ``docs/api.md`` ("Input validation").
+        """
+        from ssik._solve_inputs import check_solve_inputs
+        from ssik.postprocess import finalize_solutions as _ps_finalize
+
+        # Built by from_prebuilt: answer from the artifact's own solver, which
+        # bakes per-arm work this path redoes per call (0.089 ms against 3.627
+        # ms on the Panda, same 502 solutions). The artifact runs the same input
+        # check as the live path below (ssik._solve_inputs), so a bad T_target
+        # or q_seed raises identically either way, checked once.
+        # ``explain`` and extra solver_kwargs have no artifact equivalent, so
+        # those calls fall through; every artifact takes exactly the fixed
+        # parameter set used here, which test_prebuilt_namespace pins.
+        if self._prebuilt is not None and not explain and set(solver_kwargs) <= {"native"}:
+            sols: list[Solution] = self._prebuilt.solve(
+                T_target,
+                max_solutions=max_solutions,
+                q_seed=q_seed,
+                respect_limits=respect_limits,
+                allow_refinement=allow_refinement,
+                allow_rescue=allow_rescue,
+                policy=policy,
+                refinement_max_iters=refinement_max_iters,
+                seed_metric=seed_metric,
+                seed_tolerance=seed_tolerance,
+                enumerate_windings=enumerate_windings,
+                **solver_kwargs,
+            )
+            return sols
+
+        T, q_seed_arr, max_solutions = check_solve_inputs(
+            T_target,
+            q_seed,
+            self.dof,
+            max_solutions=max_solutions,
+            seed_tolerance=seed_tolerance,
+            refinement_max_iters=refinement_max_iters,
+            policy=policy,
+        )
+        if max_solutions == 0:  # at most 0 solutions: checked, nothing to solve
+            if not explain:
+                return []
+            return [], Diagnostic(
+                solver_name=self._plan.solver_name,
+                solver_tier=self._plan.tier,
+                dispatch_reason=self._plan.reason,
+                raw_candidates=0,
+                dropped_by_limits=0,
+                dropped_by_max_solutions=0,
+                geometric_branches=0,
+                winding_representatives=0,
+                final_count=0,
+                max_fk_residual=float("nan"),
+                refinement_engaged=0,
+                fk_atol=policy.subproblem_numerical,
+            )
+
+        # Filter kwargs by the dispatched solver's signature so callers can
+        # pass q_seed (or any other not-universally-supported kwarg) without
+        # tripping TypeError on solvers that don't accept it. Cached at __init__
+        # (the dispatched solver is fixed there), so this is a set lookup per IK.
+        params = self._solver_params
+        kwargs: dict[str, Any] = {"policy": policy}
+        if "allow_refinement" in params:
+            kwargs["allow_refinement"] = allow_refinement
+        if "refinement_max_iters" in params:
+            kwargs["refinement_max_iters"] = refinement_max_iters
+        # When respect_limits=True, don't short-circuit the inner solver's
+        # sweep on max_solutions: the closest-to-seed branch the solver
+        # picks first may be out-of-limits and the postprocess pass would
+        # drop it, leaving zero results. Force the full sweep, then
+        # filter + trim. The user opts out via respect_limits=False. Likewise
+        # when a seed is given to a solver that does not take one (the SRS
+        # 7R path): its first solution is not the one nearest the seed, so
+        # capping it before the seed ranking returned an arbitrary branch --
+        # 1.5 rad from a seed with a solution 0.118 away on the iiwa14.
+        if "max_solutions" in params:
+            seed_unseen = q_seed_arr is not None and "q_seed" not in params
+            kwargs["max_solutions"] = None if respect_limits or seed_unseen else max_solutions
+        if q_seed_arr is not None and "q_seed" in params:
+            kwargs["q_seed"] = q_seed_arr
+        if "flag_continua" in params:
+            kwargs["flag_continua"] = True
+        # Power-user kwargs override our defaults.
+        kwargs.update(solver_kwargs)
+
+        # One-time coverage warning (#328): the cold jointlock-7R path (no
+        # build-time cached-RR prime) dispatches non-tier-0 inner sub-chains to
+        # the universal Husty-Pfurner solver, which has coverage gaps the baked
+        # ``ssik build`` artifact's cached-RR derivations don't. The
+        # T-perturbation rescue below recovers many such poses, but for arms
+        # whose cold path is broadly gappy it can't fully match the prebuilt --
+        # so surface the difference rather than let it be silent.
+        if self._plan.solver_name == "jointlock.seven_r" and not self._warned_cold_coverage:
+            self._warned_cold_coverage = True
+            warnings.warn(
+                f"{self._plan.solver_name}: solving this 7R arm from a URDF uses the "
+                "universal Husty-Pfurner inner solver, which can have reduced coverage "
+                "(and is slower) vs the cached-RR artifact from `ssik build`. For full "
+                "coverage and speed, build the per-arm artifact once.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        # Internal solver functions still return (sols, is_ls); unwrap the
+        # tuple at the public-API boundary. `is_ls` is redundant with
+        # `len(sols) == 0` in every shipped solver -- ssik #238 item 1.
+        sols, _is_ls = self._solver_module.solve(self._kb, T, **kwargs)
+
+        # Bulletproof rescue (#319 / #328): when the analytical path returns
+        # nothing for a target within the arm's reach, recover the IK via the
+        # T-perturbation rescue -- the same runtime layer the baked ``ssik
+        # build`` artifacts apply. Without this, ``from_urdf(...).solve(T)``
+        # silently has worse coverage than the prebuilt at measure-zero
+        # rank-deficient ridges. Gated by the reach-sphere (triangle-inequality
+        # upper bound on ``|T_pos|``) so far-field unreachable targets stay
+        # cheap. ``allow_rescue=False`` is the guaranteed-analytical escape.
+        if not sols and allow_rescue:
+            reach_radius = sum(
+                float(np.linalg.norm(j.T_left[:3, 3])) + float(np.linalg.norm(j.T_right[:3, 3]))
+                for j in self._kb.joints
+            )
+            if float(np.linalg.norm(T[:3, 3])) <= reach_radius:
+                from ssik.refinement.rescue import rescue_via_T_perturbation
+
+                def _analytic(T_pert: NDArray[np.float64], **rescue_kwargs: Any) -> list[Solution]:
+                    inner: dict[str, Any] = {"policy": policy}
+                    inner.update({k: v for k, v in rescue_kwargs.items() if k in params})
+                    inner_sols, _ = self._solver_module.solve(self._kb, T_pert, **inner)
+                    return list(inner_sols)
+
+                # The Newton polish inside the rescue wants a spatial Jacobian, and this
+                # KinBody has a closed-form one -- the same POE walk the baked prebuilt
+                # solvers hand in as ``_spatial_jacobian``. Left at None it central-
+                # differences the FK instead: 2N extra FK calls per iteration for a
+                # derivative we can write down.
+                from ssik.refinement import kinbody_jacobian
+
+                sols = rescue_via_T_perturbation(
+                    self.fk,
+                    _analytic,
+                    T,
+                    jacobian_fn=lambda q: kinbody_jacobian(self._kb, q),
+                )
+
+        raw_candidate_count = len(sols)
+
+        # A solution the solver flagged as a sample of a singular continuum moves
+        # to the continuum's point under the rule (ssik.continuum,
+        # docs/api.md#singular-continua), as in every artifact. Only flagged
+        # solutions pay.
+        from ssik.continuum import free_of, slide_continua
+        from ssik.refinement import kinbody_jacobian as _kinbody_jacobian
+
+        sols = slide_continua(
+            sols,
+            free_of(sols),
+            self._kb,
+            T,
+            fk=self.fk,
+            jac=lambda q: _kinbody_jacobian(self._kb, q),
+            q_seed=q_seed_arr,
+            respect_limits=respect_limits,
+            dedup_atol=policy.subproblem_dedup,
+        )
+
+        # Cross-arm postprocess pass (the one shared pipeline -- see
+        # ssik.postprocess.finalize_solutions): solvers that didn't honour kwargs
+        # natively get limits + seed + truncate applied here so the public API is
+        # uniform. ``counts`` feeds the Diagnostic below.
+        counts = {
+            "dropped_by_limits": 0,
+            "dropped_by_max_solutions": 0,
+            "geometric_branches": 0,
+            "winding_representatives": 0,
+        }
+        result: list[Solution] = _ps_finalize(
+            sols,
+            self._kb,
+            respect_limits=respect_limits,
+            q_seed=q_seed_arr,
+            seed_metric=seed_metric,
+            seed_tolerance=seed_tolerance,
+            max_solutions=max_solutions,
+            # Manipulator runs the pipeline once, so this is the lifting call --
+            # but only when the caller wanted limits honoured at all.
+            enumerate_windings=enumerate_windings and bool(respect_limits),
+            counts=counts,
+            T_target=T,
+        )
+        dropped_by_limits = counts["dropped_by_limits"]
+        dropped_by_max_solutions = counts["dropped_by_max_solutions"]
+        if not explain:
+            return result
+
+        refinement_engaged = sum(1 for s in result if s.refinement_used == "lm")
+        max_fk = max((s.fk_residual for s in result), default=float("nan"))
+        diag = Diagnostic(
+            solver_name=self._plan.solver_name,
+            solver_tier=self._plan.tier,
+            dispatch_reason=self._plan.reason,
+            raw_candidates=raw_candidate_count,
+            dropped_by_limits=dropped_by_limits,
+            dropped_by_max_solutions=dropped_by_max_solutions,
+            geometric_branches=counts["geometric_branches"],
+            winding_representatives=counts["winding_representatives"],
+            final_count=len(result),
+            max_fk_residual=max_fk,
+            refinement_engaged=refinement_engaged,
+            fk_atol=policy.subproblem_numerical,
+        )
+        return result, diag

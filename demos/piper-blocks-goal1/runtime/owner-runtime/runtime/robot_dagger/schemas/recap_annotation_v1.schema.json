@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.annotation.v1",
+  "title": "XPolicy RECAP value and advantage annotation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "episode_id",
+    "frame_index",
+    "transition_id",
+    "reward",
+    "return_target",
+    "value",
+    "advantage",
+    "condition",
+    "intervention_forced_positive",
+    "value_checkpoint_sha256",
+    "reward_spec_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.annotation.v1"},
+    "episode_id": {"type": "string", "minLength": 1},
+    "frame_index": {"type": "integer", "minimum": 0},
+    "transition_id": {"type": "string", "minLength": 1},
+    "reward": {"type": "number", "minimum": -1, "maximum": 0},
+    "return_target": {"type": "number", "minimum": -1, "maximum": 0},
+    "value": {"type": "number"},
+    "advantage": {"type": "number"},
+    "condition": {"enum": ["POSITIVE", "NEGATIVE"]},
+    "intervention_forced_positive": {"type": "boolean"},
+    "value_checkpoint_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "reward_spec_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,175 @@
+profile_id: gr3_xpolicylab_v1
+robot_type: gr3
+state_schema: gr3_dagger_v2.state
+action_schema: gr3_dagger_v2.action
+action_frequency_hz: 30
+teleop_contract: xpolicylab.teleop.operator_eval.v2
+teleop_capabilities:
+  waist_pitch: true
+  waist_yaw: true
+  left_end_effector: true
+  right_end_effector: true
+
+# Repository-owned kinematics snapshot. Runtime FK/IK must use this reviewed
+# file instead of resolving a mutable site-packages asset.
+geometry:
+  urdf: description/gr3_control.urdf
+  root_frame: base_link
+  end_effector_links:
+    left_arm: left_end_effector_link
+    right_arm: right_end_effector_link
+  source_id: fourier-robot-descriptions@0.2.7/gr3_fourier_hand_6dof.urdf
+  source_sha256: 2b87382bbbda834260526b00728e2160529a3cd693267417d3e56683c87dcc9a
+  asset_sha256: 0def579752830df3c86d627b6009c02b613fb9b3718a3f1c9694acd62abe58aa
+  visual_collision_geometry: stripped
+
+data_collection:
+  schema_version: xpolicy.robot_data_profile.v1
+  owner_contract_uri: runtime/robot_dagger/schemas/gr3_dagger_v2.json
+  owner_contract_id: gr3_dagger_v2
+  owner_contract_profile_id: gr3_full37_v2
+  recorder_contract: xpolicy.recap.causal_evidence.v1
+  primary_camera: camera_top
+  evidence_cameras: [camera_top]
+  supported_collection_modes: [DEMONSTRATION, AUTONOMOUS, INTERVENTION, MIXED]
+  supports:
+    intervention: true
+    automatic_recording: true
+
+driver:
+  # Ordered Aurora groups used by the formal GR3 teleop writer. Keep this next
+  # to the fixed initial pose so joint membership and pose coverage are checked
+  # as one profile contract.
+  controlled_joints:
+    left_manipulator:
+      - left_shoulder_pitch_joint
+      - left_shoulder_roll_joint
+      - left_shoulder_yaw_joint
+      - left_elbow_pitch_joint
+      - left_wrist_yaw_joint
+      - left_wrist_pitch_joint
+      - left_wrist_roll_joint
+    right_manipulator:
+      - right_shoulder_pitch_joint
+      - right_shoulder_roll_joint
+      - right_shoulder_yaw_joint
+      - right_elbow_pitch_joint
+      - right_wrist_yaw_joint
+      - right_wrist_pitch_joint
+      - right_wrist_roll_joint
+    head:
+      - head_yaw_joint
+      - head_pitch_joint
+    waist:
+      - waist_yaw_joint
+      - waist_roll_joint
+      - waist_pitch_joint
+    left_hand:
+      - L_index_proximal_joint
+      - L_middle_proximal_joint
+      - L_ring_proximal_joint
+      - L_pinky_proximal_joint
+      - L_thumb_proximal_pitch_joint
+      - L_thumb_proximal_yaw_joint
+    right_hand:
+      - R_index_proximal_joint
+      - R_middle_proximal_joint
+      - R_ring_proximal_joint
+      - R_pinky_proximal_joint
+      - R_thumb_proximal_pitch_joint
+      - R_thumb_proximal_yaw_joint
+  base_limits:
+    lower: [-0.5, -0.3, 0.0]
+    upper: [0.04, 0.5, 0.0]
+
+prepare:
+  # Fixed 31-joint upper-body target used by startup, white-button prepare and
+  # finish-home. This profile is the only initial-pose source for the formal
+  # XPolicyLab GR3 graph; no second GR3 runtime config is consulted.
+  initial_pose:
+    left_shoulder_pitch_joint: 0.0
+    left_shoulder_roll_joint: 0.0
+    left_shoulder_yaw_joint: -0.349
+    # Less folded than the previous -2.007128640 calibration so the elbows do
+    # not lift excessively in the prepared posture.
+    left_elbow_pitch_joint: -1.658062789
+    left_wrist_yaw_joint: 0.0872
+    left_wrist_pitch_joint: 0.0
+    left_wrist_roll_joint: 0.0
+    right_shoulder_pitch_joint: 0.0
+    right_shoulder_roll_joint: 0.0
+    right_shoulder_yaw_joint: 0.349
+    right_elbow_pitch_joint: -1.658062789
+    right_wrist_yaw_joint: -0.0872
+    right_wrist_pitch_joint: 0.0
+    right_wrist_roll_joint: 0.0
+    head_yaw_joint: -0.0111586405
+    head_pitch_joint: 0.1456006467
+    waist_yaw_joint: 0.0098998994
+    waist_roll_joint: 0.0098185756
+    # Explicit neutral pitch. The previous 0.4949865609 target was close to
+    # the positive joint limit and made white-button prepare lean the waist.
+    waist_pitch_joint: 0.0
+    L_index_proximal_joint: -0.0023800898
+    L_middle_proximal_joint: -0.0045110899
+    L_ring_proximal_joint: -0.0163304079
+    L_pinky_proximal_joint: -0.0119773465
+    L_thumb_proximal_pitch_joint: 0.0026822808
+    L_thumb_proximal_yaw_joint: -1.5762438774
+    R_index_proximal_joint: -0.0058854091
+    R_middle_proximal_joint: -0.0058090407
+    R_ring_proximal_joint: -0.0150477010
+    R_pinky_proximal_joint: -0.0150066781
+    R_thumb_proximal_pitch_joint: -0.0010277656
+    R_thumb_proximal_yaw_joint: -1.5781987906
+  idle_pose_settle_seconds: 1.0
+  idle_pose_duration_seconds: 1.0
+  idle_pose_pause_seconds: 0.5
+  command_frequency_hz: 60
+
+readiness:
+  max_age_ms: 100
+  expected_lifecycle:
+    whole_body_fsm: UserController_A
+    upper_body_fsm: RemoteState
+    velocity_source: Navigation
+
+safety:
+  max_joint_step_rad: 0.15
+  max_state_age_ms: 100
+  require_joint_limits: true
+
+  # Head/waist: repository snapshot of fourier-robot-descriptions 0.2.7 GR3 URDF.
+  # Arm/hand: GR3 replay command profile.
+  joint_limits:
+    head_yaw_joint: [-1.3788, 1.3788]
+    head_pitch_joint: [-0.50615, 0.50615]
+    waist_yaw_joint: [-2.6005, 2.6005]
+    waist_pitch_joint: [-0.20944, 0.50615]
+    waist_roll_joint: [-0.15708, 0.15708]
+    left_shoulder_pitch_joint: [-2.9671, 2.9671]
+    left_shoulder_roll_joint: [-0.2618, 1.9199]
+    left_shoulder_yaw_joint: [-1.8326, 1.8326]
+    left_elbow_pitch_joint: [-2.2689, 0.087266]
+    left_wrist_yaw_joint: [-1.8326, 1.8326]
+    left_wrist_pitch_joint: [-0.87266, 1.309]
+    left_wrist_roll_joint: [-1.0472, 1.2217]
+    right_shoulder_pitch_joint: [-2.9671, 2.9671]
+    right_shoulder_roll_joint: [-1.9199, 0.2618]
+    right_shoulder_yaw_joint: [-1.8326, 1.8326]
+    right_elbow_pitch_joint: [-2.2689, 0.087266]
+    right_wrist_yaw_joint: [-1.8326, 1.8326]
+    right_wrist_pitch_joint: [-0.87266, 1.309]
+    right_wrist_roll_joint: [-1.2217, 1.0472]
+    L_pinky_proximal_joint: [-3.2, 3.2]
+    L_ring_proximal_joint: [-3.2, 3.2]
+    L_middle_proximal_joint: [-3.2, 3.2]
+    L_index_proximal_joint: [-3.2, 3.2]
+    L_thumb_proximal_pitch_joint: [-3.2, 3.2]
+    L_thumb_proximal_yaw_joint: [-3.2, 3.2]
+    R_pinky_proximal_joint: [-3.2, 3.2]
+    R_ring_proximal_joint: [-3.2, 3.2]
+    R_middle_proximal_joint: [-3.2, 3.2]
+    R_index_proximal_joint: [-3.2, 3.2]
+    R_thumb_proximal_pitch_joint: [-3.2, 3.2]
+    R_thumb_proximal_yaw_joint: [-3.2, 3.2]

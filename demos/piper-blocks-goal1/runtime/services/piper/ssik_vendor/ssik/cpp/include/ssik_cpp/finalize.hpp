@@ -1,0 +1,794 @@
+// Artifact-layer post-processing (#503), ported bit-for-bit from
+// ssik.postprocess.finalize_solutions + the <arm>_ik.solve() wrapper. This is
+// the shared tail every shipped Python artifact runs after the core solve:
+// limits (wrap-into-range then drop) -> seed (tolerance filter then rank) ->
+// truncate. The C++ replica must match the artifact, so every ordering rule,
+// inclusive/strict inequality, and wrap convention is reproduced exactly.
+#pragma once
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <functional>
+#include <limits>
+#include <optional>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
+
+#include "ssik_cpp/fk.hpp"
+#include "ssik_cpp/ik_types.hpp"
+#include "ssik_cpp/newton.hpp"  // spatial_jacobian
+
+namespace ssik {
+
+// Per-joint limits alongside JointConsts (JointConsts carries axes/frames/type;
+// limits live here since only the artifact layer needs them).
+template <int N>
+struct JointLimits {
+  std::array<double, N> lo{};
+  std::array<double, N> hi{};
+  std::array<bool, N> present{};  // false => joint has no limits (never rejects)
+};
+
+// Seed-ranking metric selector, matching seed_metric="wrap_linf"|"wrap_l2".
+enum class SeedMetric { WrapLinf, WrapL2 };
+
+// Full artifact solve() parameters (defaults match codegen.py:507-670).
+template <int N>
+struct ArtifactParams {
+  bool respect_limits = true;
+  // respect_limits="wrap": wrap each joint into its range where a +-2pi
+  // representative exists, drop nothing (postprocess.finalize_solutions).
+  bool wrap_only = false;
+  bool has_seed = false;
+  std::array<double, N> q_seed{};
+  SeedMetric seed_metric = SeedMetric::WrapLinf;
+  bool has_seed_tolerance = false;
+  double seed_tolerance = 0.0;
+  int max_solutions = -1;  // -1 => None (no cap)
+  bool allow_rescue = true;
+  int refinement_max_iters = 15;
+  // #562 step 2. TRUE, because this struct is also the public default for a C++
+  // consumer calling solve(T) with no params, and that must match what Python
+  // returns. A solve runs finalize several times (limit pass, rescue pass, then
+  // the ranking pass) and the lifts must be produced exactly once, so every
+  // internally-constructed params sets this to false explicitly -- see the
+  // p_limits declarations in the solvers.
+  bool enumerate_windings = true;
+};
+
+namespace finalize_detail {
+
+// ((x + pi) mod 2pi) - pi, matching ssik.postprocess._wrap_to_pi exactly:
+// Python's % (floored) yields [0, 2pi), so the result is [-pi, pi) -- +pi maps
+// to -pi. std::fmod is truncated, so we correct negatives to reproduce it.
+inline double wrap_to_pi(double x) {
+  double m = std::fmod(x + M_PI, 2.0 * M_PI);
+  if (m < 0.0) m += 2.0 * M_PI;
+  return m - M_PI;
+}
+
+// A joint is enumerable only when its limits span strictly more than one turn.
+// The tolerance keeps a joint whose span is 2pi to within round-off out of
+// enumeration (URDFs write +/-3.14159265359, which is 4e-10 wider than pi):
+// such a span admits a second representative only at the exact boundary, which
+// is the same physical configuration, not a lift. (postprocess._SPAN_TOL)
+inline constexpr double kSpanTol = 1e-9;
+
+// Per-joint seed difference, wrapped modulo 2pi only for continuous joints.
+// A finite revolute joint's configuration space is an interval, not a circle:
+// it cannot rotate through a limit, so measuring it modulo 2pi understates real
+// motion and makes distinct windings tie. (postprocess._seed_deltas)
+template <int N>
+std::array<double, N> seed_deltas(const std::array<double, N>& q, const JointConsts<N>& consts,
+                                  const JointLimits<N>& lim, const std::array<double, N>& seed) {
+  std::array<double, N> d{};
+  for (int i = 0; i < N; ++i) {
+    const bool circular = consts.type[i] == JointType::Revolute && !lim.present[i];
+    d[i] = circular ? wrap_to_pi(q[i] - seed[i]) : q[i] - seed[i];
+  }
+  return d;
+}
+
+template <int N>
+double aggregate(const std::array<double, N>& deltas, SeedMetric metric) {
+  if (metric == SeedMetric::WrapL2) {
+    double acc = 0.0;
+    for (int i = 0; i < N; ++i) acc += deltas[i] * deltas[i];
+    return std::sqrt(acc);
+  }
+  double m = 0.0;
+  for (int i = 0; i < N; ++i) m = std::max(m, std::abs(deltas[i]));
+  return m;
+}
+
+// The total, deterministic seeded ordering (postprocess._rank_key): aggregate,
+// then the per-joint deviations sorted descending (the leximax refinement),
+// then the joint vector. Ranking on the aggregate alone leaves ties that are
+// neither rare nor harmless once windings are enumerated -- under WrapLinf one
+// distant joint fixes the max for every winding of a branch -- and the Python
+// and native backends do not generate candidates in the same order, so the
+// order must depend only on the solutions.
+template <int N>
+struct RankKey {
+  double agg = 0.0;
+  std::array<double, N> desc{};  // |deltas| sorted descending
+  std::array<double, N> q{};
+
+  bool operator<(const RankKey& o) const {
+    if (agg != o.agg) return agg < o.agg;
+    for (int i = 0; i < N; ++i)
+      if (desc[i] != o.desc[i]) return desc[i] < o.desc[i];
+    for (int i = 0; i < N; ++i)
+      if (q[i] != o.q[i]) return q[i] < o.q[i];
+    return false;
+  }
+};
+
+// The monotone prefix of RankKey (aggregate + descending deviations), which is
+// what a best-first walk over a winding lattice can be ordered by: both parts
+// rise whenever any per-joint deviation rises.
+template <int N>
+struct LatticeKey {
+  double agg = 0.0;
+  std::array<double, N> desc{};
+
+  bool operator<(const LatticeKey& o) const {
+    if (agg != o.agg) return agg < o.agg;
+    for (int i = 0; i < N; ++i)
+      if (desc[i] != o.desc[i]) return desc[i] < o.desc[i];
+    return false;
+  }
+  bool operator>(const LatticeKey& o) const { return o < *this; }
+};
+
+// Seeded ordering compares on this grid rather than on raw doubles. Exact ties
+// are the norm once windings are enumerated -- under WrapLinf one dominant joint
+// fixes the max for every winding of a branch -- and the tie-break then turns on
+// the leading element, which the two backends compute to within about 1e-15 of
+// each other. Comparing raw doubles let that noise decide the order. A grid far
+// below any meaningful joint difference (1e-9 rad is a nanoradian) makes equal
+// things compare equal on both backends. (postprocess._RANK_QUANTUM)
+inline constexpr double kRankQuantum = 1e-9;
+inline double snap(double x) { return std::round(x / kRankQuantum); }
+
+template <int N>
+RankKey<N> rank_key(const std::array<double, N>& q, const std::array<double, N>& deltas,
+                    SeedMetric metric) {
+  RankKey<N> key;
+  key.agg = snap(aggregate<N>(deltas, metric));
+  for (int i = 0; i < N; ++i) key.desc[i] = std::abs(deltas[i]);
+  std::sort(key.desc.begin(), key.desc.end(), std::greater<double>());
+  for (int i = 0; i < N; ++i) key.desc[i] = snap(key.desc[i]);
+  for (int i = 0; i < N; ++i) key.q[i] = snap(q[i]);
+  return key;
+}
+
+}  // namespace finalize_detail
+
+// The joints admitting more than one in-limit winding: revolute, finitely
+// limited, spanning strictly more than one turn. (postprocess.winding_joints)
+struct WindingJoint {
+  int idx;
+  double lo, hi;
+};
+
+template <int N>
+std::vector<WindingJoint> winding_joints(const JointConsts<N>& consts, const JointLimits<N>& lim) {
+  std::vector<WindingJoint> out;
+  for (int i = 0; i < N; ++i) {
+    if (consts.type[i] != JointType::Revolute || !lim.present[i]) continue;
+    if (lim.hi[i] - lim.lo[i] > 2.0 * M_PI + finalize_detail::kSpanTol)
+      out.push_back(WindingJoint{i, lim.lo[i], lim.hi[i]});
+  }
+  return out;
+}
+
+// A value within kLimitBand of a joint limit is at the limit (#624): accepted,
+// and reported as exactly the limit, on either side of it. The floor of the
+// error band below, held to round-off because it moves a configuration; the
+// measurement behind 1e-9 is argued at postprocess._LIMIT_BAND. Shared with the
+// 7R in-limits resolvers' acceptance slack
+// (srs_polished_detail::kPolishLimitSlack, kShLimitSlack).
+inline constexpr double kLimitBand = 1e-9;
+
+// The error band (#651; postprocess._BAND_GAIN / _BAND_CAP, where the constants
+// are argued in full). A value is at a joint limit, or at the +-pi cut, when it
+// lies within its solution's own angular error of it, estimated as
+//   band = min(kBandCap, kBandGain * r / sigma_min),
+// r = ||fk(q) - T||_F and sigma_min the smallest singular value of the spatial
+// Jacobian at q, which bounds the first-order error of every joint: below
+// round-off for an accurate solution, wider at a fold or a singularity. The limit
+// test uses max(kLimitBand, band), the cut test max(kCutFloor, band). The gain
+// covers the measured ratio of actual error to r / sigma_min (at most 5.9 for
+// errors up to the cap); the cap is subproblem_numerical / 10, the largest move
+// a clamp or snap may make.
+inline constexpr double kBandCap = 1e-6;
+inline constexpr double kBandGain = 10.0;
+
+// v with the limit band applied: nullopt when v lies outside the limits by more
+// than max(kLimitBand, band()) (the floor alone in the plain overload), else the
+// limit when v is outside it or within the kLimitBand round-off of it (#624),
+// else v. A value inside its limits moves by round-off at most, one outside by
+// at most its band. band() is the solution's capped error estimate, called only
+// for a value outside a limit by more than the floor and at most the cap, the
+// one range where it can change the answer. (postprocess._onto_limits)
+template <class Band>
+std::optional<double> onto_limits(double v, double lo, double hi, const Band& band) {
+  double b = kLimitBand;
+  const double out = std::max(lo - v, v - hi);
+  if (kLimitBand < out && out <= kBandCap) b = std::max(kLimitBand, band());
+  if (v < lo - b || v > hi + b) return std::nullopt;
+  if (v - lo <= kLimitBand) return lo;
+  if (hi - v <= kLimitBand) return hi;
+  return v;
+}
+
+inline std::optional<double> onto_limits(double v, double lo, double hi) {
+  return onto_limits(v, lo, hi, [] { return 0.0; });
+}
+
+// Whether new_v is anything other than old_v shifted by a whole number of turns
+// (#645). A 2pi shift is the same configuration; a snap or a clamp is not. Exact
+// comparison against the same old_v + 2pi*k expression the pipeline computes a
+// shift with, so a plain shift is never a move. (postprocess._is_move)
+inline bool is_move(double old_v, double new_v) {
+  constexpr double kTwoPi = 2.0 * M_PI;
+  return new_v != old_v + kTwoPi * std::round((new_v - old_v) / kTwoPi);
+}
+
+// What a finalize pass measures a solution against. A snap onto pi or a clamp
+// onto a limit moves the configuration after the solver measured fk_residual,
+// so the residual is re-measured at the returned q (#645), with the solvers' own
+// metric (Frobenius norm of fk(q) - T on the POE chain): one FK per moved
+// solution (postprocess._placed). And the limit and cut bands are the
+// solution's error band (#651, postprocess._error_band). Default-constructed
+// (no target) it keeps the solver's value and the bands are the floor.
+template <int N>
+struct Remeasure {
+  const JointConsts<N>* consts = nullptr;
+  const Pose* target = nullptr;
+  void operator()(Solution<N>& s, bool moved) const {
+    if (moved && target != nullptr) s.fk_residual = (fk<N>(*consts, s.q) - *target).norm();
+  }
+  // The capped angular error estimate min(kBandCap, kBandGain * r / sigma_min)
+  // at q; each test adds its own floor. 0 without a target (the floors alone).
+  double error_band(const std::array<double, N>& q) const {
+    if (target == nullptr) return 0.0;
+    const double r = (fk<N>(*consts, q) - *target).norm();
+    const Eigen::JacobiSVD<Eigen::Matrix<double, 6, N>> svd(spatial_jacobian<N>(*consts, q));
+    const auto& sv = svd.singularValues();  // descending
+    const double s = sv(sv.size() - 1);
+    if (s <= 0.0) return kBandCap;  // exactly singular: nothing bounds the error
+    return std::min(kBandCap, kBandGain * r / s);
+  }
+};
+
+// One solution's error band, evaluated on first use: most solutions never need
+// it. Measured at the solution as it entered the current pass. (postprocess._Band)
+template <int N>
+class LazyBand {
+ public:
+  LazyBand(const Remeasure<N>& rm, const std::array<double, N>& q) : rm_(rm), q_(q) {}
+  double operator()() const {
+    if (!value_) value_ = rm_.error_band(q_);
+    return *value_;
+  }
+
+ private:
+  const Remeasure<N>& rm_;
+  std::array<double, N> q_;
+  mutable std::optional<double> value_;
+};
+
+// Every q + 2pi*k inside [lo, hi], ascending. The k range comes from the limits
+// (so a boundary value like 0 under [-2pi, 2pi] yields {-2pi, 0, 2pi}), then
+// each candidate goes through the limit band (the solution's `band`, the floor
+// by default), so round-off cannot emit an out-of-limit value and a
+// representative within the band of a limit is that limit. (postprocess._reps)
+template <class Band>
+std::vector<double> winding_reps(double q, double lo, double hi, const Band& band) {
+  constexpr double kTwoPi = 2.0 * M_PI;
+  const int k_lo = static_cast<int>(std::ceil((lo - q) / kTwoPi)) - 1;
+  const int k_hi = static_cast<int>(std::floor((hi - q) / kTwoPi)) + 1;
+  std::vector<double> out;
+  for (int k = k_lo; k <= k_hi; ++k) {
+    if (const auto v = onto_limits(q + kTwoPi * k, lo, hi, band)) out.push_back(*v);
+  }
+  // A value with no in-limit representative keeps its own, so expansion can
+  // only ever add configurations. Expansion runs after the limit filter, so
+  // this is unreachable in the wired paths; it is here so that a mistake in
+  // that wiring could never silently delete solutions.
+  if (out.empty()) out.push_back(q);
+  return out;
+}
+
+inline std::vector<double> winding_reps(double q, double lo, double hi) {
+  return winding_reps(q, lo, hi, [] { return 0.0; });
+}
+
+// Which coordinate an angle at the +-pi cut gets (#596); postprocess._CUT_SNAP
+// and the cut comment there, where the tolerances are argued in full. kCutSnap
+// moves a continuous joint's value onto exactly pi, so it is held to round-off
+// (the rank grid). A finite joint's value is at the cut when within its
+// solution's error band of the pi class (#651): round-off for an accurate
+// solution, wider at a folded elbow, a double root known to ~sqrt(2 x
+// round-off). It moves a value only on a joint whose limit sits on the cut,
+// onto exactly pi.
+inline constexpr double kCutSnap = finalize_detail::kRankQuantum;
+// The floor of a finite joint's cut band: a few dozen ulps of pi, so a residual
+// that rounds to zero still admits the backends' ulp-level spread.
+// (postprocess._CUT_FLOOR)
+inline constexpr double kCutFloor = 1e-14;
+
+// Distance from q to the nearest odd multiple of pi. (postprocess._pi_class_offset)
+inline double pi_class_offset(double q) {
+  return std::abs(std::abs(finalize_detail::wrap_to_pi(q)) - M_PI);
+}
+
+// Whether a finite joint's value `offset` from the pi class is at the cut:
+// within max(kCutFloor, band()) of it, band() evaluated only between the floor
+// and the cap. (postprocess._at_cut)
+template <class Band>
+bool at_cut(double offset, const Band& band) {
+  if (offset <= kCutFloor) return true;
+  if (offset > kBandCap) return false;
+  return offset <= band();
+}
+
+// One deterministic coordinate for every angle that has a choice (#596).
+// Continuous revolute joints wrap to (-pi, pi], a value within kCutSnap of the
+// cut becoming exactly +pi. A finite revolute joint whose limits admit two or
+// more representatives of pi, with a value at the cut (at_cut), takes the 2pi
+// shift nearest the in-limit representative closest to +pi; a shift that lands
+// beyond a limit sitting on that representative (by at most the band) is set
+// to the limit. Everything else, including every value away from the cut, keeps
+// its exact bits. Idempotent. (postprocess._canonicalize_representatives)
+template <int N>
+std::vector<Solution<N>> canonicalize_representatives(std::vector<Solution<N>> sols,
+                                                      const JointConsts<N>& consts,
+                                                      const JointLimits<N>& lim,
+                                                      const Remeasure<N>& remeasure = {}) {
+  constexpr double kTwoPi = 2.0 * M_PI;
+  std::array<bool, N> active{};
+  std::array<bool, N> continuous{};
+  std::array<double, N> pi_rep{};
+  bool any = false;
+  for (int i = 0; i < N; ++i) {
+    if (consts.type[i] != JointType::Revolute) continue;
+    if (!lim.present[i]) {
+      active[i] = continuous[i] = any = true;
+      continue;
+    }
+    std::vector<double> reps;
+    for (double v : winding_reps(M_PI, lim.lo[i], lim.hi[i]))
+      if (lim.lo[i] <= v && v <= lim.hi[i]) reps.push_back(v);
+    if (reps.size() < 2) continue;
+    double best = reps[0];
+    for (double v : reps)
+      if (std::abs(v - M_PI) < std::abs(best - M_PI)) best = v;
+    active[i] = any = true;
+    pi_rep[i] = best;
+  }
+  if (!any) return sols;
+  for (auto& sol : sols) {
+    bool moved = false;
+    const LazyBand<N> band(remeasure, sol.q);
+    for (int i = 0; i < N; ++i) {
+      if (!active[i]) continue;
+      const double qi = sol.q[i];
+      if (continuous[i]) {
+        if (-M_PI + kCutSnap < qi && qi < M_PI - kCutSnap) continue;
+        if (pi_class_offset(qi) <= kCutSnap) {
+          sol.q[i] = M_PI;
+          moved = moved || is_move(qi, M_PI);
+        } else {
+          sol.q[i] = finalize_detail::wrap_to_pi(qi);
+        }
+      } else if (at_cut(pi_class_offset(qi), band)) {
+        double w = qi + kTwoPi * std::round((pi_rep[i] - qi) / kTwoPi);
+        // Only where a limit sits on the representative can the shift land
+        // beyond one, and then by at most the band: the value is at that limit.
+        if (w > lim.hi[i] || w < lim.lo[i]) {
+          w = w > lim.hi[i] ? lim.hi[i] : lim.lo[i];
+          moved = moved || is_move(qi, w);
+        }
+        sol.q[i] = w;
+      }
+    }
+    remeasure(sol, moved);
+  }
+  return sols;
+}
+
+// How many configurations expand_windings would produce, without building them.
+// Keeps diagnostics truthful when a cap means the set is never materialized.
+template <int N>
+long long count_windings(const std::vector<Solution<N>>& sols,
+                         const std::vector<WindingJoint>& wind,
+                         const Remeasure<N>& remeasure = {}) {
+  if (wind.empty()) return static_cast<long long>(sols.size());
+  long long total = 0;
+  for (const auto& sol : sols) {
+    long long n = 1;
+    const LazyBand<N> band(remeasure, sol.q);
+    for (const auto& w : wind)
+      n *= static_cast<long long>(winding_reps(sol.q[w.idx], w.lo, w.hi, band).size());
+    total += n;
+  }
+  return total;
+}
+
+// Expand each solution into every in-limit winding representative: the
+// Cartesian product across winding joints, branch-major, and within a branch in
+// ascending value order. That is the stable order the ranking and truncation
+// rules are defined against. `limit` stops early, and is only sound where the
+// caller keeps a prefix (unseeded truncation). (postprocess.expand_windings)
+template <int N>
+std::vector<Solution<N>> expand_windings(const std::vector<Solution<N>>& sols,
+                                         const std::vector<WindingJoint>& wind, int limit = -1,
+                                         const Remeasure<N>& remeasure = {}) {
+  if (wind.empty()) return sols;
+  const int m = static_cast<int>(wind.size());
+  std::vector<Solution<N>> out;
+  for (const auto& sol : sols) {
+    std::vector<std::vector<double>> opts;
+    opts.reserve(m);
+    const LazyBand<N> band(remeasure, sol.q);
+    for (const auto& w : wind) opts.push_back(winding_reps(sol.q[w.idx], w.lo, w.hi, band));
+    std::vector<int> pos(m, 0);
+    while (true) {
+      Solution<N> s = sol;
+      bool moved = false;
+      for (int t = 0; t < m; ++t) {
+        s.q[wind[t].idx] = opts[t][pos[t]];
+        moved = moved || is_move(sol.q[wind[t].idx], opts[t][pos[t]]);
+      }
+      remeasure(s, moved);
+      out.push_back(s);
+      if (limit >= 0 && static_cast<int>(out.size()) >= limit) return out;
+      int t = m - 1;  // odometer, last axis fastest (matches itertools.product)
+      while (t >= 0 && ++pos[t] == static_cast<int>(opts[t].size())) pos[t--] = 0;
+      if (t < 0) break;
+    }
+  }
+  return out;
+}
+
+// wrap_to_limits: for each revolute joint with limits, try wraps k in
+// (0,1,-1,2,-2) to bring q_i into [lo,hi] up to the solution's limit band; first
+// hit wins, and a hit within the band of a limit lands on it. Prismatic /
+// no-limits joints untouched. (postprocess.wrap_to_limits)
+template <int N>
+std::vector<Solution<N>> wrap_to_limits(const std::vector<Solution<N>>& sols,
+                                        const JointConsts<N>& consts,
+                                        const JointLimits<N>& lim,
+                                        const Remeasure<N>& remeasure = {}) {
+  static constexpr int kWrapOrder[5] = {0, 1, -1, 2, -2};
+  std::vector<Solution<N>> out;
+  out.reserve(sols.size());
+  for (const auto& sol : sols) {
+    Solution<N> s = sol;  // copy; q gets adjusted in place
+    bool moved = false;
+    const LazyBand<N> band(remeasure, sol.q);
+    for (int i = 0; i < N; ++i) {
+      if (!lim.present[i] || consts.type[i] != JointType::Revolute) continue;
+      const double lo = lim.lo[i], hi = lim.hi[i];
+      const double qi = sol.q[i];
+      for (int k : kWrapOrder) {
+        const double cand = qi + 2.0 * M_PI * k;
+        if (const auto v = onto_limits(cand, lo, hi, band)) {
+          s.q[i] = *v;
+          moved = moved || *v != cand;
+          break;
+        }
+      }
+    }
+    remeasure(s, moved);
+    out.push_back(s);
+  }
+  return out;
+}
+
+// respect_limits: drop a solution if any limited joint lies outside [lo, hi] by
+// more than the solution's limit band; a kept value within the band of a limit
+// is set to it. No wrapping. (postprocess.respect_limits)
+template <int N>
+std::vector<Solution<N>> apply_respect_limits(const std::vector<Solution<N>>& sols,
+                                              const JointLimits<N>& lim,
+                                              const Remeasure<N>& remeasure = {}) {
+  std::vector<Solution<N>> out;
+  for (const auto& sol : sols) {
+    Solution<N> s = sol;
+    bool within = true;
+    bool moved = false;  // any change here is a clamp
+    const LazyBand<N> band(remeasure, sol.q);
+    for (int i = 0; i < N; ++i) {
+      if (!lim.present[i]) continue;
+      const auto v = onto_limits(sol.q[i], lim.lo[i], lim.hi[i], band);
+      if (!v) {
+        within = false;
+        break;
+      }
+      moved = moved || *v != sol.q[i];
+      s.q[i] = *v;
+    }
+    if (!within) continue;
+    remeasure(s, moved);
+    out.push_back(s);
+  }
+  return out;
+}
+
+// within_seed_tolerance: keep iff max_i |wrap(q_i - seed_i)| <= tol (Linf,
+// inclusive). (postprocess.py:198-228)
+// Measured the way the joint actually moves: modulo 2pi for continuous joints
+// only, ordinary distance for finite revolute and prismatic (#562). A finite
+// joint that must travel 6 radians is no longer admitted by a 0.5-radian bound
+// just because its endpoints happen to wrap close.
+template <int N>
+std::vector<Solution<N>> within_seed_tolerance(const std::vector<Solution<N>>& sols,
+                                               const JointConsts<N>& consts,
+                                               const JointLimits<N>& lim,
+                                               const std::array<double, N>& seed, double tol) {
+  std::vector<Solution<N>> out;
+  for (const auto& sol : sols) {
+    const auto d = finalize_detail::seed_deltas<N>(sol.q, consts, lim, seed);
+    bool ok = true;
+    for (int i = 0; i < N; ++i) {
+      if (std::abs(d[i]) > tol) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) out.push_back(sol);
+  }
+  return out;
+}
+
+// nearest_to_seed: STABLE sort by distance to seed. wrap_l2 = sqrt(sum d_i^2),
+// wrap_linf = max |d_i|, d_i = wrap(q_i - seed_i). (postprocess.py:159-195)
+template <int N>
+std::vector<Solution<N>> nearest_to_seed(std::vector<Solution<N>> sols,
+                                         const JointConsts<N>& consts, const JointLimits<N>& lim,
+                                         const std::array<double, N>& seed, SeedMetric metric) {
+  auto key = [&](const Solution<N>& sol) {
+    return finalize_detail::rank_key<N>(
+        sol.q, finalize_detail::seed_deltas<N>(sol.q, consts, lim, seed), metric);
+  };
+  std::stable_sort(sols.begin(), sols.end(),
+                   [&](const Solution<N>& a, const Solution<N>& b) { return key(a) < key(b); });
+  return sols;
+}
+
+// rewrap_to_seed (#562 step 1): rewrap each revolute joint to the q_i + 2pi*k
+// representative nearest the seed, staying within finite limits. Finite limits:
+// among all q_i + 2pi*k in [lo,hi], pick the one nearest seed_i (ties -> smaller
+// value). Continuous (no limits): nearest turn (round). Prismatic: untouched.
+// Only the coordinate changes; FK is identical. (postprocess.py rewrap_to_seed)
+// continuous_only: enumeration already emits every in-limit representative of a
+//   finite joint, so collapsing them onto the seed-nearest one would destroy the
+//   set being returned. Continuous joints are never enumerated, so they still
+//   need the nearest-turn choice.
+//
+// A value already outside its limits (only reachable via respect_limits=false,
+// where the caller wants the raw geometric set) takes the nearest turn,
+// unclamped: dragging it into limits the caller waived returned a
+// representative a full turn from the seed. An in-limit value never leaves its
+// limits. The choice is per value rather than per call, because a call-level
+// flag would have to mean "the user wanted limits", which is not what the
+// pipeline's own respect_limits says by the time the ranking pass runs.
+template <int N>
+std::vector<Solution<N>> rewrap_to_seed(std::vector<Solution<N>> sols,
+                                        const JointConsts<N>& consts, const JointLimits<N>& lim,
+                                        const std::array<double, N>& seed,
+                                        bool continuous_only = false,
+                                        const Remeasure<N>& remeasure = {}) {
+  constexpr double kTwoPi = 2.0 * M_PI;
+  for (auto& sol : sols) {
+    bool moved = false;
+    const LazyBand<N> band(remeasure, sol.q);
+    for (int i = 0; i < N; ++i) {
+      if (consts.type[i] != JointType::Revolute) continue;
+      const double qi = sol.q[i], si = seed[i];
+      if (!lim.present[i] || qi < lim.lo[i] || qi > lim.hi[i]) {  // nearest turn, no clamp
+        sol.q[i] = qi + kTwoPi * std::round((si - qi) / kTwoPi);
+        continue;
+      }
+      if (continuous_only) continue;  // enumeration emits this joint's reps
+      // Same candidate set expansion uses, so the two agree exactly.
+      double best = qi;
+      double best_d = std::numeric_limits<double>::infinity();
+      for (double cand : winding_reps(qi, lim.lo[i], lim.hi[i], band)) {
+        const double d = std::abs(cand - si);
+        if (d < best_d || (d == best_d && cand < best)) {  // nearest, tie -> smaller value
+          best = cand;
+          best_d = d;
+        }
+      }
+      sol.q[i] = best;
+      moved = moved || is_move(qi, best);
+    }
+    remeasure(sol, moved);
+  }
+  return sols;
+}
+
+// The globally nearest k winding representatives, without materializing the
+// complete expansion (postprocess._windings_topk).
+//
+// Exactly equivalent to expand -> rank -> truncate, ties included, but it never
+// builds the discarded configurations: a UR lifts 8 branches to 256 and a
+// configurations, while the tracking idiom asks for one. Two facts make the
+// pruning exact. A configuration in the global top-k is in its own branch's
+// top-k, so per-branch top-k then a global merge loses nothing. And within a
+// branch the per-joint choices are independent while both metrics are
+// non-decreasing in every deviation, so the representatives can be walked in
+// ascending order by best-first search over the product lattice.
+template <int N>
+std::vector<Solution<N>> windings_topk(const std::vector<Solution<N>>& sols,
+                                       const JointConsts<N>& consts, const JointLimits<N>& lim,
+                                       const std::array<double, N>& seed, SeedMetric metric,
+                                       int k, const Remeasure<N>& remeasure = {}) {
+  if (k <= 1) {
+    // The tracking idiom. Choosing each joint's seed-nearest representative
+    // minimizes every per-joint deviation at once, so it minimizes both the
+    // aggregate and the leximax refinement: the branch's best winding is
+    // exactly its seed-rewrap, and no lattice search is needed.
+    auto best = nearest_to_seed<N>(
+        rewrap_to_seed<N>(sols, consts, lim, seed, /*continuous_only=*/false, remeasure), consts,
+        lim, seed, metric);
+    if (static_cast<int>(best.size()) > k) best.resize(std::max(k, 0));
+    return best;
+  }
+
+  const auto wind = winding_joints<N>(consts, lim);
+  const int m = static_cast<int>(wind.size());
+  using Key = finalize_detail::LatticeKey<N>;
+  std::vector<Solution<N>> picked;
+
+  for (const auto& sol : sols) {
+    const auto base = finalize_detail::seed_deltas<N>(sol.q, consts, lim, seed);
+    // Per winding joint: the in-limit representatives ordered by distance to the
+    // seed, so rank 0 is the nearest and each step out costs more. Ties resolve
+    // to the smaller value, matching Python's sort of (distance, value) pairs.
+    std::vector<std::vector<std::pair<double, double>>> ladders(m);
+    const LazyBand<N> band(remeasure, sol.q);
+    for (int t = 0; t < m; ++t) {
+      for (double v : winding_reps(sol.q[wind[t].idx], wind[t].lo, wind[t].hi, band))
+        ladders[t].emplace_back(std::abs(v - seed[wind[t].idx]), v);
+      std::sort(ladders[t].begin(), ladders[t].end());
+    }
+
+    auto key_of = [&](const std::vector<int>& ranks) {
+      std::array<double, N> d = base;
+      for (int t = 0; t < m; ++t)
+        d[wind[t].idx] = ladders[t][ranks[t]].second - seed[wind[t].idx];
+      Key key;
+      key.agg = finalize_detail::snap(finalize_detail::aggregate<N>(d, metric));
+      for (int i = 0; i < N; ++i) key.desc[i] = std::abs(d[i]);
+      std::sort(key.desc.begin(), key.desc.end(), std::greater<double>());
+      for (int i = 0; i < N; ++i) key.desc[i] = finalize_detail::snap(key.desc[i]);
+      return key;
+    };
+
+    using Entry = std::pair<Key, std::vector<int>>;
+    auto worse = [](const Entry& a, const Entry& b) { return b.first < a.first; };
+    std::priority_queue<Entry, std::vector<Entry>, decltype(worse)> heap(worse);
+    std::set<std::vector<int>> seen;
+    std::vector<int> start(m, 0);
+    heap.push({key_of(start), start});
+    seen.insert(start);
+
+    int taken = 0;
+    bool have_boundary = false;
+    Key boundary;
+    while (!heap.empty()) {
+      // Stop once k are taken and the frontier has moved strictly past the k-th
+      // key. Popping through an exact tie keeps the result identical to ranking
+      // the complete expansion, whose tie order this cannot see.
+      if (taken >= k && have_boundary && boundary < heap.top().first) break;
+      const Entry top = heap.top();
+      heap.pop();
+      ++taken;
+      if (taken == k) {
+        boundary = top.first;
+        have_boundary = true;
+      }
+      Solution<N> s = sol;
+      bool moved = false;
+      for (int t = 0; t < m; ++t) {
+        const double v = ladders[t][top.second[t]].second;
+        s.q[wind[t].idx] = v;
+        moved = moved || is_move(sol.q[wind[t].idx], v);
+      }
+      remeasure(s, moved);
+      picked.push_back(s);
+      for (int t = 0; t < m; ++t) {
+        std::vector<int> nxt = top.second;
+        ++nxt[t];
+        if (nxt[t] < static_cast<int>(ladders[t].size()) && seen.insert(nxt).second)
+          heap.push({key_of(nxt), nxt});
+      }
+    }
+  }
+
+  auto ranked = nearest_to_seed<N>(std::move(picked), consts, lim, seed, metric);
+  if (static_cast<int>(ranked.size()) > k) ranked.resize(k);
+  return ranked;
+}
+
+// The finalize_solutions pipeline: limits -> seed(tolerance then rank) ->
+// truncate, in that fixed order. (postprocess.py:255-301)
+//
+// T is the IK target: a solution this pipeline moves (a snap onto pi or a clamp
+// onto a limit, not a 2pi shift) has its fk_residual re-measured against it at
+// the returned q (#645), so the residual always describes the configuration
+// returned.
+//
+// in_limits_fallback (optional): a zero-arg callable invoked ONLY when
+// respect_limits empties the set (redundant-7R exact resolver, #359). Its
+// solutions are already in-limits, so they skip the wrap/drop pass and flow
+// straight into seed -> truncate -- matching the Python hook exactly.
+template <int N>
+std::vector<Solution<N>> finalize_solutions(
+    std::vector<Solution<N>> sols, const JointConsts<N>& consts, const JointLimits<N>& lim,
+    const Pose& T, const ArtifactParams<N>& p,
+    const std::function<std::vector<Solution<N>>()>& in_limits_fallback = nullptr) {
+  const Remeasure<N> rm{&consts, &T};
+  // One representative per angle before anything else looks at the values
+  // (#596): the solvers choose a side of the +-pi cut ad hoc.
+  sols = canonicalize_representatives<N>(std::move(sols), consts, lim, rm);
+  if (p.respect_limits) {
+    sols = wrap_to_limits<N>(sols, consts, lim, rm);
+    if (!p.wrap_only) {
+      sols = apply_respect_limits<N>(sols, lim, rm);
+      // The resolvers accept a candidate within kLimitBand of a limit
+      // (kPolishLimitSlack, kShLimitSlack); put it on the limit, as the pass
+      // above would.
+      if (sols.empty() && in_limits_fallback)
+        sols = wrap_to_limits<N>(in_limits_fallback(), consts, lim, rm);
+    }
+  }
+
+  // Whether this call is the one that lifts is the caller's decision (see the
+  // field comment), not something inferred from respect_limits: the final
+  // ranking pass runs with respect_limits=false because the limit filter
+  // already happened, either here or inside the solver.
+  const auto wind =
+      p.enumerate_windings ? winding_joints<N>(consts, lim) : std::vector<WindingJoint>{};
+  const bool expanding = !wind.empty();
+
+  if (!p.has_seed) {
+    // Unseeded output keeps expansion order, so a cap is a prefix and the
+    // discarded representatives need never be built.
+    if (expanding) sols = expand_windings<N>(sols, wind, p.max_solutions, rm);
+  } else {
+    // #562 step 1: a seeded solve returns the representative nearest the seed
+    // rather than the principal value, so it never commands a gratuitous 2pi
+    // turn. Under enumeration the finite joints are covered by the expansion
+    // itself (collapsing them here would destroy the set), leaving only the
+    // continuous joints, whose lift family is infinite.
+    sols = rewrap_to_seed<N>(std::move(sols), consts, lim, p.q_seed,
+                             /*continuous_only=*/expanding, rm);
+    if (expanding) {
+      if (!p.has_seed_tolerance && p.max_solutions >= 0) {
+        // Ranked truncation: take the globally nearest max_solutions directly.
+        sols = windings_topk<N>(sols, consts, lim, p.q_seed, p.seed_metric, p.max_solutions, rm);
+      } else {
+        sols = expand_windings<N>(sols, wind, -1, rm);
+      }
+    }
+    if (p.has_seed_tolerance)
+      sols = within_seed_tolerance<N>(sols, consts, lim, p.q_seed, p.seed_tolerance);
+    sols = nearest_to_seed<N>(std::move(sols), consts, lim, p.q_seed, p.seed_metric);
+  }
+  if (p.max_solutions >= 0 && static_cast<int>(sols.size()) > p.max_solutions) {
+    sols.resize(p.max_solutions);
+  }
+  return sols;
+}
+
+}  // namespace ssik

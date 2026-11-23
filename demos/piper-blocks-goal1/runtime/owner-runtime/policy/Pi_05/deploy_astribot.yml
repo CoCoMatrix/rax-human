@@ -1,0 +1,17 @@
+policy_name: Pi_05
+protocol: ws
+eval_batch: false
+
+host: 0.0.0.0
+port: 19001
+runtime_profile: astribot_s1_tomato_v3
+
+# Exact self-contained EMA bundle. Override deliberately when moving hosts.
+bundle_root: /home/ubuntu/astribot_pick_tomato_v3_pi05_ema_step20000_ckpt
+camera_name: cam_head
+action_frequency_hz: 30
+dummy_horizon: 30
+num_denoise_steps: 10
+
+rtc_enabled: false
+allow_dummy_policy: false

@@ -1,0 +1,18 @@
+policy_name: Pi_05
+protocol: ws
+eval_batch: false
+
+host: 127.0.0.1
+port: 19003
+runtime_profile: piper_x_dual_desktop_cleanup_ema_h32_v3
+
+# The deployment-selected serve wrapper supplies the immutable bundle and its
+# step-specific verifier. This runtime contract is shared by the registered
+# h32 v3 EMA checkpoints.
+bundle_root: null
+action_frequency_hz: 30
+action_horizon: 32
+pytorch_device: cuda
+
+rtc_enabled: false
+allow_dummy_policy: false

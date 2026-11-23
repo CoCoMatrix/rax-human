@@ -1,0 +1,31 @@
+{
+  "schema": "rax.demo.snapshot.v1",
+  "name": "Piper four-color blocks, goal1 (goal photo + Coal pre-filter)",
+  "version": "r9-ssik-sharedik-portfolio-inward1-blend1-carry2-gap68-start1-goal1",
+  "phase": 5,
+  "exported_date": "2026-11-23",
+  "original_version_dir": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/experiments/blocks-r9-ssik-sharedik-portfolio-inward1-blend1-carry2-gap68-start1-goal1-web-20261119",
+  "controller_commit": "da2352a170232b7fb910ac60962b88b755950ae6",
+  "base_commit_start1": "5e6ee544b7a0c5c9be58544c86e5604634aae55c",
+  "web_entrypoint": "python -m services.dashboard.blocks_scale --port 18797 (cwd and PYTHONPATH = runtime/)",
+  "controller_entrypoint": "workspaces/magnetic-blocks-l-stack/r9-ssik-speed/code/magnetic_blocks/assembly_controller.py:main(ctx)",
+  "source_unchanged": true,
+  "seal": "WEB-VALIDATION.json: 32 required host files and 102 controller files; checked by restore_goal1.py",
+  "validation_scope": "Default goal identical to start1 (replayed). Custom goals validated offline only (preflight and dry execution); real-robot validation pending.",
+  "not_published": {
+    "binaries": "Coal 3.0.3 / SSIK 8.2.0 shared libraries; restore_goal1.py installs the same PyPI wheels and verifies coal_vendor_manifest.json and ssik_vendor_manifest.json",
+    "recorded_frames": "frozen r3 runtime/frames (~124 MB) and workspace runtime/frames cited by memory (~615 MB); copy with restore_goal1.py --private-from",
+    "environments": "host venv, XPolicy owner .xpolicy/envs and robot_dagger .venv, FFS venv and weights",
+    "secrets_and_runtime": "key files, Gemini key, Web access token, commissioning sessions, operator records, browser.log"
+  },
+  "publish_checks": {
+    "restore_to_temp_dir": "passed (coal 162 files, ssik 283 files, frozen 73 files, 350 memory-cited files, HEAD da2352a clean, seals match)",
+    "web_validate_run_source": "passed in restored copy, no hardware",
+    "coal_prefilter_loaded": true,
+    "ssik_self_check": "passed",
+    "goal1_web_tests": "27 passed (goal1-build/test_goal.py)",
+    "goal1_controller_tests": "test_goal_structure 9, test_goal_execution 3, test_native_budget 3 passed",
+    "full_historical_controller_suite": "385 passed, 194 failed, 13 errors; identical to the original directory with the same command",
+    "hardware_started": false
+  }
+}

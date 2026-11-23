@@ -1,0 +1,7 @@
+{
+  "version": "r9-ssik-sharedik-portfolio-inward1-blend1-carry2-gap68-start1-goal1",
+  "commit": "da2352a170232b7fb910ac60962b88b755950ae6",
+  "base_commit": "5e6ee544b7a0c5c9be58544c86e5604634aae55c",
+  "phase": 5,
+  "native_collision_prefilter": "coal-3.0.3"
+}

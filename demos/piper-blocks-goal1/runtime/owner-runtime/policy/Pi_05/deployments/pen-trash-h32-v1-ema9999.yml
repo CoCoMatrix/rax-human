@@ -1,0 +1,117 @@
+schema: xpolicylab.piper-deployment/v1
+name: pen-trash-h32-v1-ema9999
+label: Pi0.5 Piper pen-trash h32 v1 final EMA step 9999
+bundle:
+  kind: pytorch_safetensors
+  default_path: /home/ubuntu/michael_dev/model-store/models/pi05/pen-trash-dual-piper-real-h32-v1-ema-v1/step-9999
+  required: [checkpoint/model.safetensors, contract.json]
+  verifier: policy/Pi_05/verify_piper_pen_trash_h32_v1_ema9999_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 16
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi_05/serve_piper_pen_trash_h32_v1_ema9999.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Pick up one pen and place it in the trash bin.
+  inline:
+    - Close the laptop.
+    - Pick up one drink container and place it on the coaster.
+    - Pick up one mouse and place it on the mouse pad.
+    - Pick up one pen and place it in the pen holder.
+    - Pick up one pen and place it in the trash bin.
+    - Pick up all paper balls and place them in the trash bin.
+  # The immutable publisher contract omitted task 6. This versioned catalog
+  # records the operator-confirmed task without rewriting the signed bundle.
+  catalog_path: "{repo_root}/policy/Pi_05/piper_pen_trash_task_catalog.json"
+pigey:
+  supported: true
+  # Restore the original Pigey boundary behavior: after each completed task or
+  # object, use the formal XPolicy profile prepare/home path before continuing.
+  supported_modes: [fixed_task, preset_ui]
+  harness_config: configs/real/harness_xpolicy_pai_qwen.json
+  initialization_mode: profile_home
+  # Every confirmed NEXT_OBJECT, intermediate DONE, and final ALL_DONE uses the
+  # formal XPolicy profile prepare/home boundary. This deployment does not use
+  # dataset transition poses.
+  task_transition_mode: initialize
+  check_steps: 150
+  sequence_presets:
+    - id: task_1
+      label: Task 1 - Paper, mouse, pen holder, drink, laptop
+      prompts:
+        - Pick up all paper balls and place them in the trash bin.
+        - Pick up one mouse and place it on the mouse pad.
+        - Pick up one pen and place it in the pen holder.
+        - Pick up one drink container and place it on the coaster.
+        - Close the laptop.
+    - id: task_2
+      label: Task 2 - Mouse, pen holder, paper, laptop, drink
+      prompts:
+        - Pick up one mouse and place it on the mouse pad.
+        - Pick up one pen and place it in the pen holder.
+        - Pick up all paper balls and place them in the trash bin.
+        - Close the laptop.
+        - Pick up one drink container and place it on the coaster.
+    - id: task_3
+      label: Task 3 - Pen to trash
+      prompts:
+        - Pick up one pen and place it in the trash bin.
+  reinitialize_after_steps: 0
+  # Hard cumulative dispatch cap for each original Prompt. NEXT_OBJECT does
+  # not reset it. At the cap Pigey holds, records the final VLM response for
+  # audit, and treats the current original Prompt as DONE regardless of it.
+  max_task_control_steps: 500
+  task_step_limit_mode: force_done
+  continuous_policy_prompts: []
+  vlm:
+    mode: remote
+    base_url: https://cn-beijing.pai-token.aliyuncs.com/v1
+    live_model: qwen3.6-flash
+    demo_model: qwen3.6-flash
+    secret_file: /home/ubuntu/.config/michael-dev/secrets/pigey_qwen_pai.env
+setup:
+  script: policy/Pi_05/setup_piper_pen_trash_h32_v1_ema9999.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: spy/deploy/dual_piper_pen_trash_20260904_h32_v1_pi05_ema_step9999_ckpt
+  expected_bytes: 7245894467
+  threads: 64
+  request_timeout_seconds: 600
+  attempts: 50
+  metadata:
+    family: pi05
+    robot: dual_piper
+    task: pen_trash_20260904_h32_v1
+    step: 9999
+    params_semantics: ema
+    train_config: pi05_dual_piper_real
+qualification:
+  supported: true
+  verifier: policy/Pi_05/verify_piper_pen_trash_h32_v1_ema9999_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_realsense_source.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_pi05_piper_h32_ema.py
+    - tests/test_pi05_piper_pen_trash_h32_v1.py
+  smoke_script: policy/Pi_05/smoke_piper_pen_trash_h32_v1_ema9999.py

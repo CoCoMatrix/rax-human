@@ -1,0 +1,14 @@
+{
+  "id": "blue-cup",
+  "title": "Blue cup placement",
+  "description": "../blue-cup.md",
+  "backend_options": "../../blue-cup-exploration.json",
+  "seed_memory": "../../../workspaces/blue-cup/20261104-v0.3-r12-working/memory",
+  "prompts": {
+    "common": "common.md",
+    "fresh": "fresh_after_feedback.md",
+    "continuation": "continuation.md",
+    "rehearsal": "rehearsal.md",
+    "working_rehearsal": "working_rehearsal.md"
+  }
+}

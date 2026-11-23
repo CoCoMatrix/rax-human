@@ -1,0 +1,67 @@
+{
+  "stage": "software_closeout_only",
+  "status": "candidate_offline_checked",
+  "verification": [
+    {
+      "command": [
+        "python",
+        "code/magnetic_blocks/verify_offline.py"
+      ],
+      "exit_code": 0,
+      "log": "output/closeout/offline-tests.log",
+      "result": "69 tests passed; live Context and sockets blocked",
+      "kind": "offline_saved_evidence_and_fake_context"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "code/magnetic_blocks"
+      ],
+      "exit_code": 0,
+      "log": "output/closeout/compile.log",
+      "kind": "offline"
+    },
+    {
+      "command": [
+        "python",
+        "code/magnetic_blocks/rehearse_step.py",
+        "--function",
+        "green_pregrasp",
+        "--inputs",
+        "output/r7-inputs/green-pregrasp.json",
+        "--output",
+        "output/closeout/preview-only.json"
+      ],
+      "exit_code": 0,
+      "log": "output/closeout/preview.log",
+      "kind": "offline"
+    }
+  ],
+  "physical_report_integrity": {
+    "files": 70,
+    "changed": 0
+  },
+  "physical_outcome": "R7 orange/red base pair completed through supervised functions; green not stacked; both green pregrasp attempts zero motion",
+  "assistance": {
+    "onsite_r7": false,
+    "auxiliary_gemini_calls_r7": 3,
+    "software_robot_calls": 0,
+    "software_gemini_calls": 0
+  },
+  "unverified": [
+    "All closeout code changes on hardware",
+    "Green pregrasp native path and endpoint",
+    "Green approach/closure/trial/transport variants in R7",
+    "Green stack descent/release/retreat unimplemented",
+    "End-to-end unattended controller absent",
+    "Cross-layout generalization",
+    "Independent physical clearance/calibration accuracy"
+  ],
+  "next_step": "Future separately authorized fresh-scene green pregrasp function rehearsal; inspect native depth/endpoint before any grasp. No hardware in this closeout.",
+  "library_publication": "pending",
+  "artifact_root": "output/closeout",
+  "timing": "No carried-over task budget or configured closeout limit. Baseline/final timestamps only; earlier software start and main-model count unavailable."
+}

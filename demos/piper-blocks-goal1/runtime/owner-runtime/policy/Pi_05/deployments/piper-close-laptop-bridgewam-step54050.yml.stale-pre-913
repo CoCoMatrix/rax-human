@@ -1,0 +1,53 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-close-laptop-bridgewam-step54050
+label: BridgeWAM Piper close-laptop final raw epoch 50 step 54050 (v13)
+release:
+  status: contract_complete
+  evidence: policy/BridgeWAM/contracts/piper_close_laptop_step54050.json
+  evidence_sha256: REPLACE_AFTER_CONTRACT_HASH
+model:
+  backend: bridgewam
+bundle:
+  kind: bridgewam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/bridgewam/piper-close-laptop-v1/step-54050
+  required: [checkpoint/step_054050.pt, contract.json, infer.py]
+  verifier: policy/BridgeWAM/verify_piper_close_laptop_step54050_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/BridgeWAM/serve_piper_close_laptop_step54050.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: Close the laptop.
+  inline: [Close the laptop.]
+  catalog_path: "{repo_root}/policy/BridgeWAM/piper_close_laptop_task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/BridgeWAM/setup_piper_close_laptop_step54050.sh
+qualification:
+  supported: true
+  verifier: policy/BridgeWAM/verify_piper_close_laptop_step54050_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+    - tests/test_bridgewam_piper.py
+  smoke_script: null

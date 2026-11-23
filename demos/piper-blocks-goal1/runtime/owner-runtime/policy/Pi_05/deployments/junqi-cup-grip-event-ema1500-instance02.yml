@@ -1,0 +1,48 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-cup-grip-event-ema1500-instance02
+label: Junqi grip2_event3_s42 EMA1500 native RTC
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_02.yml
+release:
+  status: contract_complete
+  evidence: policy/Pi05GripperTiming/contracts/event.json
+  evidence_sha256: 84918a3cfd2f10dd423e4023d901d372c0c1f6989ab6dfd6866cc3849486d49e
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/code_junqi/model-store/models/pi05/cup_grip2_event3_s42_ema1500
+  required: [checkpoint/params, checkpoint/assets, package_manifest.json, training_recipe.json, runtime/source.tar.gz]
+  verifier: policy/Pi05GripperTiming/verify_event.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 50
+  default_execute_chunk: 10
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi05GripperTiming/serve_event.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  default: 把杯子从桌面拿起并移向杯架；当杯垫进入桌面区域时，改为将杯子放到杯垫上。
+  inline:
+    - 把杯子从桌面拿起并移向杯架；当杯垫进入桌面区域时，改为将杯子放到杯垫上。
+  catalog_path: "{repo_root}/policy/Pi05CupSwitchRTC02/task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/Pi05GripperTiming/setup_event.sh
+qualification:
+  supported: true
+  verifier: policy/Pi05GripperTiming/verify_event.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_gripper_timing_adapter.py
+    - tests/test_native_prefix_acceptance.py

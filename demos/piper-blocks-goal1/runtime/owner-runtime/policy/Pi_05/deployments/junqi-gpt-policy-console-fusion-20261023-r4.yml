@@ -1,0 +1,37 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-gpt-policy-console-fusion-20261023-r4
+label: Junqi GPT-Policy · XPolicy 融合工作台 · RGB 32cm
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-console-fusion-20261023-r4/contract.json
+  evidence_sha256: fb032c630e33656e51b4cee0c95891978bf2a9f51b8fc3d42b358a73ff7272b6
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-console-fusion-20261023-r4
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_gpt_policy_console_fusion_20261023_r4.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-console-fusion-20261023-r4/task_catalog.json
+  default: 先将蓝色杯子放到杯架左侧并松爪撤离，再将粉色杯子放到杯架右侧；搬运粉杯时若出现粉色杯垫，改放杯垫。放稳后松爪撤离，确认完成并停止。
+  inline:
+  - 先将蓝色杯子放到杯架左侧并松爪撤离，再将粉色杯子放到杯架右侧；搬运粉杯时若出现粉色杯垫，改放杯垫。放稳后松爪撤离，确认完成并停止。
+pigey:
+  supported: false
+qualification:
+  supported: false

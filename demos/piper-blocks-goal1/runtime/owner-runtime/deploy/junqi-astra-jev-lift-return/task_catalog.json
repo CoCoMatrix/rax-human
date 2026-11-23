@@ -1,0 +1,12 @@
+{
+  "exact_match_required": true,
+  "canonical_prompts": [
+    "Lift both PiPER tool centers by 0.02 m, then return to their measured starting poses; keep grippers unchanged."
+  ],
+  "tasks": [
+    {
+      "task_index": 0,
+      "task": "Lift both PiPER tool centers by 0.02 m, then return to their measured starting poses; keep grippers unchanged."
+    }
+  ]
+}

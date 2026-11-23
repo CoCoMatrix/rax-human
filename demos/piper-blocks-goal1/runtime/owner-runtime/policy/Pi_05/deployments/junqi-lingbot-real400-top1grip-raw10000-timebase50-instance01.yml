@@ -1,0 +1,57 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-lingbot-real400-top1grip-raw10000-timebase50-instance01
+label: LingBot REAL400 RAW10000 | trajectory 50% + RTC | synchronized gripper
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_01.yml
+release:
+  status: contract_complete
+  evidence: policy/LingBotSelectedReal/contracts/real400-timebase50-release.json
+  evidence_sha256: 50584fe5335a549af3baa6b0fe415254954c69d3fbd50d4c95138046f30643a0
+bundle:
+  kind: pytorch_hf
+  default_path: /home/ubuntu/code_junqi/model-store/models/lingbot/cup_real400_top1grip_lingbotv2_raw_step10000_ckpt
+  required:
+  - checkpoint/model.safetensors.index.json
+  - assets/norm_stats.json
+  - contract.json
+  - deploy_input.json
+  - runtime_processing.json
+  - package_manifest.json
+  - infer.py
+  verifier: policy/LingBotSelectedReal/verify_retimed.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 50
+  default_execute_chunk: 15
+  default_execute_mode: fixed
+  trajectory_profile: policy/LingBotSelectedReal/contracts/real400-timebase50-profile.json
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/LingBotSelectedReal/serve_retimed.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: '{repo_root}/policy/LingBotSelectedReal/contracts/real400-tasks.json'
+  default: 拿起桌面上的蓝色杯子，放到杯架空位，避开已经放好的杯子，放稳后松爪并撤回。
+  inline:
+  - 拿起桌面上的蓝色杯子，放到杯架空位，避开已经放好的杯子，放稳后松爪并撤回。
+  - 拿起桌面上的粉色杯子，放到杯架空位，避开已经放好的杯子，放稳后松爪并撤回。
+pigey:
+  supported: false
+qualification:
+  supported: true
+  verifier: policy/LingBotSelectedReal/verify_retimed.py
+  verifier_args:
+  - --full-manifest
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 1200
+  image_width: 1280
+  image_height: 720
+  tests:
+  - tests/test_lingbot_selected_real.py
+  - tests/test_action_timebase.py
+  - tests/test_trajectory_profile.py

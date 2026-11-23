@@ -1,0 +1,46 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-flowinfer-cup-switch-rtc1000-instance02
+label: Junqi cup switch EMA +1000 with robot_infra joint smoothing
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_02.yml
+release:
+  status: contract_complete
+  evidence: policy/Pi05CupFlowInfer/contracts/release-evidence.json
+  evidence_sha256: a7c285d148d28327be9e5c440b66c1ced0eaf184415c18e27a1f8c2cc59d9d85
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/code_junqi/model-store/models/pi05/flowinfer_cup_switch_bat00000002_pi05_trainingrtc_ema_step1000_from2000_ckpt
+  required: [model/checkpoint/params, model/infer.py, package_manifest.json, trajectory_profile.json]
+  verifier: policy/Pi05CupFlowInfer/verify_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 50
+  default_execute_chunk: 10
+  default_execute_mode: fixed
+  trajectory_profile: policy/Pi05CupFlowInfer/trajectory_profile.json
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi05CupFlowInfer/serve.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  default: 把杯子从桌面拿起并移向杯架；当杯垫进入桌面区域时，改为将杯子放到杯垫上。
+  inline: [把杯子从桌面拿起并移向杯架；当杯垫进入桌面区域时，改为将杯子放到杯垫上。]
+  catalog_path: "{repo_root}/policy/Pi05CupSwitchRTC02/task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/Pi05CupFlowInfer/setup.sh
+qualification:
+  supported: true
+  verifier: policy/Pi05CupFlowInfer/verify_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests: [tests/test_trajectory_profile.py, tests/test_junqi_flowinfer.py]

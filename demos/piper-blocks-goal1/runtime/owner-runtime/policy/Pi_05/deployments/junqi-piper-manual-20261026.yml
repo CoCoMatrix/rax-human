@@ -1,0 +1,37 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-piper-manual-20261026
+label: Piper · 独立手动控制（无模型）
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/manual-web-20261026/manual-owner-runtime/deploy/junqi-piper-manual-20261026/contract.json
+  evidence_sha256: 68cec6c03a7d6c193c7902eebf925b46201b63b61e43b78a0a85cc2c82808306
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/manual-web-20261026/manual-owner-runtime/deploy/junqi-piper-manual-20261026
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_piper_manual_20261026.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/manual-web-20261026/manual-owner-runtime/deploy/junqi-piper-manual-20261026/task_catalog.json
+  default: Manual Piper controls only; no autonomous task or policy execution.
+  inline:
+  - Manual Piper controls only; no autonomous task or policy execution.
+pigey:
+  supported: false
+qualification:
+  supported: false

@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.eval.data_sync.v1",
+  "title": "XPolicyLab evaluation and causal-data synchronization report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "no_hardware_execution",
+    "discovery",
+    "enqueue_issues",
+    "causal_jobs",
+    "causal_counts",
+    "dataset_views",
+    "statistics_path",
+    "robodojo_result_path",
+    "pending_review_trial_ids",
+    "incomplete_trial_ids",
+    "planned_trial_ids",
+    "all_discovered_episodes_enqueued",
+    "all_causal_materialized",
+    "all_episodes_reviewed",
+    "planned_trials_complete",
+    "strict_ready"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.eval.data_sync.v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "no_hardware_execution": {"const": true},
+    "discovery": {"type": "object"},
+    "enqueue_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["trial_id", "episode_id", "detail"],
+        "properties": {
+          "trial_id": {"type": "string", "minLength": 1},
+          "episode_id": {"type": "string", "minLength": 1},
+          "detail": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "causal_jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "trial_id",
+          "episode_id",
+          "job_id",
+          "status",
+          "attempts",
+          "error",
+          "validation_errors"
+        ],
+        "properties": {
+          "trial_id": {"type": "string", "minLength": 1},
+          "episode_id": {"type": "string", "minLength": 1},
+          "job_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "status": {
+            "enum": [
+              "PENDING",
+              "VALIDATING",
+              "MATERIALIZING",
+              "MATERIALIZED",
+              "QUARANTINED",
+              "FAILED"
+            ]
+          },
+          "attempts": {"type": "integer", "minimum": 0},
+          "error": {"type": ["string", "null"]},
+          "validation_errors": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "causal_counts": {
+      "type": "object",
+      "required": [
+        "PENDING",
+        "VALIDATING",
+        "MATERIALIZING",
+        "MATERIALIZED",
+        "QUARANTINED",
+        "FAILED"
+      ],
+      "properties": {
+        "PENDING": {"type": "integer", "minimum": 0},
+        "VALIDATING": {"type": "integer", "minimum": 0},
+        "MATERIALIZING": {"type": "integer", "minimum": 0},
+        "MATERIALIZED": {"type": "integer", "minimum": 0},
+        "QUARANTINED": {"type": "integer", "minimum": 0},
+        "FAILED": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "dataset_views": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "view",
+          "output",
+          "manifest_sha256",
+          "selected_count",
+          "quarantined_count"
+        ],
+        "properties": {
+          "run_id": {"type": "string", "minLength": 1},
+          "view": {"enum": ["dagger_intervention", "recap_episode"]},
+          "output": {"type": "string", "minLength": 1},
+          "manifest_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "selected_count": {"type": "integer", "minimum": 0},
+          "quarantined_count": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "statistics_path": {"type": "string", "minLength": 1},
+    "robodojo_result_path": {"type": "string", "minLength": 1},
+    "pending_review_trial_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "incomplete_trial_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "planned_trial_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "all_discovered_episodes_enqueued": {"type": "boolean"},
+    "all_causal_materialized": {"type": "boolean"},
+    "all_episodes_reviewed": {"type": "boolean"},
+    "planned_trials_complete": {"type": "boolean"},
+    "strict_ready": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

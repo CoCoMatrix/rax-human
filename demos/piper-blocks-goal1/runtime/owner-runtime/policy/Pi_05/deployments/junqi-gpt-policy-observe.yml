@@ -1,0 +1,32 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-gpt-policy-observe
+label: Junqi GPT-Policy live observation (no action)
+release:
+  status: hardware_free_candidate
+bundle:
+  kind: transport_contract
+  default_path: "{repo_root}/deploy/junqi-gpt-policy-observe"
+  required: [contract.json, task_catalog.json]
+  verifier: scripts/verify_junqi_gpt_policy_observe.py
+policy:
+  backend: transport_noop
+  action_frequency_hz: 30
+  action_horizon: 1
+  default_execute_chunk: 1
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: "{repo_root}/deploy/junqi-gpt-policy-observe/task_catalog.json"
+  default: Pick up the brown bottled water and place it on the coaster.
+  inline: [Pick up the brown bottled water and place it on the coaster.]
+pigey:
+  supported: false
+qualification:
+  supported: false

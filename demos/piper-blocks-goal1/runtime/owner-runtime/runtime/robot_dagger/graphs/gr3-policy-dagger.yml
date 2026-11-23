@@ -1,0 +1,246 @@
+nodes:
+  - id: camera_top
+    build: uv pip install --python ../.venv/bin/python -e ../nodes/dora-depthai
+    path: ../.venv/bin/dora-depthai
+    inputs:
+      tick: dora/timer/millis/33
+    outputs: [image, depth]
+    env:
+      IMAGE_WIDTH: 640
+      IMAGE_HEIGHT: 400
+      FPS: 30
+      ROTATE: 180
+      USE_DEPTH: 0
+      VIS_DEPTH: 0
+      DRAW_TIMESTAMP: 0
+      DEBUG: 0
+
+  - id: operator_ui
+    path: ../nodes/operator_ui.py
+    inputs:
+      camera: camera_top/image
+      review_input: qnexo_controls/review_input
+      robot_state: teleop/joint_state
+      base_state: teleop/base_state
+      robot_status: teleop/robot_status
+      model_action: output_pipeline/action
+      model_status: output_pipeline/status
+      control_mode: dagger_router/control_mode
+    env:
+      OPERATOR_UI_URL: "${OPERATOR_UI_URL:-http://127.0.0.1:8090}"
+      OPERATOR_UI_CAMERA_MAX_WIDTH: "${OPERATOR_UI_CAMERA_MAX_WIDTH:-480}"
+      OPERATOR_UI_CAMERA_JPEG_QUALITY: "${OPERATOR_UI_CAMERA_JPEG_QUALITY:-65}"
+      OPERATOR_UI_CAMERA_FPS: "${OPERATOR_UI_CAMERA_FPS:-15}"
+      IMAGE_WIDTH: 640
+      IMAGE_HEIGHT: 400
+
+  - id: exo_driver_node
+    build: uv pip install --python ../.venv/bin/python -e ../../qnexo/source
+    path: ../.venv/bin/exo_driver_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [exo_data]
+
+  # Robot-independent lifecycle controls. This node exclusively owns the
+  # white/blue/red buttons and takeover pedal for every robot.
+  - id: qnexo_controls
+    path: ../.venv/bin/xpolicylab-qnexo-controls
+    inputs:
+      exo_data: exo_driver_node/exo_data
+      tick: dora/timer/millis/100
+    outputs: [button_command, takeover, review_input, status]
+    env:
+      PYTHONPATH: ""
+
+  # GR3-specific mapping only. It never opens a controller device and does not
+  # implement lifecycle buttons or pedal state.
+  - id: gr3_retarget
+    build: uv pip install --python ../.venv/bin/python -e ../../qnexo/source
+    path: ../.venv/bin/qnexo-gr3-retarget
+    inputs:
+      exo_data: exo_driver_node/exo_data
+      takeover: qnexo_controls/takeover
+      tick: dora/timer/millis/100
+    outputs: [action, action_robot, expert_status, base_command]
+    env:
+      VISUALIZE: 0
+      ROBOT_PROFILE: "${GR3_PROFILE:-../../../real_world/robots/gr3/profile.yml}"
+
+  - id: teleop
+    build: uv pip install --python ../.venv/bin/python -e ../nodes/robot-adaptor
+    path: ../.venv/bin/teleop-node
+    inputs:
+      tick: dora/timer/millis/16
+      action: dagger_router/action_robot
+      base_command: dagger_router/base_command
+      command: qnexo_controls/button_command
+    outputs: [joint_state, state_robot, base_state, robot_status, base_command, executed_action, episode_index, episode_failed, episode_result, model_command]
+    env:
+      ROBOT_NAME: gr3
+      ROBOT_PROFILE: "${GR3_PROFILE:-../../../real_world/robots/gr3/profile.yml}"
+      ROBOT_ID: "${ROBOT_ID:-115}"
+      WBC_WALK: 0
+      ENABLE_BASE_COMMAND: 0
+      ENABLE_MODEL_STEP: 1
+      REQUIRE_CONTROL_MODE: 1
+      GR3_ENABLE_WRITE: "${GR3_ENABLE_WRITE:-0}"
+      LD_LIBRARY_PATH: ""
+      PYTHONPATH: ""
+
+  - id: gr3_policy
+    path: ../../../.venv/bin/xpolicylab-gr3-dora
+    inputs:
+      tick: dora/timer/millis/33
+      image: camera_top/image
+      state: teleop/joint_state
+      base_state: teleop/base_state
+      control: dagger_router/model_control
+    outputs: [action_chunk, action, action_robot, base_action, model_info, status]
+    env:
+      POLICY_URL: "${POLICY_URL:-ws://127.0.0.1:19000}"
+      ROBOT_ID: "${ROBOT_ID:-115}"
+      ACTION_HZ: 30
+      POLICY_STATE_DIM: "${POLICY_STATE_DIM:-33}"
+      ACTION_CHUNK_SIZE: "${ACTION_CHUNK_SIZE:-16}"
+      INFERENCE_TRIGGER_STEPS: "${INFERENCE_TRIGGER_STEPS:-0}"
+      INFERENCE_AUTO_PREFETCH: "${INFERENCE_AUTO_PREFETCH:-1}"
+      INFERENCE_PREFETCH_QUANTILE: "${INFERENCE_PREFETCH_QUANTILE:-0.95}"
+      INFERENCE_PREFETCH_MARGIN_STEPS: "${INFERENCE_PREFETCH_MARGIN_STEPS:-1}"
+      INFERENCE_PREFETCH_WINDOW_SIZE: "${INFERENCE_PREFETCH_WINDOW_SIZE:-32}"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      CAMERA_IS_BGR: 1
+      IMAGE_WIDTH: 640
+      IMAGE_HEIGHT: 400
+      TASK: "${TASK:-Pick the tomato from the table and place it inside the basket on the left.}"
+
+  - id: output_pipeline
+    path: ../../../.venv/bin/xpolicylab-gr3-output
+    inputs:
+      tick: dora/timer/millis/33
+      control_tick: dora/timer/millis/11
+      action_chunk: gr3_policy/action_chunk
+      robot_state: teleop/joint_state
+      control: dagger_router/model_control
+      model_status: gr3_policy/status
+    outputs: [action, action_robot, raw_action, qp_action, projected_action, mink_action, filtered_action, base_action, output_info, projector_info, status]
+    env:
+      OUTPUT_QP_ENABLED: "${OUTPUT_QP_ENABLED:-0}"
+      OUTPUT_QP_ACCEL_WEIGHT: "${OUTPUT_QP_ACCEL_WEIGHT:-0.25}"
+      OUTPUT_QP_OVERLAP_WEIGHT: "${OUTPUT_QP_OVERLAP_WEIGHT:-4.0}"
+      OUTPUT_FILTER_ENABLED: "${OUTPUT_FILTER_ENABLED:-0}"
+      OUTPUT_FILTER_ALPHA: "${OUTPUT_FILTER_ALPHA:-0.6}"
+      OUTPUT_SPLINE_ENABLED: "${OUTPUT_SPLINE_ENABLED:-0}"
+      OUTPUT_SPLINE_FACTOR: "${OUTPUT_SPLINE_FACTOR:-3}"
+      OUTPUT_MINK_MODE: "${OUTPUT_MINK_MODE:-off}"
+      OUTPUT_ACTION_HZ: "${OUTPUT_ACTION_HZ:-30}"
+      PREDICTIVE_MINK_ACTION_TRACKING_COST: "${PREDICTIVE_MINK_ACTION_TRACKING_COST:-10.0}"
+      PREDICTIVE_MINK_ENCODER_SYNC_COST: "${PREDICTIVE_MINK_ENCODER_SYNC_COST:-1.0}"
+      PREDICTIVE_MINK_HORIZON_STEPS: "${PREDICTIVE_MINK_HORIZON_STEPS:-7}"
+      PREDICTIVE_MINK_MAX_VELOCITY_RAD_S: "${PREDICTIVE_MINK_MAX_VELOCITY_RAD_S:-1.5}"
+      PREDICTIVE_MINK_MAX_ACCELERATION_RAD_S2: "${PREDICTIVE_MINK_MAX_ACCELERATION_RAD_S2:-8.0}"
+      PREDICTIVE_MINK_MAX_JERK_RAD_S3: "${PREDICTIVE_MINK_MAX_JERK_RAD_S3:-80.0}"
+      PREDICTIVE_MINK_STATE_TIMEOUT_MS: "${PREDICTIVE_MINK_STATE_TIMEOUT_MS:-100}"
+      PREDICTIVE_MINK_SOLVE_TIMEOUT_MS: "${PREDICTIVE_MINK_SOLVE_TIMEOUT_MS:-30}"
+
+  - id: dagger_router
+    build: uv pip install --python ../.venv/bin/python -e ../nodes/dagger-router
+    path: ../.venv/bin/dagger-router
+    inputs:
+      robot_state: teleop/joint_state
+      expert_action: gr3_retarget/action_robot
+      takeover: qnexo_controls/takeover
+      model_action: output_pipeline/action_robot
+      model_status: output_pipeline/status
+      episode_index: teleop/episode_index
+      episode_failed: teleop/episode_failed
+      model_command: teleop/model_command
+    outputs: [action, action_robot, model_action_robot, base_command, expert_action, expert_proposed_action, expert_aligned_unclipped_action, expert_safe_action, control_mode, selected_action_source, label_valid, takeover_event, control_event, model_control]
+    env:
+      MAX_JOINT_STEP_RAD: "${MAX_JOINT_STEP_RAD:-0.15}"
+      FREEZE_WAIST: "${FREEZE_WAIST:-1}"
+      FREEZE_WAIST_JOINTS: "${FREEZE_WAIST_JOINTS:-waist_roll_joint}"
+
+  - id: fourier_record
+    build: cargo build -p fourier-record --release
+    path: ../target/release/fourier-record
+    inputs:
+      tick: dora/timer/millis/100
+      episode_index: teleop/episode_index
+      episode_failed: teleop/episode_failed
+      observation.images.camera_top: camera_top/image
+      observation.state: teleop/joint_state
+      observation.base_state: teleop/base_state
+      observation.state_robot: teleop/state_robot
+      action.expert_raw: gr3_retarget/action
+      action.expert: dagger_router/expert_action
+      action.model: output_pipeline/action
+      action.model_raw: output_pipeline/raw_action
+      action.model_qp: output_pipeline/qp_action
+      action.model_projected: output_pipeline/projected_action
+      action.model_mink: output_pipeline/mink_action
+      action.model_filtered: output_pipeline/filtered_action
+      action.executed: dagger_router/action
+      action.model_robot: dagger_router/model_action_robot
+      action.expert_proposed_robot: dagger_router/expert_proposed_action
+      action.expert_aligned_unclipped_robot: dagger_router/expert_aligned_unclipped_action
+      action.expert_robot: dagger_router/expert_safe_action
+      action.expert_safe_robot: dagger_router/expert_safe_action
+      action.executed_robot: teleop/executed_action
+      action.base.expert: gr3_retarget/base_command
+      action.base.model: output_pipeline/base_action
+      action.base.executed: dagger_router/base_command
+      control.mode: dagger_router/control_mode
+      control.selected_action_source: dagger_router/selected_action_source
+      control.takeover_event: dagger_router/takeover_event
+      control.event: dagger_router/control_event
+      label.valid: dagger_router/label_valid
+      model.policy_info: gr3_policy/model_info
+      model.rtc_info: gr3_policy/model_info
+      model.projector_info: output_pipeline/projector_info
+      model.status: output_pipeline/status
+      expert.status: gr3_retarget/expert_status
+      episode_result: teleop/episode_result
+    env:
+      OUTPUT_DIR: "${DAGGER_RECORD_DIR:-../../../Log/dagger/gr3}"
+      DAQ_CAMERA_TYPE: oak
+      DAQ_TASK_ID: "${DAQ_TASK_ID:-prototype}"
+      ENABLE_DAGGER_RECORDING: "${ENABLE_DAGGER_RECORDING:-0}"
+      EVIDENCE_RETENTION_POLICY: "${EVIDENCE_RETENTION_POLICY:-AUTO_RETAIN_ALL_EVAL}"
+      XPOLICY_EVAL_RUN_ID: "${XPOLICY_EVAL_RUN_ID:-}"
+      XPOLICY_EVAL_SUITE_ID: "${XPOLICY_EVAL_SUITE_ID:-adhoc}"
+      XPOLICY_EVAL_SUITE_REVISION: "${XPOLICY_EVAL_SUITE_REVISION:-v1}"
+      XPOLICY_EVAL_TASK_REVISION: "${XPOLICY_EVAL_TASK_REVISION:-v1}"
+      XPOLICY_EVAL_CASE_IDS: "${XPOLICY_EVAL_CASE_IDS:-}"
+      MODEL_BACKEND: "${MODEL_BACKEND:-xpolicy}"
+      MODEL_CHECKPOINT: "${MODEL_CHECKPOINT:-unknown}"
+      MODEL_CHECKPOINT_SHA256: "${MODEL_CHECKPOINT_SHA256:-}"
+      MODEL_TRAINING_DATASET_ID: "${MODEL_TRAINING_DATASET_ID:-}"
+      DAGGER_ITERATION: "${DAGGER_ITERATION:-0}"
+      RECAP_ITERATION: "${RECAP_ITERATION:-}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      RECAP_PARENT_DATASET_ID: "${RECAP_PARENT_DATASET_ID:-}"
+      RECAP_POLICY_CONDITION: "${RECAP_POLICY_CONDITION:-UNCONDITIONED}"
+      COLLECTION_BATCH_ID: "${COLLECTION_BATCH_ID:-}"
+      XPOLICYLAB_SOURCE_REPO: "${XPOLICYLAB_SOURCE_REPO:-CoCoMatrix/xpolicylabdagger}"
+      XPOLICYLAB_SOURCE_COMMIT: "${XPOLICYLAB_SOURCE_COMMIT:-unknown}"
+      TASK_INSTRUCTION: "${TASK:-Pick the tomato from the table and place it inside the basket on the left.}"
+      ROBOT_ID: "${ROBOT_ID:-115}"
+      RETARGET_MAPPING_VERSION: gr3_retarget_v4
+      CONTROLLER_VERSION: gr3_dagger_router_v2
+      DAGGER_STORAGE_FORMAT: xpolicylab_dagger_parquet_v1
+      DAGGER_SCHEMA_VERSION: gr3_dagger_v2
+      ROBOT_TYPE: gr3
+      ROBOT_PROFILE_ID: gr3_full37_v2
+      DAGGER_SCHEMA_PATH: ../schemas/gr3_dagger_v2.json
+      CAMERA_TOP_WIDTH: 640
+      CAMERA_TOP_HEIGHT: 400
+      CAMERA_TOP_ENCODING: bgr8

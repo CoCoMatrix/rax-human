@@ -1,0 +1,53 @@
+schema: xpolicylab.piper-deployment/v1
+name: typec-task11-rtc-ema10000-instance02
+label: Type-C task11 | EMA 10000 | training RTC d10 | instance02
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_02.yml
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/code_junqi/model-store/models/pi05/typec_task11_all200_20260929_pi05_rtc_d10_ema_step10000_ckpt
+  required: [checkpoint/params, checkpoint/assets, contract.json, deploy_input.json, package_manifest.json, infer.py]
+  verifier: policy/Pi05TypeCRTC/verify_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 16
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi05TypeCRTC/serve.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  default: Pick up the USB-C cable and insert its connector into the USB-C port on the charger.
+  inline:
+    - Pick up the USB-C cable and insert its connector into the USB-C port on the charger.
+  catalog_path: '{repo_root}/policy/Pi05TypeCRTC/task_catalog.json'
+pigey:
+  supported: false
+setup:
+  script: policy/Pi05TypeCRTC/setup.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: spy/deploy/typec_task11_all200_20260929_pi05_rtc_d10_ema_step10000_ckpt
+  expected_bytes: 12445673918
+  threads: 8
+  metadata: {family: pi05, robot: dual_piper, task: typec_task11, step: 10000, params_semantics: EMA}
+qualification:
+  supported: true
+  verifier: policy/Pi05TypeCRTC/verify_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_typec_training_rtc.py
+    - tests/test_native_prefix_acceptance.py

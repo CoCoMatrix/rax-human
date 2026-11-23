@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "author_of_closeout": "RAX main Agent",
+  "stage": "software_closeout_only",
+  "imported_sources": [
+    {
+      "identity": "Preserved R6 rehearsal candidate with RAX and Mac-authored repairs",
+      "evidence": [
+        "references/rehearsal-handoff.md",
+        "Imported README.md hash in baseline"
+      ],
+      "qualification": "Partial function rehearsal, not full controller"
+    },
+    {
+      "identity": "R7 task-stage RAX main-Agent edits",
+      "evidence": "output/rehearsal/r7-*.json code_hashes and original tool logs",
+      "qualification": "Supervised orange base pair; no green pregrasp motion"
+    }
+  ],
+  "initial_code_hashes": {
+    "code/magnetic_blocks/README.md": "f6949b4ace0d2d9b5254342f5996ec4fc1c8ccab6763d1b1d3d31f466aa7aee0",
+    "code/magnetic_blocks/controller.py": "ac58ab57ca636ea1adaa5afa87ec17b0c86447a9a381cb903a28f879e08e7636",
+    "code/magnetic_blocks/green_checks.py": "817b8d63cde07e7342ec139dc2decd0020082ac9c64b99b646242d4cbc69ee2f",
+    "code/magnetic_blocks/manipulation_checks.py": "2e1d48a0abbdb000c1b773c2bb6a73b5e54e94ebd8fe652e30fe70a283fa17b7",
+    "code/magnetic_blocks/perception.py": "2ede6674eaea3fced1ace9b582a92fbd76eb15d3c17663f13bc1e114ee4f5bc1",
+    "code/magnetic_blocks/plan_rehearsal.py": "982efd288453659b2c571da8daf098a16badafe93a8d683073b75a19cdb00a87",
+    "code/magnetic_blocks/qualitative.py": "0ee7f096df9b7cbec9fe521340437c8455e5a7210f70c3f32527334f0484633d",
+    "code/magnetic_blocks/r7_plan.py": "9383675dd2c582ccbcdd3ff71a8985963b09800962cb3974887b4d9e36d15d9e",
+    "code/magnetic_blocks/recorded-opening.json": "ee1f648b09ff01ce511f0a10f9187d4a00b9d62f48f68f15324d75468b0d3639",
+    "code/magnetic_blocks/rehearse_step.py": "ac8071e7795a014c403d00ec6df1d573e602f62e1278cbaf0619524bc1ad4b84",
+    "code/magnetic_blocks/scene_checks.py": "2438568f943fab467e939b8b50debed8924c64df48b6a87b0638e287999ca338",
+    "code/magnetic_blocks/test_geometry_reuse.py": "4c905c618d51c3a069c24ae3f4b78edb24b690adec95e61492bb0a5e035a7bc6",
+    "code/magnetic_blocks/test_native_budget.py": "1c2f2d3191d399ef09fa1c7a64cdebba1c3802c344ee3d86fad5ecc3651af974",
+    "code/magnetic_blocks/test_occlusion_repair.py": "d85a08a36df8e93cd37bcccd3bbd1f8af17d194a4cad8df4041b51bc0524b05a",
+    "code/magnetic_blocks/test_perception.py": "a15db6a66ffcdd8852cf4d05776e225d4d54a9be4c96ef65706d663e8b581d53",
+    "code/magnetic_blocks/test_scene_checks.py": "4029063a5a2b6910f24e78ada3d61cae0d87cdfcaac6f9453d8a70c04c321639",
+    "code/magnetic_blocks/test_workflow.py": "3ecafc8df723bf2488c2a13937e5d5811abf7b901b8057e1dbd23d4ee2ac530f",
+    "code/magnetic_blocks/tool-schemas.json": "5ef0ca6188835602e86cf19ebe6f3a22130ab8f8d3da1d5847a379fead539160"
+  },
+  "baseline_manifest": "output/closeout/BASELINE.json",
+  "baseline_manifest_sha256": "7516bb8d0e041f819f72903468bac6bc228955de2822fa7be60d56e65e61a533",
+  "original_git_metadata_available": false,
+  "source_library_commit": "9c6cb4be81a94c47493f5462a190151a44b51df7",
+  "publication": "pending; no fetch/merge/MCP during software-only continuation",
+  "missing_supplied_references": [
+    "AGENT_OWNERSHIP.md",
+    "software-closeout/task-checkpoint"
+  ],
+  "note": "Initial hashes identify received code; no claim to have authored imported repairs or verified absent host backup.",
+  "subsequent_engineering_repair": {
+    "author": "Mac Codex",
+    "source_commit": "2101a65c71618fa902101452b9e2496c67dd2262",
+    "physical_calls": 0,
+    "stage": "offline_candidate",
+    "details": "REPAIR.md"
+  }
+}

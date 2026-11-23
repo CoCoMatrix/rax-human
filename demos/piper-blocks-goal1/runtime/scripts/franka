@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+# Short operator command for motion arming. Symlink it onto PATH, e.g. ~/.local/bin/franka.
+#   franka arm [minutes]   arm the newest session (asks you to confirm the e-stop)
+#   franka disarm          disarm EVERY session and hold the arm
+#   franka status          arming state of recent sessions
+#   franka requests        what the agent is asking the operator for
+#   franka reply [text]    answer the oldest open request ("done" for a reset)
+#   franka clean-streams   delete the camera recordings of sessions that are not running
+#   franka home [--open]   move the arm to the libfranka ready pose (asks you to confirm);
+#                          --open also opens the gripper. Refused while an agent session runs.
+set -euo pipefail
+SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+PROJECT_ROOT="$(cd "$(dirname "$SCRIPT")/.." && pwd)"
+PYTHON="${RAX_PYTHON:-$(command -v python3 || true)}"
+[[ -x "$PYTHON" ]] || { echo "No robot Python: set RAX_PYTHON to the interpreter of the robot environment (got '$PYTHON')" >&2; exit 2; }
+cd "$PROJECT_ROOT"  # the current directory comes first on sys.path: never pick up another repo
+PYTHONPATH="$PROJECT_ROOT" exec "$PYTHON" - "$@" <<'PY'
+import json, sys, time
+from urllib.request import Request, urlopen
+from services.franka import arming
+from services.controller import operator
+from services.storage_root import artifact_root
+
+sessions = sorted((p.parent for p in (artifact_root()/'sessions').glob('*/operator-input.json')),
+                  key=lambda p: (p/'operator-input.json').stat().st_mtime)
+action = sys.argv[1] if len(sys.argv) > 1 else 'status'
+
+def ask(prompt):
+    """Prompt on the terminal: this script's own stdin is the program text."""
+    try:  # separate handles: a terminal is not seekable, so 'r+' text mode fails
+        with open('/dev/tty', 'w') as out, open('/dev/tty') as tty:
+            out.write(prompt)
+            out.flush()
+            return tty.readline().strip()
+    except OSError:
+        sys.exit('no terminal to confirm on')
+
+
+def line(root):
+    state = arming.read(root)
+    extra = '' if not state.get('until') else f" until {time.strftime('%H:%M', time.localtime(state['until']))}"
+    return f"{'ARMED   ' if state['armed'] else 'disarmed'}{extra}  {root.name}"
+
+if action == 'disarm':
+    for root in sessions:
+        if arming.read(root)['armed']:
+            arming.write(root, False, reason='disarmed by the operator')
+    try:
+        urlopen(Request('http://127.0.0.1:50054/hold', data=b'{}', method='POST',
+                        headers={'Content-Type': 'application/json'}), timeout=3).read()
+        print('all sessions disarmed; arm holding')
+    except Exception as exc:
+        print(f'all sessions disarmed; hold failed ({exc})')
+elif action == 'arm':
+    if not sessions:
+        sys.exit('no sessions')
+    root = sessions[-1]
+    minutes = float(sys.argv[2]) if len(sys.argv) > 2 else None
+    print(f'session: {root.name}')
+    if ask('Person at the emergency stop and workspace clear? Type ARM: ') != 'ARM':
+        sys.exit('not armed')
+    arming.write(root, True, minutes=minutes)
+    print(line(root))
+elif action == 'status':
+    for root in sessions[-5:]:
+        print(line(root))
+        for request in operator.pending(root):
+            print(f"   OPEN {request['kind'].upper()} {request['id']}: {request['message']}")
+elif action == 'home':
+    import os
+    import numpy as np
+    from services.franka.backend import HOME_Q
+    from services.franka.bridges import ArmBridge, GripperBridge
+    from services.franka.kinematics import joint_frames
+    def alive(root):
+        try:
+            life = json.loads((root/'agent-lifecycle.json').read_text())
+            os.kill(int(life['pid']), 0)
+            return life.get('status') in ('preparing', 'running', 'usage_wait')
+        except Exception:
+            return False
+    busy = [root.name for root in sessions if alive(root)]
+    if busy:
+        sys.exit(f'an agent session is running ({busy[0]}): stop it or use the agent; not homing')
+    arm = ArmBridge('http://127.0.0.1:50054')
+    start = np.asarray(arm.state()['arm_joint_position'])
+    goal = np.asarray(HOME_Q)
+    for fraction in np.linspace(0, 1, 61):  # table clearance along the straight joint path
+        frames = joint_frames(start + fraction * (goal - start))
+        low = min(frame[2, 3] for frame in frames[3:9])
+        if low < 0.10:
+            sys.exit(f'path to home brings the arm to z={low:.3f} m at {fraction:.0%} (table at 0.09 m); '
+                     'guide the arm up first')
+    step = float(np.max(np.abs(goal - start)))
+    seconds = max(4.0, step / 0.3)
+    print('current', np.round(start, 3).tolist())
+    print('home   ', np.round(goal, 3).tolist())
+    print(f'largest joint change {step:.2f} rad, about {seconds:.0f} s; the path clears the table')
+    if step < 0.01:
+        print('already home')
+    elif ask('Person at the emergency stop and the swept volume clear? Type HOME: ') != 'HOME':
+        sys.exit('not moved')
+    else:
+        arm.move_joints(goal, seconds)
+        error = float(np.max(np.abs(np.asarray(arm.state()['arm_joint_position']) - goal)))
+        print(f'home reached (largest joint error {error:.3f} rad)')
+    if '--open' in sys.argv[2:]:
+        gripper = GripperBridge('http://127.0.0.1:50053')
+        state = gripper.state()
+        print('gripper', round(gripper.move(state['max_width'], 0.05)['width'], 4))
+elif action == 'clean-streams':
+    import os, shutil
+    def running(root):
+        try:
+            life = json.loads((root/'agent-lifecycle.json').read_text())
+            os.kill(int(life['pid']), 0)
+            return life.get('status') in ('preparing', 'running', 'usage_wait')
+        except Exception:
+            return False
+    for root in sessions:
+        stream = root/'stream'
+        if stream.is_dir() and any(stream.iterdir()) and not running(root):
+            size = sum(p.stat().st_size for p in stream.rglob('*') if p.is_file()) / 1e9
+            shutil.rmtree(stream)
+            stream.mkdir()
+            print(f'deleted {size:.1f} GB  {root.name}')
+elif action in ('requests', 'reply'):
+    open_requests = sorted(((r['created'], root, r) for root in sessions for r in operator.pending(root)),
+                           key=lambda item: item[0])
+    if not open_requests:
+        sys.exit('no open requests')
+    if action == 'requests':
+        for _, root, r in open_requests:
+            print(f"{r['kind'].upper():5s} {time.strftime('%H:%M:%S', time.localtime(r['created']))} {root.name}\n  {r['message']}")
+    else:
+        _, root, r = open_requests[0]
+        text = ' '.join(sys.argv[2:]) or ('Scene reset done.' if r['kind'] == 'reset' else '')
+        if not text:
+            text = ask(f"{r['kind'].upper()}: {r['message']}\nYour answer: ")
+        operator.reply(root, r['id'], text, by='franka-cli')
+        print(f"answered {r['kind']} request {r['id']}")
+else:
+    sys.exit('usage: franka arm [minutes] | disarm | status | requests | reply [text] | clean-streams | home [--open]')
+PY

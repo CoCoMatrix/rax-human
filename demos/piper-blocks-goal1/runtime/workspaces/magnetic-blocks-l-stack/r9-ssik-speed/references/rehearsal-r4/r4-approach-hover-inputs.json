@@ -1,0 +1,18 @@
+{
+  "waypoints": [
+    [
+      0.3053622405806108,
+      -0.18051907796340438,
+      0.27968236533727114
+    ]
+  ],
+  "quaternion": [
+    0.9996573249755574,
+    -0.026176948307873156,
+    0.0,
+    0.0
+  ],
+  "previous_report": "output/rehearsal/r4-hover-05.json",
+  "color": "orange",
+  "engage": false
+}

@@ -1,0 +1,37 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-rax-general-motion-ram-20261028
+label: RAX 双臂 Prepare · 人工监督
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/general-motion-20261028/owner-runtime-ram/deploy/junqi-rax-general-motion-ram-20261028/contract.json
+  evidence_sha256: b583a0bc6f19c272c7163dd3ee7cddf805eccf305392b83671ba513463a02bfb
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/general-motion-20261028/owner-runtime-ram/deploy/junqi-rax-general-motion-ram-20261028
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_calibration.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/general-motion-20261028/owner-runtime-ram/deploy/junqi-rax-general-motion-ram-20261028/task_catalog.json
+  default: RAX supervised dual PiPER joint motion commissioning. No contact or grasp.
+  inline:
+  - RAX supervised dual PiPER joint motion commissioning. No contact or grasp.
+pigey:
+  supported: false
+qualification:
+  supported: false

@@ -1,0 +1,62 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-songling-fastwam
+label: FastWAM Piper Songling raw step 48020
+model:
+  backend: fastwam
+bundle:
+  kind: fastwam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/fastwam/piper-songling-lerobot-v3-build-blocks-v1/step-48020
+  required: [checkpoint/step_048020.pt, contract.json, infer.py]
+  verifier: policy/FastWAM/verify_piper_songling_bundle.py
+policy:
+  action_frequency_hz: 60
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+server:
+  default_mode: managed
+  script: policy/FastWAM/serve_piper_songling.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-fastwam-policy-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: 搭积木
+  inline:
+    - 搭积木
+  catalog_path: "{repo_root}/policy/FastWAM/piper_songling_task_catalog.json"
+setup:
+  script: policy/FastWAM/setup_piper_songling.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: jxfang/delivery/piper_songling_lerobot_v3_fastwam_raw_step48020_ckpt.partial
+  expected_bytes: 13455714659
+  threads: 16
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: fastwam
+    robot: dual_piper
+    dataset: piper_songling_lerobot_v3
+    task: build_blocks_zh
+    step: 48020
+    params_semantics: raw
+qualification:
+  supported: true
+  verifier: policy/FastWAM/verify_piper_songling_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1920
+  image_height: 1080
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+  smoke_script: null

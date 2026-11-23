@@ -1,0 +1,15 @@
+policy_name: Pi_05
+protocol: ws
+host: 0.0.0.0
+port: 19003
+runtime_profile: piper_x_dual_build_blocks_v1
+checkpoint_path: checkpoints/piper-pi05-dj-tricam-b512-20k-0825-r3/2000
+checkpoint_sha256: 18949d93065e0e512fdbb32d6f061304314c4d775b8213946e60a530e160afb9
+source_revision: xpolicylab-tree-sha256:67f019011d47509d6b834a7b6078d2fe5329475f457498de39b974b6fba15325
+train_config_name: pi05_piper_build_blocks_delta_joint_v1
+repo_id: piper_build_blocks_jiaxin_v1
+action_frequency_hz: 30
+action_horizon: 15
+horizon: 15
+instruction: "Stack the second cube on top of the first cube, then place the cone on top of the second cube."
+rtc_enabled: false

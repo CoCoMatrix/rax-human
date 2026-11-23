@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.collection.v1",
+  "title": "XPolicy RECAP collection identity",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "collection_batch_id",
+    "collection_mode",
+    "recap_iteration",
+    "source",
+    "robot_contract",
+    "behavior_policy",
+    "outcome_label_schema_version",
+    "extensions"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.collection.v1"},
+    "collection_batch_id": {"type": "string", "minLength": 1},
+    "collection_mode": {
+      "enum": ["DEMONSTRATION", "AUTONOMOUS", "INTERVENTION", "MIXED"]
+    },
+    "recap_iteration": {"type": "string", "minLength": 1},
+    "parent_dataset_id": {"type": ["string", "null"]},
+    "source": {
+      "type": "object",
+      "required": ["repo", "commit"],
+      "properties": {
+        "repo": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "robot_contract": {
+      "type": "object",
+      "required": ["id", "sha256", "file_sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "sha256": {"type": ["string", "null"]},
+        "file_sha256": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "behavior_policy": {
+      "type": "object",
+      "required": [
+        "policy_id",
+        "checkpoint_uri",
+        "checkpoint_sha256",
+        "training_dataset_id",
+        "condition"
+      ],
+      "properties": {
+        "policy_id": {"type": "string", "minLength": 1},
+        "checkpoint_uri": {"type": "string", "minLength": 1},
+        "checkpoint_sha256": {"type": ["string", "null"]},
+        "training_dataset_id": {"type": ["string", "null"]},
+        "condition": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "outcome_label_schema_version": {"const": "xpolicy.recap.outcome.v1"},
+    "extensions": {"type": "object"}
+  },
+  "additionalProperties": false
+}

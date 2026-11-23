@@ -1,0 +1,63 @@
+{
+  "collision_checked": true,
+  "cad_clear": true,
+  "contacts": [],
+  "expected_gripper_contacts": [
+    {
+      "links": [
+        "right_gripper_link1",
+        "right_gripper_link2"
+      ],
+      "distance_m": 0.001999999464102083,
+      "rule": "opposing fingers within commanded jaw width",
+      "jaw_width_m": 0.002
+    }
+  ],
+  "margin_m": 0.003,
+  "collision_objects": 30,
+  "checked_pairs": 376,
+  "environment_boxes": 0,
+  "physical_calibration_validated": false,
+  "hardware_execution_approved": false,
+  "limitation": "CAD sampled check only; no cable, payload, unseen obstacle or continuous sweep certification",
+  "geometry_identity": {
+    "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+    "cad_bounds_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+    "tool_calibration_sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+    "representation": "link6_axis_aligned_finger_envelopes_v1"
+  },
+  "environment_checked": false,
+  "exact_static_pairs_reused": 56,
+  "checked_samples": 70,
+  "total_samples": 70,
+  "whole_path_checked": true,
+  "workspace_checked": true,
+  "workspace_clear": true,
+  "workspace_check": {
+    "checked": true,
+    "clear": true,
+    "frame": "left_base_link",
+    "controlled_link": "left_link6",
+    "min_m": [
+      0.055,
+      -0.4,
+      0.17
+    ],
+    "max_m": [
+      0.5,
+      0.045,
+      0.36
+    ],
+    "samples": 41,
+    "first_violation": null,
+    "reason": "All sampled flange positions are within workspace"
+  },
+  "wall_budget": {
+    "session_seconds": 2400,
+    "elapsed_seconds": 141.687,
+    "remaining_seconds": 2258.313,
+    "finish_reserve_seconds": 60,
+    "phase": "active",
+    "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+  }
+}

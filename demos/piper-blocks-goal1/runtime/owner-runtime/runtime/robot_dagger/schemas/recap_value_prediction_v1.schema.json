@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.value_prediction.v1",
+  "title": "XPolicy RECAP value-model prediction",
+  "type": "object",
+  "required": ["schema_version", "episode_id", "frame_index", "value"],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.value_prediction.v1"},
+    "episode_id": {"type": "string", "minLength": 1},
+    "frame_index": {"type": "integer", "minimum": 0},
+    "value": {"type": "number"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "rax.task.device_reuse.v1",
+  "robot": "piper",
+  "files": [
+    {
+      "source": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/services/piper/assets/camera-all13-candidate.json",
+      "snapshot": "references/device/00-camera-all13-candidate.json",
+      "sha256": "c4a393c074890ff8f0d28532e8916dd7c6bdedc7ee8f4e91b7a6f6c07155fae6"
+    },
+    {
+      "source": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/services/piper/assets/head-stereo-calibration.json",
+      "snapshot": "references/device/01-head-stereo-calibration.json",
+      "sha256": "3bb012d7b738c4d375791fdb7a1ab4a98dafebed2b4a710776def1867a6e3b4f"
+    },
+    {
+      "source": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/services/piper/assets/left-stereo-calibration.json",
+      "snapshot": "references/device/02-left-stereo-calibration.json",
+      "sha256": "e13d2136fae3079e3b17857152d7244a1fc8ccd94cbcf85e511894937af63749"
+    },
+    {
+      "source": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/services/piper/assets/left-tcp140-tip170-20261104.json",
+      "snapshot": "references/device/03-left-tcp140-tip170-20261104.json",
+      "sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a"
+    },
+    {
+      "source": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/docs/PIPER_TOOL_CHARACTERIZATION.md",
+      "snapshot": "references/device/04-PIPER_TOOL_CHARACTERIZATION.md",
+      "sha256": "9a1335d1215c6000b0feb94d836e0c410873aec8a6b273a3d2927336d80604b4"
+    },
+    {
+      "source": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/agent_skills/control/piper/robot-interface/references/tool-characterization.md",
+      "snapshot": "references/device/05-tool-characterization.md",
+      "sha256": "782c1419678ab5002556bfea63048e8cf44db203e2eb314f99a753be70774541"
+    }
+  ],
+  "backend_source_sha256": "c9bb372a531ba714e1ae2ee9918b17d9f6649992cfb6a132eca49467e713db59",
+  "read_only_configuration": true,
+  "hardware_connected": false,
+  "models_called": false,
+  "wrist_hand_eye_available": false,
+  "head_extrinsics_provisional": true,
+  "task_state_imported": false,
+  "task_controller_imported": false,
+  "unbound_until_hardware_handoff": [
+    "owner_session_root",
+    "bridge_root",
+    "depth_root",
+    "left_depth_root",
+    "moveit_manifest"
+  ],
+  "workspace_policy": "No cup-specific workspace box copied. Operator must bind/confirm a device-appropriate box before motion.",
+  "model_routing_reused": {
+    "primary_model": "gpt-6-astra",
+    "primary_effort": "high",
+    "vision_provider": "google",
+    "vision_model": "gemini-3.8-flash",
+    "primary_direct": true,
+    "vision_uses_existing_proxy": true
+  },
+  "caveats": [
+    "Tool characterization is partial and contains dated historical task evidence, not new-task qualification.",
+    "Existing robot-interface prose includes old numeric policy descriptions; compare live tool/status contracts before first motion.",
+    "Full cube height, protrusions, magnetic behavior, gripping and environment have not been measured in this task."
+  ]
+}

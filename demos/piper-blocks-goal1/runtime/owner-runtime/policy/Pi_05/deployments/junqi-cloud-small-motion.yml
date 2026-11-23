@@ -1,0 +1,34 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-cloud-small-motion
+label: Junqi cloud scripted one-shot lift-reach-return (NO neural model)
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-cloud-small-motion/release-evidence.json
+  evidence_sha256: 13226f7be0ac33228d4f05478c55fd3d5686062dcde79d9bd993ce749afdfb94
+bundle:
+  kind: bounded_scripted_trajectory
+  default_path: "{repo_root}/deploy/junqi-cloud-small-motion"
+  required: [plan.json, task_catalog.json]
+  verifier: scripts/verify_junqi_motion_plan.py
+policy:
+  backend: bounded_scripted_motion
+  action_frequency_hz: 30
+  action_horizon: 541
+  default_execute_chunk: 541
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: "{repo_root}/deploy/junqi-cloud-small-motion/task_catalog.json"
+  default: Raise both arms 2 cm, reach forward 2 cm, and return once.
+  inline: ["Raise both arms 2 cm, reach forward 2 cm, and return once."]
+pigey:
+  supported: false
+qualification:
+  supported: false

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.reward_spec.v1",
+  "title": "XPolicy RECAP sparse reward specification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_normalizers",
+    "step_penalty",
+    "failure_penalty"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.reward_spec.v1"},
+    "task_normalizers": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"type": "number", "exclusiveMinimum": 0}
+    },
+    "step_penalty": {"type": "number", "maximum": 0},
+    "failure_penalty": {"type": "number", "maximum": 0}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.causal_evidence.v1",
+  "title": "XPolicy robot-independent causal evidence index",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "frame_key",
+    "decision_key",
+    "observation_timestamp",
+    "action_timestamp",
+    "streams",
+    "observed_streams",
+    "missing_required_streams",
+    "complete"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.causal_evidence.v1"},
+    "frame_key": {
+      "const": ["episode_id", "frame_index"]
+    },
+    "decision_key": {"const": "control_tick_id"},
+    "observation_timestamp": {"const": "source_timestamp_ns"},
+    "action_timestamp": {"const": "target_execution_timestamp_ns"},
+    "streams": {
+      "description": "Semantic roles only. teleop_mapped_raw is optional debug evidence and is never an expert training label without takeover alignment and safety validation.",
+      "type": "object",
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "observed_streams": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "missing_required_streams": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "complete": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

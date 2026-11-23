@@ -1,0 +1,20 @@
+policy_name: Pi_05
+protocol: ws
+eval_batch: false
+
+host: 127.0.0.1
+port: 19003
+runtime_profile: piper_x_dual_multitask5_ema_h16_v1
+source_commit: bd48ebf4a2f848976fa216d1245c5c796cc22827
+params_semantics: ema
+
+# serve_piper_multitask5.sh supplies both generated paths.
+bundle_root: null
+runtime_source_root: null
+action_frequency_hz: 15
+action_horizon: 16
+horizon: 16
+num_denoise_steps: 10
+
+rtc_enabled: false
+allow_dummy_policy: false

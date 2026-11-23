@@ -1,0 +1,2079 @@
+"""Per-arm artifact emission. Renders a self-contained Python module that
+wraps the dispatched solver around baked KinBody constants.
+
+The emitted artifact is a single ``.py`` file with a stable public API:
+
+    >>> import ur5_ik
+    >>> solutions = ur5_ik.solve(T_target, max_solutions=1, q_seed=q_current)
+    >>> T = ur5_ik.fk(q)
+
+Internals: the emitted module imports the chosen ssik solver, reconstructs
+the POE-normalised :class:`KinBody` from baked numpy literals at import
+time, and exports ``solve(T) -> list[Solution]``, ``fk(q) -> NDArray``, plus
+``SOLVER_NAME`` and ``DISPATCH_REASON`` constants for diagnostic visibility.
+
+This iteration emits source that has ``ssik`` as a runtime dependency. The
+forthcoming Cython port emits the equivalent compiled artifact under the
+same import-and-call API; the build CLI gains a flag to switch targets.
+
+For tier-2 ``general_6r`` arms today, the artifact's ``solve()`` triggers
+the lazy sympy preprocessing on first call (the existing behaviour). Phase
+2 of #110 bakes that preprocessing output into the artifact at build time
+so first-call latency is gone.
+"""
+
+from __future__ import annotations
+
+import logging
+import textwrap
+from dataclasses import dataclass
+from importlib import import_module
+from io import StringIO
+from typing import TYPE_CHECKING
+
+import numpy as np
+
+from ssik._native import _NATIVE_SOLVERS as _NATIVE_SOLVER_FAMILIES
+from ssik.core.solver_registry import SOLVERS
+
+if TYPE_CHECKING:  # pragma: no cover -- typing only
+    from ssik._kinbody import KinBody
+    from ssik.core.dispatcher import DispatchPlan
+
+__all__ = ["EmissionResult", "emit_artifact"]
+
+_LOG = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True, kw_only=True)
+class EmissionResult:
+    """What :func:`emit_artifact` produced.
+
+    The CLI prints ``output_path`` and uses ``module_name`` for the "to
+    use it: ``import <module_name>``" line. Tests assert against
+    ``source`` directly (the rendered file content) so they don't have
+    to write to disk.
+    """
+
+    module_name: str
+    """Python module name, e.g. ``ur5_ik`` (no ``.py`` suffix)."""
+
+    output_path: str | None
+    """Filesystem path the artifact was written to, or ``None`` if the
+    caller asked for source-only emission."""
+
+    source: str
+    """Full rendered source of the artifact (also written to disk if
+    ``output_path`` is set)."""
+
+
+def emit_artifact(
+    *,
+    kb: KinBody,
+    plan: DispatchPlan,
+    module_name: str,
+    output_path: str | None = None,
+    arm_label: str | None = None,
+) -> EmissionResult:
+    """Render a per-arm IK module that wraps the dispatched solver.
+
+    :param kb: a POE-normalised :class:`KinBody` (the one passed to
+        :func:`ssik.dispatch`).
+    :param plan: dispatch result describing which solver to import and the
+        explanatory diagnostic to bake into the artifact's docstring.
+    :param module_name: stem for the emitted module (``ur5_ik``,
+        ``jaco2_ik``, ...). Used in the artifact's header comment.
+    :param output_path: where to write the rendered source. ``None`` means
+        return source only without touching disk -- useful in tests and
+        when the caller wants to post-process before writing.
+    :param arm_label: optional human-readable arm name to embed in the
+        artifact header (``"UR5"``, ``"Kinova JACO 2"``). Defaults to
+        the module name.
+    :returns: :class:`EmissionResult` carrying the rendered source and the
+        path where it landed (if any).
+    """
+    label = arm_label or module_name
+    source = _render(kb=kb, plan=plan, module_name=module_name, arm_label=label)
+    if output_path is not None:
+        with open(output_path, "w", encoding="utf-8") as fh:
+            fh.write(source)
+        _LOG.info(
+            "codegen: emitted %s (%d bytes) for %s -> %s",
+            module_name,
+            len(source),
+            plan.solver_name,
+            output_path,
+        )
+    else:
+        _LOG.info(
+            "codegen: rendered %s (%d bytes, in-memory) for %s",
+            module_name,
+            len(source),
+            plan.solver_name,
+        )
+    return EmissionResult(
+        module_name=module_name,
+        output_path=output_path,
+        source=source,
+    )
+
+
+def _render(*, kb: KinBody, plan: DispatchPlan, module_name: str, arm_label: str) -> str:
+    """Render the artifact source as a single string.
+
+    Picks between the **specialised** form (sympy-driven inlined trig with
+    arm constants substituted; #112) and the **thin wrapper** form (calls
+    into ssik solver at runtime; #110 Phase 1 default). The specialised
+    form is preferred when a per-solver composer is registered.
+    """
+    if SOLVERS[plan.solver_name].composer is not None:
+        return _render_specialised(kb=kb, plan=plan, module_name=module_name, arm_label=arm_label)
+    return _render_thin_wrapper(kb=kb, plan=plan, module_name=module_name, arm_label=arm_label)
+
+
+def _render_thin_wrapper(
+    *, kb: KinBody, plan: DispatchPlan, module_name: str, arm_label: str
+) -> str:
+    """Original Phase-1 emitter: `_solver_solve(_KB, T_target, ...)` wrapper.
+
+    Used for solvers without a registered specialised composer (today:
+    every solver except spherical_two_parallel; expand as composers land).
+    """
+    solver_module = SOLVERS[plan.solver_name].module_path
+    solver_short = plan.solver_name.split(".")[-1]
+
+    buf = StringIO()
+    buf.write(_render_header(module_name, arm_label, plan, kb))
+    buf.write("\n\nfrom __future__ import annotations\n\n")
+    buf.write("import numpy as np\n\n")
+    buf.write("from ssik._kinbody import Joint, KinBody, Link\n")
+    buf.write("from ssik.core.solution import Solution\n")
+    buf.write("from ssik.core.tolerances import DEFAULT_TOLERANCE_POLICY, TolerancePolicy\n")
+    buf.write(
+        "from ssik._solve_inputs import check_joints as _check_joints, "
+        "check_solve_inputs as _check_solve_inputs\n"
+    )
+    buf.write("from ssik.postprocess import finalize_solutions as _ps_finalize\n")
+    # Bulletproof rescue fallback (#319 / #358): thin-wrapper solvers (the
+    # SRS family -- seven_r.srs / srs_polished) get the same T-perturbation
+    # rescue the specialised orchestrators have, so a reachable-but-degenerate
+    # pose the analytical path empties on is recovered instead of returning [].
+    buf.write("import functools as _functools\n")
+    buf.write("from ssik.refinement import kinbody_jacobian as _kinbody_jacobian\n")
+    # Seeded numerical-tracking fast path (#380): Newton-continue from q_seed for
+    # the single-IK trajectory-tracking idiom instead of resolving the whole
+    # redundancy. Falls through to the full analytical solve when it can't
+    # cleanly continue, so it never trades correctness for speed.
+    buf.write("from ssik.refinement import seeded_track as _seeded_track\n")
+    buf.write(
+        "from ssik.refinement.rescue import "
+        "rescue_via_T_perturbation as _rescue_via_T_perturbation\n"
+    )
+    # Exact joint-limit-aware redundancy resolution (#359): recovers in-limits
+    # solutions the coarse redundancy sweep drops. Each redundant-7R solver family
+    # ships its own resolver (SRS swivel vs spherical-shoulder q6), so wire the one
+    # that matches this arm's solver -- importing the SRS resolver for a
+    # spherical-shoulder arm is a silent no-op (#377 audit / D1, #389). Derived
+    # from the solver module itself (has-attr), not a hand-kept map, so a new
+    # thin-wrapper solver that defines ``resolve_in_limits`` is wired automatically.
+    _resolver_module = (
+        solver_module
+        if hasattr(import_module(solver_module), "resolve_in_limits")
+        else "ssik.solvers.seven_r._swivel_limits"
+    )
+    buf.write(f"from {_resolver_module} import resolve_in_limits as _resolve_in_limits\n")
+    buf.write(f"from {solver_module} import solve as _solver_solve\n")
+    # Opt-in native (C++) dispatch for thin-wrapper families with a native core
+    # (seven_r.srs, canonical + general #354). solve(..., native=True) runs the
+    # WHOLE artifact in C++ via ssik._ssik_native -- seeded-track, the analytical
+    # core, finalize (limits/seed/truncate), and the #359 in-limits fallback -- so
+    # the Python postprocess (which dominated per-call time) is skipped. Returns
+    # early on success, else falls back silently to the Python path below.
+    emit_native = plan.solver_name in _NATIVE_SOLVER_FAMILIES
+    if emit_native:
+        buf.write("from ssik._native import try_native_solve_7r as _try_native_solve_7r\n")
+    buf.write("\n")
+    buf.write(f'SOLVER_NAME = "{plan.solver_name}"\n')
+    buf.write(f"SOLVER_TIER = {plan.tier}\n")
+    buf.write(f"EXPECTED_MS_MEDIAN = {plan.expected_ms_median!r}\n")
+    buf.write(f"FLOP_BUDGET = {plan.flop_budget}\n")
+    buf.write(_render_dispatch_reason(plan.reason))
+    buf.write(_render_introspection_constants(kb))
+    buf.write("\n")
+    buf.write(_render_kinbody_constants(kb))
+    buf.write("\n")
+    buf.write(_render_kinbody_builder())
+    buf.write("\n")
+    buf.write(_render_solve_function(solver_short, emit_native=emit_native))
+    buf.write(_render_fk_function_from_kb())
+    buf.write(_render_all_export())
+    return buf.getvalue()
+
+
+def _render_specialised(
+    *, kb: KinBody, plan: DispatchPlan, module_name: str, arm_label: str
+) -> str:
+    """Phase 1.5 emitter (#112): inlined per-arm trig + arithmetic.
+
+    Calls the registered composer to produce `_solve_algebraic(T_target)`
+    with all of the SP1/SP3/SP4 closed-form math expanded inline + arm
+    constants substituted. The artifact's `solve()` orchestrator wraps
+    the algebraic candidates with FK verification + dedup, mirroring
+    `verify_candidates`.
+    """
+    composer_module = SOLVERS[plan.solver_name].composer
+    assert composer_module is not None  # _render_specialised is only called when set
+    comp_mod = import_module(composer_module)
+    compose = comp_mod.compose
+    render_constants_header = comp_mod.render_constants_header
+
+    algebraic_body = compose(kb)
+
+    buf = StringIO()
+    buf.write(_render_header(module_name, arm_label, plan, kb))
+    buf.write("\n\nfrom __future__ import annotations\n\n")
+    buf.write(render_constants_header())
+    # ``import cython`` enables the pure-Python-mode Cython annotations
+    # in the orchestrator below (``@cython.ccall``, ``@cython.locals``).
+    # No-op when the artifact runs as plain Python; takes effect when
+    # the artifact is compiled to ``.so`` via ``scripts/build_cython.py``
+    # (#137 Slice 3).
+    buf.write("\nimport cython\nimport numpy as np\n\n")
+    buf.write("from ssik._kinbody import Joint, KinBody, Link\n")
+    buf.write("from ssik.core.solution import Solution\n")
+    buf.write("from ssik.core.tolerances import DEFAULT_TOLERANCE_POLICY, TolerancePolicy\n")
+    buf.write(
+        "from ssik._solve_inputs import check_joints as _check_joints, "
+        "check_solve_inputs as _check_solve_inputs\n"
+    )
+    # _spatial_jacobian is inlined per-arm in the orchestrator (#126); the
+    # only refinement primitive imported from runtime is the generic
+    # Levenberg-Marquardt step.
+    buf.write("from ssik.refinement import lm_refine as _lm_refine\n")
+    if SOLVERS[plan.solver_name].polish_accepted:
+        # With the rank flag (#662) the polish also reports which candidates
+        # may sample a singular continuum.
+        polish_fn = (
+            "polish_accepted_flagged as _polish_flagged"
+            if SOLVERS[plan.solver_name].continuum == "rank"
+            else "polish_accepted as _polish_accepted"
+        )
+        buf.write(f"from ssik.refinement.polish import Chain as _PolishChain, {polish_fn}\n")
+    continuum = SOLVERS[plan.solver_name].continuum
+    if continuum is not None:
+        # The singular-continuum slide (#662) and the markers its flags use.
+        buf.write(
+            "from ssik.continuum import NOT_FLAGGED as _NOT_FLAGGED, "
+            "slide_continua as _slide_continua\n"
+        )
+    if continuum == "rank":
+        buf.write(
+            "from ssik.continuum import FREE_FROM_KERNEL as _FREE_FROM_KERNEL, "
+            "has_null as _has_null\n"
+        )
+    if plan.solver_name != "jointlock.seven_r":
+        # 6R roots are isolated: the orchestrator merges only the same root
+        # (#600). The 7R orchestrator's merge is a sampling resolution.
+        buf.write(
+            "from ssik.refinement import is_same_root as _is_same_root, "
+            "same_root_floor as _same_root_floor\n"
+        )
+    # Bulletproof rescue fallback (#319): when the analytical path returns no
+    # solutions at a reachable-but-degenerate ridge, ``solve()`` recovers via
+    # the T-perturbation rescue, gated on a reach-sphere so genuinely
+    # out-of-reach targets stay cheap.
+    buf.write("import functools as _functools\n")
+    buf.write(
+        "from ssik.refinement.rescue import "
+        "rescue_via_T_perturbation as _rescue_via_T_perturbation\n"
+    )
+    buf.write("from ssik.postprocess import finalize_solutions as _ps_finalize\n")
+    # Opt-in native (C++) dispatch (#507/#510), emitted only for families with a
+    # native implementation: solve(..., native=True) tries ssik._ssik_native and
+    # silently falls back to the Python path below when it is unavailable.
+    if plan.solver_name == "jointlock.seven_r":
+        buf.write(
+            "from ssik._native import try_native_jointlock_solve as _try_native_jointlock_solve\n"
+        )
+        buf.write("from pathlib import Path as _Path\n")
+    elif plan.solver_name in _NATIVE_SOLVER_FAMILIES:
+        buf.write("from ssik._native import try_native_solve as _try_native_solve\n")
+    if plan.solver_name == "ikgeo.general_6r":
+        buf.write("from pathlib import Path as _Path\n")
+    buf.write("from ssik.subproblems._rotation import rotation_matrix as _rotation_matrix\n\n")
+    buf.write(f'SOLVER_NAME = "{plan.solver_name}"\n')
+    buf.write(f"SOLVER_TIER = {plan.tier}\n")
+    buf.write(f"EXPECTED_MS_MEDIAN = {plan.expected_ms_median!r}\n")
+    buf.write(f"FLOP_BUDGET = {plan.flop_budget}\n")
+    buf.write(_render_dispatch_reason(plan.reason))
+    buf.write(_render_introspection_constants(kb))
+    buf.write("\n")
+    buf.write(_render_kinbody_constants(kb))
+    buf.write("\n")
+    buf.write(_render_kinbody_builder())
+    buf.write("\n\n")
+    if plan.solver_name == "ikgeo.general_6r":
+        buf.write(_render_rr_native_loader())
+        buf.write("\n")
+    if plan.solver_name == "jointlock.seven_r":
+        buf.write(_render_jointlock_native_loader())
+        buf.write("\n")
+    buf.write(algebraic_body)
+    buf.write("\n")
+    # 7R artifacts get a different orchestrator: their public ``solve()``
+    # exposes ``max_solutions`` and ``q_seed`` (forwarded to the underlying
+    # lock-sweep for early-exit; see #142). 6R artifacts keep the original
+    # exhaustive-only API -- their algebraic path doesn't have a sweep to
+    # short-circuit, and these args would just postprocess (which is what
+    # ``ssik.postprocess`` is for).
+    if plan.solver_name == "jointlock.seven_r":
+        buf.write(_render_specialised_solve_orchestrator_7r(emit_native=True))
+    else:
+        _spec = SOLVERS[plan.solver_name]
+        buf.write(
+            _render_specialised_solve_orchestrator(
+                _spec.fk_atol_expr,
+                force_refine=_spec.force_refine,
+                polish_accepted=_spec.polish_accepted,
+                emit_native=plan.solver_name in _NATIVE_SOLVER_FAMILIES,
+                native_rr=plan.solver_name == "ikgeo.general_6r",
+                continuum=_spec.continuum,
+            )
+        )
+    buf.write(_render_fk_alias())
+    buf.write(_render_all_export())
+    return buf.getvalue()
+
+
+# The check that opens every generated solve() (#574, docs/api.md "Input
+# validation"): target, seed and max_solutions are validated once, before a
+# backend is picked, and a cap of 0 then returns [] without solving. The native
+# hooks below are injected right after it.
+_CHECK_INPUTS = (
+    "    T_target, q_seed, max_solutions = _check_solve_inputs(\n"
+    "        T_target,\n"
+    "        q_seed,\n"
+    "        DOF,\n"
+    "        max_solutions=max_solutions,\n"
+    "        seed_tolerance=seed_tolerance,\n"
+    "        refinement_max_iters=refinement_max_iters,\n"
+    "        policy=policy,\n"
+    "    )\n"
+    "    if max_solutions == 0:  # at most 0 solutions: checked, nothing to solve\n"
+    "        return []\n"
+)
+
+
+# Injected into the 6R orchestrator's solve() for native-capable families (#507):
+# a `native: bool = True` kwarg (the default since #554) plus an early dispatch to
+# the shipped C++ extension that silently falls back (returns None -> continue)
+# when unavailable (Windows / source installs).
+_NATIVE_HOOK = """\
+    if native:
+        _native_sols = _try_native_solve(
+            SOLVER_NAME,
+            _KB,
+            T_target,
+            respect_limits=respect_limits,
+            q_seed=q_seed,
+            seed_metric=seed_metric,
+            seed_tolerance=seed_tolerance,
+            max_solutions=max_solutions,
+            allow_rescue=allow_rescue,
+            enumerate_windings=enumerate_windings,
+            refinement_max_iters=refinement_max_iters,
+            policy=policy,
+            allow_refinement=allow_refinement,
+        )
+        if _native_sols is not None:
+            return _native_sols
+"""
+
+# RR (ikgeo.general_6r) variant: passes the baked elimination tensor loaded lazily
+# from the sidecar .npz. A single shipped ext covers every RR arm via the numeric
+# tensor (#555); no per-arm C code.
+_NATIVE_HOOK_RR = _NATIVE_HOOK.replace(
+    "            allow_refinement=allow_refinement,\n        )",
+    "            allow_refinement=allow_refinement,\n"
+    "            rr_geometry=_rr_native_geometry(),\n        )",
+)
+
+
+def _render_rr_native_loader() -> str:
+    """Module-scope lazy loader for the baked RR tensor sidecar ``<arm>_rr.npz``
+    (#555), emitted only for ikgeo.general_6r artifacts. Cached; returns ``None``
+    when the sidecar is absent (source installs) so ``native=True`` falls back to
+    the Python path."""
+    return textwrap.dedent(
+        """\
+
+        # Baked Raghavan-Roth elimination tensor for the native (C++) backend,
+        # loaded lazily from the sidecar ``.npz`` beside this module (the ~30s
+        # sympy derivation ran at build time). Cached; ``None`` when the sidecar
+        # is absent so ``native=True`` silently falls back to Python.
+        _RR_NATIVE_NPZ = _Path(__file__).with_name(
+            _Path(__file__).stem.removesuffix("_ik") + "_rr.npz"
+        )
+        _rr_native_geometry_cache = None
+        _rr_native_geometry_loaded = False
+
+
+        def _rr_native_geometry():
+            global _rr_native_geometry_cache, _rr_native_geometry_loaded
+            if not _rr_native_geometry_loaded:
+                _rr_native_geometry_loaded = True
+                if _RR_NATIVE_NPZ.exists():
+                    from ssik._native import load_rr_native_geometry
+
+                    _rr_native_geometry_cache = load_rr_native_geometry(str(_RR_NATIVE_NPZ))
+            return _rr_native_geometry_cache
+
+    """
+    )
+
+
+# Docstring entry for the injected `native` kwarg (dedented base indent).
+_NATIVE_DOC = """\
+    :param native: use the shipped native (C++) backend for this arm's
+        solver family (the default; typically 2-100x faster). Returns the
+        same solution *set*; the *order* without a seed and the
+        near-singular *representative* may differ (numpy vs Eigen), and
+        redundant-7R arms may sample the self-motion manifold differently.
+        Silently falls back to the Python path when the native extension
+        isn't bundled (Windows / source installs), and when ``policy`` is
+        not equal to ``DEFAULT_TOLERANCE_POLICY`` or ``allow_refinement``
+        is ``True``, which native does not implement. Pass ``native=False``
+        for the pure-Python path (identical algorithm, no C++ dependency).
+        Default ``True``.
+"""
+
+
+def _render_jointlock_native_loader() -> str:
+    """Module-scope lazy loader for the baked jointlock sidecar ``<arm>_jl.npz``
+    (#554), emitted only for jointlock.seven_r artifacts. Cached; ``None`` when the
+    sidecar is absent so ``native=True`` falls back to Python."""
+    return textwrap.dedent(
+        """\
+
+        # Baked jointlock native geometry (16-sample lock sweep: per-sample RR
+        # tensors, or HP Study-quaternion consts for kassow), loaded lazily from
+        # the sidecar ``.npz`` beside this module (build-time bake). Cached;
+        # ``None`` when absent so ``native=True`` silently falls back to Python.
+        _JL_NATIVE_NPZ = _Path(__file__).with_name(
+            _Path(__file__).stem.removesuffix("_ik") + "_jl.npz"
+        )
+        _jl_native_geometry_cache = None
+        _jl_native_geometry_loaded = False
+
+
+        def _jointlock_native_geometry():
+            global _jl_native_geometry_cache, _jl_native_geometry_loaded
+            if not _jl_native_geometry_loaded:
+                _jl_native_geometry_loaded = True
+                if _JL_NATIVE_NPZ.exists():
+                    from ssik._native import load_jointlock_native_geometry
+
+                    _jl_native_geometry_cache = load_jointlock_native_geometry(str(_JL_NATIVE_NPZ))
+            return _jl_native_geometry_cache
+
+    """
+    )
+
+
+# Inserted before the 6R orchestrator's same-root dedup when the solver's spec
+# sets ``polish_accepted``: every candidate that passed the gate on its own
+# ("none") is polished to machine precision on its own branch, or left exactly
+# as it was (ssik.refinement.polish owns the definition; the native core runs
+# the same one). Refined near-misses ("lm") keep allow_refinement's semantics.
+_POLISH_ACCEPTED_BLOCK = """\
+    # Polish every accepted candidate to machine precision on its own
+    # branch, before the dedup sees it (ssik.refinement.polish).
+    _accepted = [i for i, v in enumerate(verified) if v[2] == "none"]
+    if _accepted:
+        _q_pol, _r_pol, _polished = _polish_accepted(
+            np.array([verified[i][0] for i in _accepted]),
+            T,
+            _POLISH_CHAIN,
+        )
+        for _k, _i in enumerate(_accepted):
+            if _polished[_k]:
+                verified[_i] = (_q_pol[_k], float(_r_pol[_k]), "none", 0)
+
+"""
+
+
+def _render_specialised_solve_orchestrator(
+    fk_atol_expr: str = "policy.subproblem_numerical",
+    force_refine: bool = False,
+    polish_accepted: bool = False,
+    emit_native: bool = False,
+    native_rr: bool = False,
+    continuum: str | None = None,
+) -> str:
+    """Render the public ``solve()`` for specialised artifacts.
+
+    Wraps ``_solve_algebraic`` with FK verification + wrap-to-pi dedup;
+    matches the runtime ``verify_candidates`` semantics. Exposes the
+    same kwargs as the thin-wrapper version.
+
+    Both ``_fk`` and ``_spatial_jacobian`` are inlined per-arm: they
+    iterate over the baked ``_JOINT_AXES`` / ``_JOINT_T_LEFTS`` /
+    ``_JOINT_T_RIGHTS`` arrays directly without a ``_KB`` indirection.
+    Cython compiles those loops to native code with const-folded
+    chain constants -- prerequisite for the Level 3 numerical backstop
+    being a clean ``.so``. Math is identical to
+    :func:`ssik.refinement.kinbody_jacobian`; only the indirection
+    changes.
+    """
+    template = textwrap.dedent(
+        '''\
+
+        # Module-scope ``2*pi`` constant referenced inside the dedup hot
+        # loop (Cython compiles ``_TWO_PI`` to a typed C ``double``).
+        _TWO_PI: float = 2.0 * math.pi
+
+        # Cached 4x4 identity reused inside ``_fk`` / ``_spatial_jacobian``
+        # so each call avoids ``len(_JOINT_AXES)+1`` per-iteration ``np.eye(4)``
+        # allocations -- the orchestrator's #1 hotspot per Slice 4 profile
+        # (~22% of ``_fk`` cost on Puma 560).
+        _FK_EYE4 = np.eye(4, dtype=np.float64)
+        _FK_EYE4.flags.writeable = False
+
+
+        @cython.ccall
+        @cython.locals(
+            i=cython.int,
+            n=cython.int,
+            ax=cython.double, ay=cython.double, az=cython.double,
+            qi=cython.double, c=cython.double, s=cython.double, oc=cython.double,
+            r00=cython.double, r01=cython.double, r02=cython.double,
+            r10=cython.double, r11=cython.double, r12=cython.double,
+            r20=cython.double, r21=cython.double, r22=cython.double,
+            l00=cython.double, l01=cython.double, l02=cython.double, l03=cython.double,
+            l10=cython.double, l11=cython.double, l12=cython.double, l13=cython.double,
+            l20=cython.double, l21=cython.double, l22=cython.double, l23=cython.double,
+            m00=cython.double, m01=cython.double, m02=cython.double, m03=cython.double,
+            m10=cython.double, m11=cython.double, m12=cython.double, m13=cython.double,
+            m20=cython.double, m21=cython.double, m22=cython.double, m23=cython.double,
+            t00=cython.double, t01=cython.double, t02=cython.double, t03=cython.double,
+            t10=cython.double, t11=cython.double, t12=cython.double, t13=cython.double,
+            t20=cython.double, t21=cython.double, t22=cython.double, t23=cython.double,
+            n00=cython.double, n01=cython.double, n02=cython.double, n03=cython.double,
+            n10=cython.double, n11=cython.double, n12=cython.double, n13=cython.double,
+            n20=cython.double, n21=cython.double, n22=cython.double, n23=cython.double,
+            a00=cython.double, a01=cython.double, a02=cython.double, a03=cython.double,
+            a10=cython.double, a11=cython.double, a12=cython.double, a13=cython.double,
+            a20=cython.double, a21=cython.double, a22=cython.double, a23=cython.double,
+            b00=cython.double, b01=cython.double, b02=cython.double, b03=cython.double,
+            b10=cython.double, b11=cython.double, b12=cython.double, b13=cython.double,
+            b20=cython.double, b21=cython.double, b22=cython.double, b23=cython.double,
+        )
+        def _fk(q):
+            """POE forward kinematics using the baked chain constants.
+
+            Hand-rolled scalar 4x4 matmul + inline Rodrigues -- no per-call
+            ``np.eye(4)`` allocations and no per-joint numpy ``@`` dispatch.
+            Each numpy ``@`` on a 4x4 has ~3 us of dispatch overhead;
+            inlining the ~85 scalar ops per joint turns the inner loop into
+            a single native-code chunk under Cython compile.
+
+            Bottom row of the accumulator stays [0, 0, 0, 1] implicitly.
+            """
+            n = len(_JOINT_AXES)
+            # Identity accumulator (the bottom row [0,0,0,1] is implicit).
+            a00 = 1.0; a01 = 0.0; a02 = 0.0; a03 = 0.0
+            a10 = 0.0; a11 = 1.0; a12 = 0.0; a13 = 0.0
+            a20 = 0.0; a21 = 0.0; a22 = 1.0; a23 = 0.0
+            for i in range(n):
+                # Inline Rodrigues for this joint's axis.
+                ax = float(_JOINT_AXES[i][0])
+                ay = float(_JOINT_AXES[i][1])
+                az = float(_JOINT_AXES[i][2])
+                qi = float(q[i])
+                c = math.cos(qi); s = math.sin(qi); oc = 1.0 - c
+                r00 = c + ax*ax*oc;     r01 = ax*ay*oc - az*s; r02 = ax*az*oc + ay*s
+                r10 = ay*ax*oc + az*s;  r11 = c + ay*ay*oc;    r12 = ay*az*oc - ax*s
+                r20 = az*ax*oc - ay*s;  r21 = az*ay*oc + ax*s; r22 = c + az*az*oc
+                # T_left[i] entries.
+                Tl = _JOINT_T_LEFTS[i]
+                l00 = float(Tl[0,0]); l01 = float(Tl[0,1])
+                l02 = float(Tl[0,2]); l03 = float(Tl[0,3])
+                l10 = float(Tl[1,0]); l11 = float(Tl[1,1])
+                l12 = float(Tl[1,2]); l13 = float(Tl[1,3])
+                l20 = float(Tl[2,0]); l21 = float(Tl[2,1])
+                l22 = float(Tl[2,2]); l23 = float(Tl[2,3])
+                # M = T_left[i] @ R (R is the homogeneous version of the 3x3
+                # rotation above with column 3 = [0,0,0,1]^T).
+                m00 = l00*r00 + l01*r10 + l02*r20
+                m01 = l00*r01 + l01*r11 + l02*r21
+                m02 = l00*r02 + l01*r12 + l02*r22
+                m03 = l03
+                m10 = l10*r00 + l11*r10 + l12*r20
+                m11 = l10*r01 + l11*r11 + l12*r21
+                m12 = l10*r02 + l11*r12 + l12*r22
+                m13 = l13
+                m20 = l20*r00 + l21*r10 + l22*r20
+                m21 = l20*r01 + l21*r11 + l22*r21
+                m22 = l20*r02 + l21*r12 + l22*r22
+                m23 = l23
+                # T_right[i] entries.
+                Tr = _JOINT_T_RIGHTS[i]
+                t00 = float(Tr[0,0]); t01 = float(Tr[0,1])
+                t02 = float(Tr[0,2]); t03 = float(Tr[0,3])
+                t10 = float(Tr[1,0]); t11 = float(Tr[1,1])
+                t12 = float(Tr[1,2]); t13 = float(Tr[1,3])
+                t20 = float(Tr[2,0]); t21 = float(Tr[2,1])
+                t22 = float(Tr[2,2]); t23 = float(Tr[2,3])
+                # N = M @ T_right[i]
+                n00 = m00*t00 + m01*t10 + m02*t20
+                n01 = m00*t01 + m01*t11 + m02*t21
+                n02 = m00*t02 + m01*t12 + m02*t22
+                n03 = m00*t03 + m01*t13 + m02*t23 + m03
+                n10 = m10*t00 + m11*t10 + m12*t20
+                n11 = m10*t01 + m11*t11 + m12*t21
+                n12 = m10*t02 + m11*t12 + m12*t22
+                n13 = m10*t03 + m11*t13 + m12*t23 + m13
+                n20 = m20*t00 + m21*t10 + m22*t20
+                n21 = m20*t01 + m21*t11 + m22*t21
+                n22 = m20*t02 + m21*t12 + m22*t22
+                n23 = m20*t03 + m21*t13 + m22*t23 + m23
+                # T_acc = T_acc @ N
+                b00 = a00*n00 + a01*n10 + a02*n20
+                b01 = a00*n01 + a01*n11 + a02*n21
+                b02 = a00*n02 + a01*n12 + a02*n22
+                b03 = a00*n03 + a01*n13 + a02*n23 + a03
+                b10 = a10*n00 + a11*n10 + a12*n20
+                b11 = a10*n01 + a11*n11 + a12*n21
+                b12 = a10*n02 + a11*n12 + a12*n22
+                b13 = a10*n03 + a11*n13 + a12*n23 + a13
+                b20 = a20*n00 + a21*n10 + a22*n20
+                b21 = a20*n01 + a21*n11 + a22*n21
+                b22 = a20*n02 + a21*n12 + a22*n22
+                b23 = a20*n03 + a21*n13 + a22*n23 + a23
+                a00, a01, a02, a03 = b00, b01, b02, b03
+                a10, a11, a12, a13 = b10, b11, b12, b13
+                a20, a21, a22, a23 = b20, b21, b22, b23
+            return np.array(
+                [[a00, a01, a02, a03],
+                 [a10, a11, a12, a13],
+                 [a20, a21, a22, a23],
+                 [0.0, 0.0, 0.0, 1.0]],
+                dtype=np.float64,
+            )
+
+
+        @cython.ccall
+        @cython.locals(i=cython.int, n=cython.int)
+        def _spatial_jacobian(q):
+            """6 x n_dof spatial Jacobian using the baked chain constants.
+
+            Math identical to ssik.refinement.kinbody_jacobian: column i
+            is (p_i x z_i, z_i) where z_i is the i-th joint axis in the
+            world frame at q and p_i is the i-th joint origin. This is
+            the SPATIAL twist representation -- T(q+dq) @ T(q)^-1 ~
+            exp([J @ dq]) -- matching the residual extracted by
+            ssik.refinement.se3_log_residual. Per-arm version with
+            baked _JOINT_AXES / _JOINT_T_LEFTS / _JOINT_T_RIGHTS so
+            there's no KinBody walk at runtime.
+            """
+            n = len(_JOINT_AXES)
+            cum = _FK_EYE4.copy()
+            cums = [cum.copy()]
+            rot = _FK_EYE4.copy()
+            for i in range(n):
+                rot[:3, :3] = _rotation_matrix(_JOINT_AXES[i], float(q[i]))
+                cum = cum @ _JOINT_T_LEFTS[i] @ rot @ _JOINT_T_RIGHTS[i]
+                cums.append(cum.copy())
+            J = np.zeros((6, n), dtype=np.float64)
+            for i in range(n):
+                t_pre = cums[i] @ _JOINT_T_LEFTS[i]
+                axis_unit = _JOINT_AXES[i] / np.linalg.norm(_JOINT_AXES[i])
+                z_i = t_pre[:3, :3] @ axis_unit
+                p_i = t_pre[:3, 3]
+                # Scalar cross product p_i x z_i: bit-identical to np.cross but
+                # ~11x faster for 3-vectors (np.cross's moveaxis / axis-normalize
+                # overhead dominates the LM-refine loop). Mirrors the live
+                # kinbody_jacobian, which is already scalar-inlined.
+                J[0, i] = p_i[1] * z_i[2] - p_i[2] * z_i[1]
+                J[1, i] = p_i[2] * z_i[0] - p_i[0] * z_i[2]
+                J[2, i] = p_i[0] * z_i[1] - p_i[1] * z_i[0]
+                J[3:, i] = z_i
+            return J
+
+
+        @cython.ccall
+        def _wrap_to_pi(a: float) -> float:
+            """Wrap an angle to ``(-pi, pi]``. Called inside the per-IK
+            dedup hot loop (235k+ times on Franka 7R)."""
+            return ((a + math.pi) % _TWO_PI) - math.pi
+
+
+        @cython.ccall
+        @cython.locals(
+            i=cython.int,
+            n=cython.int,
+            diff=cython.double,
+            ai=cython.double,
+            bi=cython.double,
+        )
+        def _q_close_wrap(a, b, tol: float) -> bool:
+            """Return ``True`` if joint vectors ``a`` and ``b`` agree (mod 2pi)
+            within ``tol`` per element. Replaces the
+            ``np.array([_wrap_to_pi(...)]) -> np.all(np.abs(...) < tol)``
+            pipeline that allocated a numpy array per dedup-loop iteration --
+            a per-element scalar loop avoids the array creation and the
+            ``np.all`` reduction overhead, which together dominated the
+            artifact's ``solve()`` body at the per-IK level."""
+            n = len(a)
+            for i in range(n):
+                ai = float(a[i])
+                bi = float(b[i])
+                diff = ((ai - bi + math.pi) % _TWO_PI) - math.pi
+                if abs(diff) > tol:
+                    return False
+            return True
+
+
+        def solve(
+            T_target,
+            *,
+            max_solutions: int | None = None,
+            q_seed=None,
+            respect_limits: bool | str = True,
+            allow_refinement: bool = False,
+            allow_rescue: bool = True,
+            policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+            refinement_max_iters: int = 15,
+            seed_metric: str = "wrap_linf",
+            seed_tolerance: float | None = None,
+            enumerate_windings: bool = True,
+        ):
+            """Inverse kinematics. Returns ``list[Solution]``.
+
+            :param T_target: 4x4 SE(3) target end-effector pose.
+            :param max_solutions: optional cap on returned IKs (post-dedup,
+                post-limits filter). ``None`` = full redundancy enumeration.
+                Combine with ``q_seed`` for the "give me the IK closest to
+                where I am now" trajectory-tracking idiom.
+            :param q_seed: optional joint configuration. When provided,
+                returned solutions are sorted by distance from ``q_seed``
+                (closest first, via ``seed_metric``); with ``max_solutions``
+                this returns the nearest ``max_solutions`` to the seed -- the
+                trajectory-tracking idiom.
+            :param seed_metric: distance used to rank against ``q_seed``.
+                ``"wrap_linf"`` (default) minimises the *largest* single-joint
+                wrap-to-pi move, which holds the branch during tracking;
+                ``"wrap_l2"`` minimises the summed move (can favour a flip
+                "paid for" by smaller moves elsewhere). Ignored when
+                ``q_seed`` is ``None``.
+            :param seed_tolerance: optional max per-joint deviation from
+                ``q_seed`` (radians, wrap-to-pi). When set, only solutions with
+                *every* joint within ``seed_tolerance`` are returned -- a hard
+                tracking guarantee that may return an empty list when no branch
+                qualifies. ``None`` (default) keeps the best-effort behaviour.
+                Requires ``q_seed``.
+            :param respect_limits: when ``True`` (default), solutions
+                outside URDF joint limits are dropped. Pass ``False`` for
+                the raw geometric set (e.g. analysis / debugging), or
+                ``"wrap"`` for the full set wrapped into the joint ranges
+                with nothing dropped.
+            :param allow_refinement: opt into Newton polish for near-miss
+                algebraic candidates that don't quite meet ``fk_atol``.
+                Default ``False`` -- the algebraic path is already at
+                machine precision on tier-0 / SRS arms. On tier-2 RR
+                arms (JACO 2, Rizon 4, Kassow), polish can recover
+                edge-case candidates whose algebraic FK drifts above
+                ``fk_atol``, at ~100-300 us per polished branch.
+            :param allow_rescue: when ``True`` (default), if the analytical
+                path returns no solutions for a target within the arm's
+                reach (a measure-zero rank-deficient RR ridge -- a
+                reachable pose the algebraic path can't extract),
+                ``solve()`` recovers the IK via the T-perturbation rescue
+                (#319), returning machine-precision solutions tagged
+                ``refinement_used="lm"``. Set ``False`` for a guaranteed
+                purely-analytical result (returns ``[]`` at such ridges).
+                Gated by a reach-sphere, so far-field unreachable targets
+                stay cheap.
+            :param policy: tolerance policy (FK closure + dedup tolerance).
+                Rarely customised.
+            :param refinement_max_iters: cap on Newton iterations per
+                candidate when ``allow_refinement=True``.
+            :returns: list of :class:`Solution`; empty list iff no IK
+                closed within ``policy.subproblem_numerical`` (or all
+                IKs were filtered by ``respect_limits=True``).
+            """
+            T_target, q_seed, max_solutions = _check_solve_inputs(
+                T_target,
+                q_seed,
+                DOF,
+                max_solutions=max_solutions,
+                seed_tolerance=seed_tolerance,
+                refinement_max_iters=refinement_max_iters,
+                policy=policy,
+            )
+            if max_solutions == 0:  # at most 0 solutions: checked, nothing to solve
+                return []
+            T = np.asarray(T_target, dtype=np.float64)
+            candidates = _solve_algebraic(T)
+
+            fk_atol = policy.subproblem_numerical
+            dedup_atol = policy.subproblem_dedup
+
+            # Three-bucket sort: exact (closes within fk_atol), near-miss
+            # (refinable when allow_refinement=True), or drop.
+            verified: list[tuple[np.ndarray, float, str, int]] = []
+            for cand_q in candidates:
+                q = np.asarray(cand_q, dtype=np.float64)
+                if not np.all(np.isfinite(q)):
+                    continue
+                T_check = _fk(q)
+                residual = float(np.linalg.norm(T_check - T))
+                if residual <= fk_atol:
+                    verified.append((q, residual, "none", 0))
+                    continue
+                if not allow_refinement:
+                    continue
+                # Refine only NEAR-misses. An algebraic candidate whose FK is
+                # already >0.1 off (Frobenius) is an eigensolve root that does not
+                # correspond to a real IK solution here (genuine near-double-root
+                # marginals sit at ~1e-4); polishing it just burns Newton iters
+                # that stall out and add nothing (#490: force_refine was 5-10x on
+                # degenerate arms doing exactly this). 0.1 is 100x looser than the
+                # 1e-3 band that once dropped genuine piper solutions -- it only
+                # skips candidates clearly not near any solution.
+                if residual >= 0.1:
+                    continue
+                # Newton polish using the per-arm spatial Jacobian.
+                refined = _lm_refine(
+                    q,
+                    _fk,
+                    T,
+                    fk_atol=fk_atol,
+                    max_iters=refinement_max_iters,
+                    jacobian_fn=_spatial_jacobian,
+                )
+                if refined is None:
+                    continue
+                q_ref, resid_ref, iters = refined
+                verified.append((q_ref, resid_ref, "lm", iters))
+
+            # Same-root dedup (#600), mirroring ``ssik.refinement.dedup_same_root``:
+            # a pair within ``dedup_atol`` merges only if its midpoint also
+            # closes FK, so twin roots near a fold both survive. The survivor
+            # changes only on a residual gain above round-off. ``_q_close_wrap``
+            # is the cheap pre-filter (typed scalar loop, #137 Slice 3).
+            _floor = _same_root_floor(T)
+            deduped: list[tuple[np.ndarray, float, str, int]] = []
+            for cand_q, cand_res, ref_used, ref_iters in verified:
+                dup_idx = None
+                for j, (existing_q, existing_res, _, _) in enumerate(deduped):
+                    if _q_close_wrap(cand_q, existing_q, dedup_atol) and _is_same_root(
+                        cand_q, cand_res, existing_q, existing_res, _fk, T, _floor
+                    ):
+                        dup_idx = j
+                        break
+                if dup_idx is None:
+                    deduped.append((cand_q, cand_res, ref_used, ref_iters))
+                elif cand_res < deduped[dup_idx][1] - _floor:
+                    deduped[dup_idx] = (cand_q, cand_res, ref_used, ref_iters)
+
+            solutions = [
+                Solution(
+                    q=q,
+                    fk_residual=residual,
+                    refinement_used=ref_used,
+                )
+                for q, residual, ref_used, _ref_iters in deduped
+            ]
+
+            # Bulletproof fallback (#319): the analytical path found nothing.
+            # If the target is within the arm's max reach it may be a
+            # measure-zero rank-deficient ridge (a reachable pose the algebraic
+            # path can't extract) rather than an unreachable target -- recover
+            # via the T-perturbation rescue. The reach-sphere (sum of link
+            # lengths; an exact upper bound by the triangle inequality, so it
+            # never rejects a reachable pose) is the gate: it is checked only
+            # here in the rare empty branch and keeps genuinely far-field
+            # targets cheap. (The RR real-root count is NOT used as a gate -- it
+            # is an unreliable reachability signal: some reachable ridges, e.g.
+            # Rizon 4's, yield only complex roots, so gating on it would
+            # silently drop real solutions.) The perturbed re-solves run with
+            # allow_rescue=False (recursion guard + analytical-only escape
+            # hatch). Rescued sols carry refinement_used="lm", FK-gated to
+            # machine precision.
+            # Shared post-processing pipeline (limits -> seed -> truncate); the
+            # one definition lives in ssik.postprocess.finalize_solutions.
+            # Limit pass only (no seed/tolerance/truncate yet): the rescue gate is
+            # "no in-limits solution exists", so it must not depend on the
+            # seed-tolerance / max_solutions filters (a seed filter emptying a
+            # non-empty in-limits set is a user preference, not a missing solution).
+            _in_limits = _ps_finalize(
+                solutions, _KB, respect_limits=respect_limits, T_target=T
+            )
+            # Rescue on LIMIT-empty (#524): fire when nothing survives the limit
+            # filter (not just when the analytical count was zero), so a pose
+            # whose only analytical candidates were out-of-limits still gets
+            # rescued. Perturbed re-solves run with allow_rescue=False.
+            if not _in_limits and allow_rescue:
+                _reach_radius = sum(
+                    float(np.linalg.norm(np.asarray(_t)[:3, 3]))
+                    for _t in (*_JOINT_T_LEFTS, *_JOINT_T_RIGHTS)
+                )
+                if float(np.linalg.norm(T[:3, 3])) <= _reach_radius:
+                    _in_limits = _ps_finalize(
+                        _rescue_via_T_perturbation(
+                            _fk,
+                            _functools.partial(solve, allow_rescue=False),
+                            T,
+                            jacobian_fn=_spatial_jacobian,
+                        ),
+                        _KB,
+                        T_target=T,
+                        respect_limits=respect_limits,
+                    )
+            # Seed tolerance / ranking / truncate over the in-limits set.
+            return _ps_finalize(
+                _in_limits,
+                _KB,
+                T_target=T,
+                respect_limits=False,
+                q_seed=q_seed,
+                seed_metric=seed_metric,
+                seed_tolerance=seed_tolerance,
+                max_solutions=max_solutions,
+                # The single lifting stage (#562): the call that yields the
+                # returned set. Skipped when the caller asked for raw geometry.
+                enumerate_windings=enumerate_windings and respect_limits,
+            )
+        '''
+    ).replace("fk_atol = policy.subproblem_numerical", f"fk_atol = {fk_atol_expr}")
+    if polish_accepted:
+        # Polish accepted candidates before the same-root dedup (see
+        # SolverSpec.polish_accepted); other artifacts stay byte-identical.
+        marker = "    # Same-root dedup (#600), mirroring"
+        assert marker in template
+        template = template.replace(marker, _POLISH_ACCEPTED_BLOCK + marker, 1)
+        two_pi = "_TWO_PI: float = 2.0 * math.pi\n"
+        assert two_pi in template
+        template = template.replace(
+            two_pi,
+            two_pi
+            + "\n# The POE chain accepted candidates are polished on (ssik.refinement.polish).\n"
+            + "_POLISH_CHAIN = _PolishChain.from_kinbody(_KB)\n",
+            1,
+        )
+    if force_refine:
+        # Always polish near-misses (see SolverSpec.force_refine). Only rewrite
+        # the gate when set, so non-forced artifacts stay byte-identical.
+        template = template.replace(
+            "if not allow_refinement:", "if not (allow_refinement or True):"
+        )
+    if emit_native:
+        # Add the `native` kwarg + early native dispatch. Only native-capable
+        # families opt in, so every other artifact stays byte-identical.
+        template = template.replace(
+            "    enumerate_windings: bool = True,\n):",
+            "    enumerate_windings: bool = True,\n    native: bool = True,\n):",
+        )
+        template = template.replace(
+            _CHECK_INPUTS + "    T = np.asarray(T_target, dtype=np.float64)",
+            _CHECK_INPUTS
+            + (_NATIVE_HOOK_RR if native_rr else _NATIVE_HOOK)
+            + "    T = np.asarray(T_target, dtype=np.float64)",
+        )
+        template = template.replace(
+            "    :returns: list of :class:`Solution`; empty list iff no IK",
+            _NATIVE_DOC + "    :returns: list of :class:`Solution`; empty list iff no IK",
+        )
+    if continuum is not None:
+        template = _with_continuum(template, continuum)
+    return template
+
+
+def _with_continuum(template: str, continuum: str) -> str:
+    """Thread the singular-continuum flags through the orchestrator and slide
+    the flagged solutions before finalize (:mod:`ssik.continuum`, #662).
+
+    ``"lock"``: ``_solve_algebraic`` sets a locked wrist's free joint to the
+    seed's (else 0) and reports the flag. ``"rank"``: the accepted-candidate
+    polish (and a refined near-miss's own Jacobian) reports it. Each verified
+    candidate carries its flag as a fifth element, a same-root merge keeps a
+    flag either side had, and the slide runs once on the deduplicated set."""
+
+    def sub(old: str, new: str) -> None:
+        nonlocal template
+        assert old in template, old
+        template = template.replace(old, new, 1)
+
+    if continuum == "lock":
+        sub(
+            "    candidates = _solve_algebraic(T)\n",
+            "    # Per candidate, the free joint of the singular continuum it samples,\n"
+            "    # or _NOT_FLAGGED (ssik.continuum); a locked wrist's free joint starts\n"
+            "    # at the seed's value, else 0.\n"
+            "    _free: list[int] = []\n"
+            "    candidates = _solve_algebraic(\n"
+            "        T, 0.0 if q_seed is None else float(q_seed[5]), _free\n"
+            "    )\n",
+        )
+        lm_line = '        verified.append((q_ref, resid_ref, "lm", iters, _free[_ci]))\n'
+    else:
+        sub(
+            "    candidates = _solve_algebraic(T)\n",
+            "    candidates = _solve_algebraic(T)\n"
+            "    # Per candidate, whether it may sample a singular continuum\n"
+            "    # (ssik.continuum): set from its Jacobian below.\n"
+            "    _free = [_NOT_FLAGGED] * len(candidates)\n",
+        )
+        lm_line = (
+            "        # A refined near-miss is flagged from the last Jacobian its\n"
+            "        # refinement evaluated (one step from q_ref).\n"
+            "        _f = (\n"
+            "            _FREE_FROM_KERNEL\n"
+            "            if not _lm_jac or _has_null(_lm_jac[-1])\n"
+            "            else _NOT_FLAGGED\n"
+            "        )\n"
+            '        verified.append((q_ref, resid_ref, "lm", iters, _f))\n'
+        )
+        sub(
+            "            jacobian_fn=_spatial_jacobian,\n        )\n        if refined is None:\n",
+            "            jacobian_fn=_lm_jacobian,\n        )\n        if refined is None:\n",
+        )
+        sub(
+            "        refined = _lm_refine(\n",
+            "        _lm_jac.clear()\n        refined = _lm_refine(\n",
+        )
+        sub(
+            "    verified: list[tuple[np.ndarray, float, str, int]] = []\n",
+            "    # The Jacobians the near-miss refinement evaluates, the last of which\n"
+            "    # flags a refined candidate (ssik.continuum.has_null).\n"
+            "    _lm_jac: list[np.ndarray] = []\n\n"
+            "    def _lm_jacobian(x: np.ndarray) -> np.ndarray:\n"
+            "        j = _spatial_jacobian(x)\n"
+            "        _lm_jac.append(j)\n"
+            "        return j\n\n"
+            "    verified: list[tuple[np.ndarray, float, str, int]] = []\n",
+        )
+    sub(
+        "    verified: list[tuple[np.ndarray, float, str, int]] = []\n"
+        "    for cand_q in candidates:\n",
+        "    verified: list[tuple[np.ndarray, float, str, int, int]] = []\n"
+        "    for _ci, cand_q in enumerate(candidates):\n",
+    )
+    sub(
+        '            verified.append((q, residual, "none", 0))\n',
+        '            verified.append((q, residual, "none", 0, _free[_ci]))\n',
+    )
+    sub('        verified.append((q_ref, resid_ref, "lm", iters))\n', lm_line)
+    if continuum == "rank":
+        sub(
+            "        _q_pol, _r_pol, _polished = _polish_accepted(\n",
+            "        _q_pol, _r_pol, _polished, _singular = _polish_flagged(\n",
+        )
+        sub(
+            "        for _k, _i in enumerate(_accepted):\n"
+            "            if _polished[_k]:\n"
+            '                verified[_i] = (_q_pol[_k], float(_r_pol[_k]), "none", 0)\n',
+            "        for _k, _i in enumerate(_accepted):\n"
+            "            _f = _FREE_FROM_KERNEL if _singular[_k] else _NOT_FLAGGED\n"
+            "            if _polished[_k]:\n"
+            '                verified[_i] = (_q_pol[_k], float(_r_pol[_k]), "none", 0, _f)\n'
+            "            else:\n"
+            "                verified[_i] = (*verified[_i][:4], _f)\n",
+        )
+    sub(
+        "    deduped: list[tuple[np.ndarray, float, str, int]] = []\n"
+        "    for cand_q, cand_res, ref_used, ref_iters in verified:\n"
+        "        dup_idx = None\n"
+        "        for j, (existing_q, existing_res, _, _) in enumerate(deduped):\n",
+        "    deduped: list[tuple[np.ndarray, float, str, int, int]] = []\n"
+        "    for cand_q, cand_res, ref_used, ref_iters, cand_free in verified:\n"
+        "        dup_idx = None\n"
+        "        for j, (existing_q, existing_res, _, _, _) in enumerate(deduped):\n",
+    )
+    sub(
+        "        if dup_idx is None:\n"
+        "            deduped.append((cand_q, cand_res, ref_used, ref_iters))\n"
+        "        elif cand_res < deduped[dup_idx][1] - _floor:\n"
+        "            deduped[dup_idx] = (cand_q, cand_res, ref_used, ref_iters)\n",
+        "        if dup_idx is None:\n"
+        "            deduped.append((cand_q, cand_res, ref_used, ref_iters, cand_free))\n"
+        "            continue\n"
+        "        # A merge keeps the flag either side had.\n"
+        "        _kept = deduped[dup_idx]\n"
+        "        _f = _kept[4] if _kept[4] != _NOT_FLAGGED else cand_free\n"
+        "        if cand_res < _kept[1] - _floor:\n"
+        "            deduped[dup_idx] = (cand_q, cand_res, ref_used, ref_iters, _f)\n"
+        "        elif _f != _kept[4]:\n"
+        "            deduped[dup_idx] = (*_kept[:4], _f)\n",
+    )
+    sub(
+        "        for q, residual, ref_used, _ref_iters in deduped\n    ]\n",
+        "        for q, residual, ref_used, _ref_iters, _f in deduped\n"
+        "    ]\n"
+        "    # The singular-continuum slide (ssik.continuum, docs/api.md#singular-\n"
+        "    # continua): each flagged solution moves to its continuum's point under\n"
+        "    # the rule, seeded or not. Only flagged solutions pay.\n"
+        "    solutions = _slide_continua(\n"
+        "        solutions,\n"
+        "        [_f for _q, _r, _u, _i, _f in deduped],\n"
+        "        _KB,\n"
+        "        T,\n"
+        "        fk=_fk,\n"
+        "        jac=_spatial_jacobian,\n"
+        "        q_seed=q_seed,\n"
+        "        respect_limits=respect_limits,\n"
+        "        dedup_atol=dedup_atol,\n"
+        "    )\n",
+    )
+    return template
+
+
+_JOINTLOCK_NATIVE_HOOK = """\
+    if native:
+        _native_sols = _try_native_jointlock_solve(
+            SOLVER_NAME,
+            _KB,
+            T_target,
+            respect_limits=respect_limits,
+            q_seed=q_seed,
+            seed_metric=seed_metric,
+            seed_tolerance=seed_tolerance,
+            max_solutions=max_solutions,
+            allow_rescue=allow_rescue,
+            enumerate_windings=enumerate_windings,
+            refinement_max_iters=refinement_max_iters,
+            policy=policy,
+            allow_refinement=allow_refinement,
+            jointlock_geometry=_jointlock_native_geometry(),
+        )
+        if _native_sols is not None:
+            return _native_sols
+"""
+
+
+def _render_specialised_solve_orchestrator_7r(emit_native: bool = False) -> str:
+    """Render ``solve()`` for 7R artifacts (jointlock.seven_r).
+
+    Extends the 6R orchestrator with ``max_solutions`` and ``q_seed``
+    kwargs (forwarded to ``_solve_algebraic`` so the underlying
+    lock-sweep can short-circuit -- see #142). Defaults preserve the
+    exhaustive-search semantic; the early-exit is opt-in.
+    """
+    template = textwrap.dedent(
+        '''\
+
+        # Cached 4x4 identity reused inside ``_fk`` / ``_spatial_jacobian``
+        # so each call avoids ``len(_JOINT_AXES)+1`` per-iteration ``np.eye(4)``
+        # allocations -- the orchestrator's #1 hotspot per Slice 4 profile
+        # (~22% of ``_fk`` cost on Puma 560).
+        _FK_EYE4 = np.eye(4, dtype=np.float64)
+        _FK_EYE4.flags.writeable = False
+
+
+        @cython.ccall
+        @cython.locals(
+            i=cython.int,
+            n=cython.int,
+            ax=cython.double, ay=cython.double, az=cython.double,
+            qi=cython.double, c=cython.double, s=cython.double, oc=cython.double,
+            r00=cython.double, r01=cython.double, r02=cython.double,
+            r10=cython.double, r11=cython.double, r12=cython.double,
+            r20=cython.double, r21=cython.double, r22=cython.double,
+            l00=cython.double, l01=cython.double, l02=cython.double, l03=cython.double,
+            l10=cython.double, l11=cython.double, l12=cython.double, l13=cython.double,
+            l20=cython.double, l21=cython.double, l22=cython.double, l23=cython.double,
+            m00=cython.double, m01=cython.double, m02=cython.double, m03=cython.double,
+            m10=cython.double, m11=cython.double, m12=cython.double, m13=cython.double,
+            m20=cython.double, m21=cython.double, m22=cython.double, m23=cython.double,
+            t00=cython.double, t01=cython.double, t02=cython.double, t03=cython.double,
+            t10=cython.double, t11=cython.double, t12=cython.double, t13=cython.double,
+            t20=cython.double, t21=cython.double, t22=cython.double, t23=cython.double,
+            n00=cython.double, n01=cython.double, n02=cython.double, n03=cython.double,
+            n10=cython.double, n11=cython.double, n12=cython.double, n13=cython.double,
+            n20=cython.double, n21=cython.double, n22=cython.double, n23=cython.double,
+            a00=cython.double, a01=cython.double, a02=cython.double, a03=cython.double,
+            a10=cython.double, a11=cython.double, a12=cython.double, a13=cython.double,
+            a20=cython.double, a21=cython.double, a22=cython.double, a23=cython.double,
+            b00=cython.double, b01=cython.double, b02=cython.double, b03=cython.double,
+            b10=cython.double, b11=cython.double, b12=cython.double, b13=cython.double,
+            b20=cython.double, b21=cython.double, b22=cython.double, b23=cython.double,
+        )
+        def _fk(q):
+            """POE forward kinematics using the baked chain constants.
+
+            Hand-rolled scalar 4x4 matmul + inline Rodrigues -- no per-call
+            ``np.eye(4)`` allocations and no per-joint numpy ``@`` dispatch.
+            Each numpy ``@`` on a 4x4 has ~3 us of dispatch overhead;
+            inlining the ~85 scalar ops per joint turns the inner loop into
+            a single native-code chunk under Cython compile.
+
+            Bottom row of the accumulator stays [0, 0, 0, 1] implicitly.
+            """
+            n = len(_JOINT_AXES)
+            # Identity accumulator (the bottom row [0,0,0,1] is implicit).
+            a00 = 1.0; a01 = 0.0; a02 = 0.0; a03 = 0.0
+            a10 = 0.0; a11 = 1.0; a12 = 0.0; a13 = 0.0
+            a20 = 0.0; a21 = 0.0; a22 = 1.0; a23 = 0.0
+            for i in range(n):
+                # Inline Rodrigues for this joint's axis.
+                ax = float(_JOINT_AXES[i][0])
+                ay = float(_JOINT_AXES[i][1])
+                az = float(_JOINT_AXES[i][2])
+                qi = float(q[i])
+                c = math.cos(qi); s = math.sin(qi); oc = 1.0 - c
+                r00 = c + ax*ax*oc;     r01 = ax*ay*oc - az*s; r02 = ax*az*oc + ay*s
+                r10 = ay*ax*oc + az*s;  r11 = c + ay*ay*oc;    r12 = ay*az*oc - ax*s
+                r20 = az*ax*oc - ay*s;  r21 = az*ay*oc + ax*s; r22 = c + az*az*oc
+                # T_left[i] entries.
+                Tl = _JOINT_T_LEFTS[i]
+                l00 = float(Tl[0,0]); l01 = float(Tl[0,1])
+                l02 = float(Tl[0,2]); l03 = float(Tl[0,3])
+                l10 = float(Tl[1,0]); l11 = float(Tl[1,1])
+                l12 = float(Tl[1,2]); l13 = float(Tl[1,3])
+                l20 = float(Tl[2,0]); l21 = float(Tl[2,1])
+                l22 = float(Tl[2,2]); l23 = float(Tl[2,3])
+                # M = T_left[i] @ R (R is the homogeneous version of the 3x3
+                # rotation above with column 3 = [0,0,0,1]^T).
+                m00 = l00*r00 + l01*r10 + l02*r20
+                m01 = l00*r01 + l01*r11 + l02*r21
+                m02 = l00*r02 + l01*r12 + l02*r22
+                m03 = l03
+                m10 = l10*r00 + l11*r10 + l12*r20
+                m11 = l10*r01 + l11*r11 + l12*r21
+                m12 = l10*r02 + l11*r12 + l12*r22
+                m13 = l13
+                m20 = l20*r00 + l21*r10 + l22*r20
+                m21 = l20*r01 + l21*r11 + l22*r21
+                m22 = l20*r02 + l21*r12 + l22*r22
+                m23 = l23
+                # T_right[i] entries.
+                Tr = _JOINT_T_RIGHTS[i]
+                t00 = float(Tr[0,0]); t01 = float(Tr[0,1])
+                t02 = float(Tr[0,2]); t03 = float(Tr[0,3])
+                t10 = float(Tr[1,0]); t11 = float(Tr[1,1])
+                t12 = float(Tr[1,2]); t13 = float(Tr[1,3])
+                t20 = float(Tr[2,0]); t21 = float(Tr[2,1])
+                t22 = float(Tr[2,2]); t23 = float(Tr[2,3])
+                # N = M @ T_right[i]
+                n00 = m00*t00 + m01*t10 + m02*t20
+                n01 = m00*t01 + m01*t11 + m02*t21
+                n02 = m00*t02 + m01*t12 + m02*t22
+                n03 = m00*t03 + m01*t13 + m02*t23 + m03
+                n10 = m10*t00 + m11*t10 + m12*t20
+                n11 = m10*t01 + m11*t11 + m12*t21
+                n12 = m10*t02 + m11*t12 + m12*t22
+                n13 = m10*t03 + m11*t13 + m12*t23 + m13
+                n20 = m20*t00 + m21*t10 + m22*t20
+                n21 = m20*t01 + m21*t11 + m22*t21
+                n22 = m20*t02 + m21*t12 + m22*t22
+                n23 = m20*t03 + m21*t13 + m22*t23 + m23
+                # T_acc = T_acc @ N
+                b00 = a00*n00 + a01*n10 + a02*n20
+                b01 = a00*n01 + a01*n11 + a02*n21
+                b02 = a00*n02 + a01*n12 + a02*n22
+                b03 = a00*n03 + a01*n13 + a02*n23 + a03
+                b10 = a10*n00 + a11*n10 + a12*n20
+                b11 = a10*n01 + a11*n11 + a12*n21
+                b12 = a10*n02 + a11*n12 + a12*n22
+                b13 = a10*n03 + a11*n13 + a12*n23 + a13
+                b20 = a20*n00 + a21*n10 + a22*n20
+                b21 = a20*n01 + a21*n11 + a22*n21
+                b22 = a20*n02 + a21*n12 + a22*n22
+                b23 = a20*n03 + a21*n13 + a22*n23 + a23
+                a00, a01, a02, a03 = b00, b01, b02, b03
+                a10, a11, a12, a13 = b10, b11, b12, b13
+                a20, a21, a22, a23 = b20, b21, b22, b23
+            return np.array(
+                [[a00, a01, a02, a03],
+                 [a10, a11, a12, a13],
+                 [a20, a21, a22, a23],
+                 [0.0, 0.0, 0.0, 1.0]],
+                dtype=np.float64,
+            )
+
+
+        @cython.ccall
+        @cython.locals(i=cython.int, n=cython.int)
+        def _spatial_jacobian(q):
+            """6 x n_dof spatial Jacobian using the baked chain constants.
+
+            Math identical to ssik.refinement.kinbody_jacobian: column i
+            is (p_i x z_i, z_i) where z_i is the i-th joint axis in the
+            world frame at q and p_i is the i-th joint origin. This is
+            the SPATIAL twist representation -- T(q+dq) @ T(q)^-1 ~
+            exp([J @ dq]) -- matching the residual extracted by
+            ssik.refinement.se3_log_residual. Per-arm version with
+            baked _JOINT_AXES / _JOINT_T_LEFTS / _JOINT_T_RIGHTS so
+            there's no KinBody walk at runtime.
+            """
+            n = len(_JOINT_AXES)
+            cum = _FK_EYE4.copy()
+            cums = [cum.copy()]
+            rot = _FK_EYE4.copy()
+            for i in range(n):
+                rot[:3, :3] = _rotation_matrix(_JOINT_AXES[i], float(q[i]))
+                cum = cum @ _JOINT_T_LEFTS[i] @ rot @ _JOINT_T_RIGHTS[i]
+                cums.append(cum.copy())
+            J = np.zeros((6, n), dtype=np.float64)
+            for i in range(n):
+                t_pre = cums[i] @ _JOINT_T_LEFTS[i]
+                axis_unit = _JOINT_AXES[i] / np.linalg.norm(_JOINT_AXES[i])
+                z_i = t_pre[:3, :3] @ axis_unit
+                p_i = t_pre[:3, 3]
+                # Scalar cross product p_i x z_i: bit-identical to np.cross but
+                # ~11x faster for 3-vectors (np.cross's moveaxis / axis-normalize
+                # overhead dominates the LM-refine loop). Mirrors the live
+                # kinbody_jacobian, which is already scalar-inlined.
+                J[0, i] = p_i[1] * z_i[2] - p_i[2] * z_i[1]
+                J[1, i] = p_i[2] * z_i[0] - p_i[0] * z_i[2]
+                J[2, i] = p_i[0] * z_i[1] - p_i[1] * z_i[0]
+                J[3:, i] = z_i
+            return J
+
+
+        # Module-scope ``2*pi`` constant referenced inside the dedup hot
+        # loop (Cython compiles ``_TWO_PI`` to a typed C ``double``).
+        _TWO_PI: float = 2.0 * math.pi
+
+
+        @cython.ccall
+        def _wrap_to_pi(a: float) -> float:
+            """Wrap an angle to ``(-pi, pi]``. Called inside the per-IK
+            dedup hot loop (235k+ times on Franka 7R)."""
+            return ((a + math.pi) % _TWO_PI) - math.pi
+
+
+        @cython.ccall
+        @cython.locals(
+            i=cython.int,
+            n=cython.int,
+            diff=cython.double,
+            ai=cython.double,
+            bi=cython.double,
+        )
+        def _q_close_wrap(a, b, tol: float) -> bool:
+            """Return ``True`` if joint vectors ``a`` and ``b`` agree (mod 2pi)
+            within ``tol`` per element. Replaces the
+            ``np.array([_wrap_to_pi(...)]) -> np.all(np.abs(...) < tol)``
+            pipeline that allocated a numpy array per dedup-loop iteration --
+            a per-element scalar loop avoids the array creation and the
+            ``np.all`` reduction overhead, which together dominated the
+            artifact's ``solve()`` body at the per-IK level."""
+            n = len(a)
+            for i in range(n):
+                ai = float(a[i])
+                bi = float(b[i])
+                diff = ((ai - bi + math.pi) % _TWO_PI) - math.pi
+                if abs(diff) > tol:
+                    return False
+            return True
+
+
+        def solve(
+            T_target,
+            *,
+            max_solutions: int | None = None,
+            q_seed=None,
+            respect_limits: bool | str = True,
+            allow_refinement: bool = False,
+            allow_rescue: bool = True,
+            policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+            refinement_max_iters: int = 15,
+            seed_metric: str = "wrap_linf",
+            seed_tolerance: float | None = None,
+            enumerate_windings: bool = True,
+        ):
+            """Inverse kinematics. Returns ``list[Solution]``.
+
+            :param T_target: 4x4 SE(3) target end-effector pose.
+            :param max_solutions: optional early-exit cap on the
+                jointlock lock-sweep. ``None`` (default) = exhaustive
+                search. ``max_solutions=1`` short-circuits as soon as
+                one valid IK is found (~17x faster on this 7R).
+            :param q_seed: optional length-7 seed configuration. When
+                provided, the lock-joint samples are visited outward from
+                ``q_seed[lock_idx]`` and the first yielding slice's full
+                branch set is L-infinity-ranked against the seed (see
+                ``seed_metric``); with ``max_solutions`` this returns the
+                nearest configs to the seed in ~1 sub-solve -- the
+                trajectory-tracking fast path (#331), branch-continuous and
+                ~20x faster than the exhaustive sweep.
+            :param seed_metric: distance used to rank against ``q_seed``.
+                ``"wrap_linf"`` (default) minimises the *largest* single-joint
+                wrap-to-pi move, holding the branch during tracking;
+                ``"wrap_l2"`` minimises the summed move. Ignored when
+                ``q_seed`` is ``None``.
+            :param seed_tolerance: optional max per-joint deviation from
+                ``q_seed`` (radians, wrap-to-pi). When set, only solutions with
+                *every* joint within ``seed_tolerance`` are returned -- a hard
+                tracking guarantee that may return an empty list when no branch
+                qualifies. ``None`` (default) keeps the best-effort behaviour.
+                Requires ``q_seed``.
+            :param respect_limits: when ``True`` (default), solutions
+                outside URDF joint limits are dropped. Pass ``False``
+                for the raw geometric set, or ``"wrap"`` for the full set
+                wrapped into the joint ranges with nothing dropped.
+            :param allow_refinement: when ``True`` (default), Newton
+                polish fires on near-miss algebraic candidates.
+            :param allow_rescue: when ``True`` (default), if the analytical
+                path returns no solutions for a target within the arm's
+                reach (a measure-zero rank-deficient RR ridge -- a
+                reachable pose the algebraic path can't extract),
+                ``solve()`` recovers the IK via the T-perturbation rescue
+                (#319), returning machine-precision solutions tagged
+                ``refinement_used="lm"``. Set ``False`` for a guaranteed
+                purely-analytical result. Gated by a reach-sphere, so
+                far-field unreachable targets stay cheap.
+            :param policy: tolerance policy. Rarely customised.
+            :param refinement_max_iters: cap on Newton iterations per
+                candidate when ``allow_refinement=True``.
+
+            Common idioms::
+
+                # Exhaustive search (default).
+                solutions = solve(T_target)
+
+                # "Just give me one IK" -- ~17x faster.
+                solutions = solve(T_target, max_solutions=1)
+
+                # Track current config -- ~37x faster.
+                solutions = solve(
+                    T_target, q_seed=q_current, max_solutions=1,
+                )
+            """
+            T_target, q_seed, max_solutions = _check_solve_inputs(
+                T_target,
+                q_seed,
+                DOF,
+                max_solutions=max_solutions,
+                seed_tolerance=seed_tolerance,
+                refinement_max_iters=refinement_max_iters,
+                policy=policy,
+            )
+            if max_solutions == 0:  # at most 0 solutions: checked, nothing to solve
+                return []
+            T = np.asarray(T_target, dtype=np.float64)
+            # Lock-sweep filters limits in-flight (#238 review): the
+            # short-circuit fires on the first in-limits valid IK, not
+            # on a candidate that postprocess would drop. Preserves the
+            # max_solutions+q_seed early-exit fast path even with
+            # respect_limits=True.
+            candidates = _solve_algebraic(
+                T, max_solutions=max_solutions, q_seed=q_seed,
+                respect_limits=respect_limits,
+            )
+
+            fk_atol = policy.subproblem_numerical
+            dedup_atol = policy.subproblem_dedup
+
+            # Three-bucket sort: exact (closes within fk_atol), near-miss
+            # (refinable when allow_refinement=True), or drop.
+            verified: list[tuple[np.ndarray, float, str, int]] = []
+            for cand_q in candidates:
+                q = np.asarray(cand_q, dtype=np.float64)
+                if not np.all(np.isfinite(q)):
+                    continue
+                T_check = _fk(q)
+                residual = float(np.linalg.norm(T_check - T))
+                if residual <= fk_atol:
+                    verified.append((q, residual, "none", 0))
+                    continue
+                if not allow_refinement:
+                    continue
+                # Refine only NEAR-misses. An algebraic candidate whose FK is
+                # already >0.1 off (Frobenius) is an eigensolve root that does not
+                # correspond to a real IK solution here (genuine near-double-root
+                # marginals sit at ~1e-4); polishing it just burns Newton iters
+                # that stall out and add nothing (#490: force_refine was 5-10x on
+                # degenerate arms doing exactly this). 0.1 is 100x looser than the
+                # 1e-3 band that once dropped genuine piper solutions -- it only
+                # skips candidates clearly not near any solution.
+                if residual >= 0.1:
+                    continue
+                # Newton polish using the per-arm spatial Jacobian.
+                refined = _lm_refine(
+                    q,
+                    _fk,
+                    T,
+                    fk_atol=fk_atol,
+                    max_iters=refinement_max_iters,
+                    jacobian_fn=_spatial_jacobian,
+                )
+                if refined is None:
+                    continue
+                q_ref, resid_ref, iters = refined
+                verified.append((q_ref, resid_ref, "lm", iters))
+
+            # Wrap-to-pi dedup; keep lowest fk_residual on collision.
+            # Inner check via ``_q_close_wrap`` -- typed scalar loop, no per-
+            # iteration numpy allocation (#137 Slice 3).
+            deduped: list[tuple[np.ndarray, float, str, int]] = []
+            for cand_q, cand_res, ref_used, ref_iters in verified:
+                dup_idx = None
+                for j, (existing_q, _, _, _) in enumerate(deduped):
+                    if _q_close_wrap(cand_q, existing_q, dedup_atol):
+                        dup_idx = j
+                        break
+                if dup_idx is None:
+                    deduped.append((cand_q, cand_res, ref_used, ref_iters))
+                elif cand_res < deduped[dup_idx][1]:
+                    deduped[dup_idx] = (cand_q, cand_res, ref_used, ref_iters)
+
+            solutions = [
+                Solution(
+                    q=q,
+                    fk_residual=residual,
+                    refinement_used=ref_used,
+                )
+                for q, residual, ref_used, _ref_iters in deduped
+            ]
+            # Bulletproof fallback (#319): the analytical lock-sweep found
+            # nothing. If the target is within the arm's max reach it may be a
+            # measure-zero rank-deficient ridge (a reachable pose the algebraic
+            # path can't extract) rather than an unreachable target -- recover
+            # via the T-perturbation rescue. The reach-sphere (sum of link
+            # lengths; an exact upper bound by the triangle inequality, so it
+            # never rejects a reachable pose) is the gate: it is checked only
+            # here in the rare empty branch and keeps far-field targets cheap.
+            # (The cached-RR real-root count is NOT used as a gate -- it is an
+            # unreliable reachability signal: some reachable ridges, e.g. Rizon
+            # 4's, yield only complex roots, so gating on it would silently drop
+            # real solutions.) Perturbed re-solves run with allow_rescue=False
+            # (recursion guard + analytical-only escape hatch). The rescue calls
+            # back with respect_limits=False, so its output gets the limit/seed
+            # postprocess here (the analytical path filtered limits in-flight).
+            if not solutions and allow_rescue:
+                _reach_radius = sum(
+                    float(np.linalg.norm(np.asarray(_t)[:3, 3]))
+                    for _t in (*_JOINT_T_LEFTS, *_JOINT_T_RIGHTS)
+                )
+                if float(np.linalg.norm(T[:3, 3])) <= _reach_radius:
+                    solutions = _rescue_via_T_perturbation(
+                        _fk,
+                        _functools.partial(solve, allow_rescue=False),
+                        T,
+                        jacobian_fn=_spatial_jacobian,
+                    )
+                    # Rescued candidates were not limit-filtered; run the shared
+                    # pipeline (limits + seed) over them.
+                    solutions = _ps_finalize(
+                        solutions,
+                        _KB,
+                        T_target=T,
+                        respect_limits=respect_limits,
+                        q_seed=q_seed,
+                        seed_metric=seed_metric,
+                        seed_tolerance=seed_tolerance,
+                    )
+
+            # No orchestrator-level respect_limits pass on the analytical result:
+            # the inner ``_solve_algebraic`` already filtered in-flight when
+            # respect_limits=True (hence respect_limits=False here). Seeded
+            # ranking (#331) still needs an explicit rank by ``seed_metric`` over
+            # the lock-sample window before the cap, so the cap keeps the nearest
+            # *configs*, not the nearest *lock samples*. Shared pipeline again;
+            # the seed re-rank is idempotent for the already-ranked rescue set.
+            return _ps_finalize(
+                solutions,
+                _KB,
+                T_target=T,
+                respect_limits=False,
+                q_seed=q_seed,
+                seed_metric=seed_metric,
+                seed_tolerance=seed_tolerance,
+                max_solutions=max_solutions,
+                # The single lifting stage (#562): the call that yields the
+                # returned set. Skipped when the caller asked for raw geometry.
+                enumerate_windings=enumerate_windings and respect_limits,
+            )
+        '''
+    )
+    if emit_native:
+        # Add the `native` kwarg + early native dispatch (jointlock: RR tensors or
+        # HP kernel, from the sidecar .npz). Only fires when native=True.
+        template = template.replace(
+            "    enumerate_windings: bool = True,\n):",
+            "    enumerate_windings: bool = True,\n    native: bool = True,\n):",
+        )
+        template = template.replace(
+            _CHECK_INPUTS + "    T = np.asarray(T_target, dtype=np.float64)",
+            _CHECK_INPUTS
+            + _JOINTLOCK_NATIVE_HOOK
+            + "    T = np.asarray(T_target, dtype=np.float64)",
+        )
+        template = template.replace(
+            "    :returns: list of :class:`Solution`; empty list iff no IK",
+            _NATIVE_DOC + "    :returns: list of :class:`Solution`; empty list iff no IK",
+        )
+    return template
+
+
+def _kb_digest(kb: KinBody) -> str:
+    """Deterministic 12-hex-char digest of the KinBody's kinematic structure.
+
+    Hashes the joint axes, ``T_left`` / ``T_right`` matrices, joint types,
+    and link names in chain order. Stable across runs and platforms; lets
+    a reviewer recognise the same fixture even if the artifact has been
+    edited downstream. Identifies fixture changes too: any drift in the
+    chain (axis flip, link rename, transform tweak) shifts the digest.
+    """
+    import hashlib
+
+    # Bumped to v2 when joint limits joined the kinematic spec (#129).
+    h = hashlib.sha256()
+    h.update(b"ssik-kinbody-v2\n")
+    for link in kb.links:
+        h.update(b"L:")
+        h.update(link.name.encode("utf-8"))
+        h.update(b"\n")
+    for joint in kb.joints:
+        h.update(b"J:")
+        h.update(joint.joint_type.encode("utf-8"))
+        h.update(b":")
+        h.update((joint.name or "").encode("utf-8"))
+        h.update(b":axis=")
+        for v in joint.axis.tolist():
+            h.update(f"{v!r}".encode())
+            h.update(b",")
+        h.update(b":Tl=")
+        for row in joint.T_left.tolist():
+            for v in row:
+                h.update(f"{v!r}".encode())
+                h.update(b",")
+        h.update(b":Tr=")
+        for row in joint.T_right.tolist():
+            for v in row:
+                h.update(f"{v!r}".encode())
+                h.update(b",")
+        h.update(b":lim=")
+        if joint.limits is None:
+            h.update(b"None")
+        else:
+            h.update(f"{joint.limits[0]!r},{joint.limits[1]!r}".encode())
+        h.update(b"\n")
+    return h.hexdigest()[:12]
+
+
+def _render_header(module_name: str, arm_label: str, plan: DispatchPlan, kb: KinBody) -> str:
+    """Top-of-file docstring with provenance + usage.
+
+    Provenance is the ``KinBody hash``: a 12-hex-char sha256 digest of the
+    input chain's kinematic structure. Stable across runs and platforms,
+    so it does not churn the artifact snapshot; identifies fixture
+    changes (axis flip, link rename, transform tweak) when they happen.
+
+    The ssik commit is intentionally NOT baked because
+    ``importlib.metadata.version`` reports the install-time pinned value,
+    which drifts between local checkouts and CI -- not actually stable.
+    The artifact's ssik provenance lives in the parent repo's git history
+    (e.g. ``git log -- tests/artifacts/ur5_ik.py``).
+
+    The docstring includes base / end-effector link names + DOF + home FK
+    so a downstream user can immediately see which kinematic frame their
+    ``T_target`` is expressed in (and whether the baked chain matches
+    their own URDF). ``T_target`` is the pose of ``EE_LINK`` in
+    ``BASE_LINK``; if the user's URDF disagrees on link selection
+    (calibrated geometry, custom tool past the flange, different
+    naming), they should run ``ssik build <their.urdf> --base X --ee Y``
+    rather than rely on this artifact.
+    """
+    digest_str = _kb_digest(kb)
+    base_link = kb.links[0].name
+    ee_link = kb.links[-1].name
+    dof = len(kb.joints)
+    return textwrap.dedent(
+        f'''\
+        """Generated IK module for {arm_label}.
+
+        This file was emitted by ``ssik build`` and is the public artifact for
+        running analytical inverse kinematics on this specific arm. The
+        per-arm KinBody constants are baked in below; you do not need to
+        load a URDF or MJCF at runtime.
+
+        Provenance: KinBody hash {digest_str} (sha256/12 of the input chain).
+        ``T_target`` is the pose of ``{ee_link}`` (end-effector link) in
+        ``{base_link}`` (base link). If your URDF differs (calibrated
+        geometry, custom tool past the flange, different link names),
+        run ``ssik build <your.urdf> --base <yours> --ee <yours>`` to
+        produce an artifact correct for your hardware.
+
+        DOF: {dof}    BASE_LINK: "{base_link}"    EE_LINK: "{ee_link}"
+        Solver: ``{plan.solver_name}`` (tier {plan.tier})
+        Expected median IK time: ~{plan.expected_ms_median} ms on commodity
+        single-thread hardware. FLOP budget: {plan.flop_budget:,} per solve.
+
+        Usage:
+
+            import {module_name}
+            import numpy as np
+            T_target = np.eye(4)  # 4x4 SE(3) pose of {ee_link} in {base_link}
+            T_target[:3, 3] = [0.5, 0.1, 0.3]
+            solutions = {module_name}.solve(T_target)
+            for sol in solutions:
+                print(sol.q, sol.fk_residual)
+
+        ``solve(T)`` returns ``list[Solution]``. Empty list iff no
+        candidate closed within the solver's FK tolerance -- check
+        ``if not solutions:`` for the "unreachable" case.
+
+        Sanity-check the baked geometry: ``{module_name}.T_HOME`` is the
+        4x4 home pose (FK at ``q = np.zeros(DOF)``). If it doesn't match
+        your robot's home pose, the artifact is for a different URDF.
+        """'''
+    )
+
+
+def _render_dispatch_reason(reason: str) -> str:
+    """Bake the dispatcher's explanatory diagnostic as a module-level constant."""
+    # ``repr`` keeps newlines and quoting safe inside the rendered source.
+    return f"DISPATCH_REASON = {reason!r}\n"
+
+
+def _render_introspection_constants(kb: KinBody) -> str:
+    """Emit BASE_LINK / EE_LINK / DOF / T_HOME as public module constants.
+
+    These give downstream callers a way to see -- programmatically -- which
+    kinematic frame the artifact's ``T_target`` is expressed in, without
+    reading the source. ``T_HOME`` is the forward kinematics at
+    ``q = np.zeros(DOF)``: a 4x4 SE(3) pose a user can compare against
+    their robot's documented home pose to verify the baked geometry
+    matches their hardware.
+    """
+    from ssik.kinematics.poe_fk import poe_forward_kinematics
+
+    base_link = kb.links[0].name
+    ee_link = kb.links[-1].name
+    dof = len(kb.joints)
+    t_home = poe_forward_kinematics(kb, np.zeros(dof, dtype=np.float64))
+    lines: list[str] = []
+    lines.append(f'BASE_LINK = "{base_link}"\n')
+    lines.append(f'EE_LINK = "{ee_link}"\n')
+    lines.append(f"DOF = {dof}\n")
+    lines.append(
+        "# Home pose: FK at q = np.zeros(DOF). Sanity-check this against\n"
+        "# your robot's documented home pose to verify the baked geometry\n"
+        "# matches your URDF.\n"
+    )
+    lines.append(f"T_HOME = np.array({t_home.tolist()!r}, dtype=np.float64)\n")
+    return "".join(lines)
+
+
+def _render_kinbody_constants(kb: KinBody) -> str:
+    """Emit the joint axes / T_left / T_right matrices as numpy literals."""
+    lines: list[str] = []
+    lines.append("# --- baked KinBody constants ---\n")
+    lines.append(f"_LINK_NAMES = {[link.name for link in kb.links]!r}\n")
+    lines.append("_JOINT_NAMES = [")
+    for j in kb.joints:
+        lines.append(f"    {j.name!r},")
+    lines.append("]\n")
+    lines.append("_JOINT_AXES = [")
+    for j in kb.joints:
+        lines.append(f"    np.array({j.axis.tolist()!r}, dtype=np.float64),")
+    lines.append("]\n")
+    lines.append("_JOINT_T_LEFTS = [")
+    for j in kb.joints:
+        lines.append(f"    np.array({j.T_left.tolist()!r}, dtype=np.float64),")
+    lines.append("]\n")
+    lines.append("_JOINT_T_RIGHTS = [")
+    for j in kb.joints:
+        lines.append(f"    np.array({j.T_right.tolist()!r}, dtype=np.float64),")
+    lines.append("]\n")
+    lines.append("_JOINT_TYPES = [")
+    for j in kb.joints:
+        lines.append(f"    {j.joint_type!r},")
+    lines.append("]\n")
+    lines.append("_JOINT_LIMITS = [")
+    for j in kb.joints:
+        lines.append(f"    {j.limits!r},")
+    lines.append("]\n")
+    return "\n".join(lines)
+
+
+def _render_kinbody_builder() -> str:
+    """Emit the function that reconstructs the baked :class:`KinBody`."""
+    return textwrap.dedent(
+        """\
+
+        def _build_kb() -> KinBody:
+            \"\"\"Reconstruct the baked KinBody. Run once at module import.\"\"\"
+            links = [Link(name=n) for n in _LINK_NAMES]
+            joints = [
+                Joint(
+                    name=_JOINT_NAMES[i],
+                    dof_index=i,
+                    parent_link=links[i],
+                    T_left=_JOINT_T_LEFTS[i],
+                    T_right=_JOINT_T_RIGHTS[i],
+                    axis=_JOINT_AXES[i],
+                    joint_type=_JOINT_TYPES[i],
+                    limits=_JOINT_LIMITS[i],
+                )
+                for i in range(len(_JOINT_NAMES))
+            ]
+            return KinBody(links=links, joints=joints)
+
+
+        _KB = _build_kb()
+        """
+    )
+
+
+def _render_solve_function(solver_short: str, emit_native: bool = False) -> str:
+    """Emit the public ``solve`` callable wrapping the chosen ssik solver."""
+    template = textwrap.dedent(
+        f"""\
+
+        def solve(
+            T_target,
+            *,
+            max_solutions=None,
+            q_seed=None,
+            respect_limits: bool | str = True,
+            allow_refinement: bool = False,
+            allow_rescue: bool = True,
+            policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+            refinement_max_iters: int = 15,
+            seed_metric: str = "wrap_linf",
+            seed_tolerance: float | None = None,
+            enumerate_windings: bool = True,
+        ):
+            \"\"\"Inverse kinematics. Returns ``list[Solution]``.
+
+            :param T_target: 4x4 SE(3) target end-effector pose, np.float64.
+            :param max_solutions: optional cap on returned IKs (post-dedup,
+                post-limits filter). ``None`` = full enumeration.
+            :param q_seed: optional joint config. When provided, solutions
+                are sorted by distance from ``q_seed`` (closest first, via
+                ``seed_metric``). Combine with ``max_solutions=1`` for the
+                trajectory-tracking idiom.
+            :param seed_metric: distance used to rank against ``q_seed``.
+                ``"wrap_linf"`` (default, largest single-joint move) holds
+                the branch during tracking; ``"wrap_l2"`` uses the summed
+                move. Ignored when ``q_seed`` is ``None``.
+            :param seed_tolerance: optional max per-joint deviation from
+                ``q_seed`` (radians, wrap-to-pi). When set, only solutions with
+                *every* joint within ``seed_tolerance`` are returned -- a hard
+                tracking guarantee that may return an empty list when no branch
+                qualifies. ``None`` (default) keeps the best-effort behaviour.
+                Requires ``q_seed``.
+            :param respect_limits: when ``True`` (default), solutions
+                outside URDF joint limits are dropped. ``False`` returns
+                the raw geometric set; ``"wrap"`` the full set wrapped into
+                the joint ranges with nothing dropped.
+            :param allow_refinement: when ``True`` (default), Newton polish
+                fires on near-miss algebraic candidates. Tightens FK
+                closure to machine precision.
+            :param allow_rescue: when ``True`` (default), if the analytical
+                path returns no solutions but the target is within the arm's
+                reach-sphere, ``solve()`` recovers the IK via the
+                T-perturbation rescue (#319) -- reachable-but-degenerate poses
+                (near-singular / near-parallel-axis) return LM-polished
+                solutions tagged ``refinement_used="lm"`` instead of ``[]``.
+                Set ``False`` for a guaranteed-analytical-or-empty result.
+                Gated by the reach-sphere, so far-field unreachable targets
+                stay cheap (no rescue fired).
+            :param policy: tolerance policy. Rarely customised.
+            :param refinement_max_iters: cap on Newton iterations per
+                candidate when ``allow_refinement=True``.
+            :returns: list of :class:`Solution`, one per analytical IK
+                branch (plus any rescued at a degenerate pose). Empty list
+                iff the target is unreachable or ``allow_rescue=False`` and
+                the analytical path found nothing.
+
+            Solver: {solver_short}.
+            \"\"\"
+            T_target, q_seed, max_solutions = _check_solve_inputs(
+                T_target,
+                q_seed,
+                DOF,
+                max_solutions=max_solutions,
+                seed_tolerance=seed_tolerance,
+                refinement_max_iters=refinement_max_iters,
+                policy=policy,
+            )
+            if max_solutions == 0:  # at most 0 solutions: checked, nothing to solve
+                return []
+            # Seeded numerical-tracking fast path (#380): the caller gave a seed
+            # and wants a single IK -- the trajectory-tracking idiom. Newton-
+            # continue from the seed (~0.2 ms) instead of resolving the whole
+            # redundancy (several ms). On a smooth trajectory the continuation is
+            # exactly the seed-nearest solution the full solve would return; it
+            # is run through the same limit/tolerance postprocess below so its
+            # output is indistinguishable from the full path's. When the seed
+            # doesn't continue cleanly (Newton jumped a branch, diverged, or the
+            # result fails limits/seed_tolerance) ``_seeded_track`` returns
+            # ``None`` / the postprocess empties and we fall through to the full
+            # analytical solve -- correctness is never traded for speed.
+            if q_seed is not None and max_solutions == 1:
+                _tracked = _seeded_track(
+                    np.asarray(q_seed, dtype=np.float64),
+                    fk,
+                    lambda _q: _kinbody_jacobian(_KB, _q),
+                    np.asarray(T_target, dtype=np.float64),
+                )
+                if _tracked is not None:
+                    # Same post-processing as the full path (no in-limits
+                    # fallback: a tracked seed that fails limits/tolerance falls
+                    # through to the full analytical solve below).
+                    _fast = _ps_finalize(
+                        [_tracked],
+                        _KB,
+                        T_target=T_target,
+                        respect_limits=respect_limits,
+                        q_seed=q_seed,
+                        seed_metric=seed_metric,
+                        seed_tolerance=seed_tolerance,
+                        max_solutions=1,
+                    )
+                    if _fast:
+                        return _fast
+            sols, _is_ls = _solver_solve(
+                _KB,
+                T_target,
+                policy=policy,
+                allow_refinement=allow_refinement,
+                refinement_max_iters=refinement_max_iters,
+            )
+            # Limit pass + #359 in-limits fallback ONLY (no seed/tolerance/
+            # truncate yet). The rescue gate below is "no in-limits solution
+            # exists", so it must not depend on the seed-tolerance / max_solutions
+            # filters -- a seed filter emptying a non-empty in-limits set is a
+            # user preference, NOT a missing solution, and must not trigger a
+            # rescue (which would diverge native vs Python by sampling a different
+            # continuum). The in-limits fallback (#359) recovers a reachable
+            # in-limits solution the coarse sweep missed (no-op for non-redundant
+            # chains).
+            _in_limits = _ps_finalize(
+                sols,
+                _KB,
+                T_target=T_target,
+                respect_limits=respect_limits,
+                in_limits_fallback=lambda: _resolve_in_limits(_KB, T_target, policy=policy),
+            )
+            # Bulletproof fallback (#319 / #358 / #524): nothing survives the
+            # limit filter. If the target is within the arm's max reach it may be
+            # a measure-zero degenerate pose (near-singular elbow/gimbal) the
+            # algebraic extraction can't resolve, NOT an unreachable target --
+            # recover via the T-perturbation rescue. Gating on the LIMIT-filtered
+            # empty (not the pre-limit analytical count) is what lets a pose whose
+            # only analytical candidates were out-of-limits still get rescued
+            # (#524). The reach-sphere (sum of link lengths; an exact triangle-
+            # inequality upper bound, so it never rejects a reachable pose) keeps
+            # far-field targets cheap; perturbed re-solves run allow_rescue=False.
+            if not _in_limits and allow_rescue:
+                _reach_radius = sum(
+                    float(np.linalg.norm(np.asarray(_t)[:3, 3]))
+                    for _t in (*_JOINT_T_LEFTS, *_JOINT_T_RIGHTS)
+                )
+                _T = np.asarray(T_target, dtype=np.float64)
+                if float(np.linalg.norm(_T[:3, 3])) <= _reach_radius:
+                    _in_limits = _ps_finalize(
+                        _rescue_via_T_perturbation(
+                            fk,
+                            _functools.partial(solve, allow_rescue=False),
+                            _T,
+                            jacobian_fn=lambda _q: _kinbody_jacobian(_KB, _q),
+                        ),
+                        _KB,
+                        T_target=T_target,
+                        respect_limits=respect_limits,
+                    )
+            # Seed tolerance / ranking / truncate over the in-limits set.
+            return _ps_finalize(
+                _in_limits,
+                _KB,
+                T_target=T_target,
+                respect_limits=False,
+                q_seed=q_seed,
+                seed_metric=seed_metric,
+                seed_tolerance=seed_tolerance,
+                max_solutions=max_solutions,
+                # The single lifting stage (#562): the call that yields the
+                # returned set. Skipped when the caller asked for raw geometry.
+                enumerate_windings=enumerate_windings and respect_limits,
+            )
+        """
+    )
+    if emit_native:
+        # Add the `native` kwarg + inject a top-of-body early dispatch to the FULL
+        # C++ artifact (whole pipeline, not just the analytical sweep). Only
+        # families with a native thin-wrapper core opt in; others stay
+        # byte-identical.
+        template = template.replace(
+            "    enumerate_windings: bool = True,\n):",
+            "    enumerate_windings: bool = True,\n    native: bool = True,\n):",
+        )
+        template = template.replace(
+            _CHECK_INPUTS,
+            _CHECK_INPUTS + "    if native:\n"
+            "        _native_sols = _try_native_solve_7r(\n"
+            "            SOLVER_NAME,\n"
+            "            _KB,\n"
+            "            T_target,\n"
+            "            respect_limits=respect_limits,\n"
+            "            q_seed=q_seed,\n"
+            "            seed_metric=seed_metric,\n"
+            "            seed_tolerance=seed_tolerance,\n"
+            "            max_solutions=max_solutions,\n"
+            "            allow_rescue=allow_rescue,\n"
+            "            enumerate_windings=enumerate_windings,\n"
+            "            refinement_max_iters=refinement_max_iters,\n"
+            "            policy=policy,\n"
+            "            allow_refinement=allow_refinement,\n"
+            "        )\n"
+            "        if _native_sols is not None:\n"
+            "            return _native_sols\n",
+        )
+    return template
+
+
+def _render_all_export() -> str:
+    return (
+        "\n__all__ = ["
+        '\n    "BASE_LINK",'
+        '\n    "DISPATCH_REASON",'
+        '\n    "DOF",'
+        '\n    "EE_LINK",'
+        '\n    "EXPECTED_MS_MEDIAN",'
+        '\n    "FLOP_BUDGET",'
+        '\n    "SOLVER_NAME",'
+        '\n    "SOLVER_TIER",'
+        '\n    "T_HOME",'
+        '\n    "fk",'
+        '\n    "solve",'
+        "\n]\n"
+    )
+
+
+def _render_fk_alias() -> str:
+    """Specialised templates already define ``_fk``; expose it publicly
+    so callers can do ``arm_ik.fk(q)`` instead of the private mangled
+    name."""
+    return textwrap.dedent(
+        """\
+
+
+        def fk(q):
+            \"\"\"Forward kinematics: the 4x4 base->ee pose at ``q``, shape ``(DOF,)``.\"\"\"
+            return _fk(_check_joints(q, DOF, "q", finite=False))
+        """
+    )
+
+
+def _render_fk_function_from_kb() -> str:
+    """For thin-wrapper templates that don't bake FK themselves
+    (``seven_r.srs``, ``seven_r.srs_polished``): build a public
+    ``fk(q)`` from the baked ``_KB`` using runtime POE FK."""
+    return textwrap.dedent(
+        """\
+
+        from ssik.kinematics.poe_fk import poe_forward_kinematics as _poe_fk
+
+
+        def fk(q):
+            \"\"\"Forward kinematics: returns the 4x4 base->ee pose at ``q``.\"\"\"
+            return _poe_fk(_KB, _check_joints(q, DOF, "q", finite=False))
+        """
+    )

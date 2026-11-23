@@ -1,0 +1,39 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-piper-manual-jog
+label: Junqi PiPER manual Cartesian jog
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-piper-manual-jog/contract.json
+  evidence_sha256: b6191316cd012b0d71fcc338802241b8a1091db340440371c674b5f30d6b79e5
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-piper-manual-jog
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_piper_manual_jog.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-piper-manual-jog/task_catalog.json
+  default: Operator-controlled Cartesian jogging of one PiPER arm; preserve the other
+    arm and both grippers.
+  inline:
+  - Operator-controlled Cartesian jogging of one PiPER arm; preserve the other arm
+    and both grippers.
+pigey:
+  supported: false
+qualification:
+  supported: false

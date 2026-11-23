@@ -1,0 +1,69 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-pick-and-place-mouse-fastwam-step73350
+label: FastWAM Piper pick-and-place mouse raw step 73350
+release:
+  status: contract_complete
+  evidence: policy/FastWAM/contracts/piper_pick_and_place_mouse_step73350.json
+  evidence_sha256: 5a8f95026917540f55ce9b47997a6360e90b1f7df81d17a3334aa8d603aa2495
+model:
+  backend: fastwam
+bundle:
+  kind: fastwam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/fastwam/piper-pick-and-place-mouse-v1/step-73350
+  required: [checkpoint/step_073350.pt, contract.json, infer.py]
+  verifier: policy/FastWAM/verify_piper_pick_and_place_mouse_step73350_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/FastWAM/serve_piper_pick_and_place_mouse_step73350.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: Pick up one mouse and place it on the mouse pad.
+  inline: [Pick up one mouse and place it on the mouse pad.]
+  catalog_path: "{repo_root}/policy/FastWAM/piper_pick_and_place_mouse_task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/FastWAM/setup_piper_pick_and_place_mouse_step73350.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: jxfang/real_songling_bushu/pick_and_place_mouse_step_073350
+  expected_bytes: 13476171418
+  threads: 32
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: fastwam
+    robot: dual_piper
+    dataset: only_pick_and_place_mouse
+    task: pick_and_place_mouse
+    step: 73350
+    params_semantics: raw
+qualification:
+  supported: true
+  verifier: policy/FastWAM/verify_piper_pick_and_place_mouse_step73350_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+  smoke_script: null

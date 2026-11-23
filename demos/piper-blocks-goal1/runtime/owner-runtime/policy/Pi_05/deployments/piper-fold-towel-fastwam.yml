@@ -1,0 +1,62 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-fold-towel-fastwam
+label: FastWAM Piper fold-towel raw step 28340
+model:
+  backend: fastwam
+bundle:
+  kind: fastwam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/fastwam/piper-fold-towel-lerobot-v3-v1/step-28340
+  required: [checkpoint/step_028340.pt, contract.json, infer.py]
+  verifier: policy/FastWAM/verify_piper_fold_towel_bundle.py
+policy:
+  action_frequency_hz: 60
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+server:
+  default_mode: managed
+  script: policy/FastWAM/serve_piper_fold_towel.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-fastwam-policy-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: Fold a Towel
+  inline:
+    - Fold a Towel
+  catalog_path: "{repo_root}/policy/FastWAM/piper_fold_towel_task_catalog.json"
+setup:
+  script: policy/FastWAM/setup_piper_fold_towel.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: jxfang/delivery/fold_towel_lerobot_v3_fastwam_raw_step28340_ckpt.partial
+  expected_bytes: 13455892537
+  threads: 16
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: fastwam
+    robot: dual_piper
+    dataset: fold_towel_lerobot_v3
+    task: fold_towel_en
+    step: 28340
+    params_semantics: raw
+qualification:
+  supported: true
+  verifier: policy/FastWAM/verify_piper_fold_towel_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1920
+  image_height: 1080
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+  smoke_script: null

@@ -1,0 +1,5 @@
+{
+  "final_r8_closeout_commit": "bd9713baa7d67281ad62a2499e617324614cf4ff",
+  "copied_worktree_code_diff_from_final_closeout": [],
+  "note": "Snapshot taken during native software closeout finalization; source task git HEAD c8a3fc6 plus exact file hashes in SOURCE.json. No source controller edited by composition host."
+}

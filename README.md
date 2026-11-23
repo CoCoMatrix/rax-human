@@ -10,7 +10,8 @@
 |---|---|
 | Piper owner、状态、三路相机、动作回执 | 导出当前适配实现；设备配置和标定对应原实验设备 |
 | 蓝杯放杯垫 v0.4.0-rc10 | 已有多轮成功记录的逐函数组合 `main(ctx)`；源码及原始哈希保留在 `demos/piper-blue-cup-v0.4` |
-| 积木 L 形搭建 | 探索成功，含现场确认；函数代码仍为演练候选，不标为已通过整段测试 |
+| 积木 L 形搭建 | 探索成功，含现场确认；`examples/controllers` 里的函数代码仍为早期演练候选 |
+| 积木 goal1（2026-11-23） | 5090 上 18797 Web 在用的已封版版本，控制器提交 `da2352a`：目标照片识别、按目标规划执行、Coal 碰撞预筛。默认目标与 start1 一致；自定义目标只做了离线验证。完整快照和启动流程见 [`demos/piper-blocks-goal1`](demos/piper-blocks-goal1/README.md) |
 | 多路点轨迹 v0.6 | 独立实验版，不能替代已验证的 v0.4 |
 | 主 Agent 独立软件收尾 | 已做离线验证；本次发布未做新的真实模型收尾或真机测试 |
 | 新机器安装 | 源码和部署配置已提供；SDK、FFS 权重、MoveIt 环境和设备实测标定需要单独准备 |
@@ -113,6 +114,64 @@ PYTHONPATH=. .venv/bin/python -m services.dashboard.piper_scale --port 8781
 
 v0.4 当前配置：50% SDK 速度、3 mm 抓取、40 mm 试抬、0.01 rad 关节判断、0.3 s 持稳（至少 4 个样本）、单次位姿位移上限 400 mm，工作区 X 上限 500 mm。这些是本设备的既有选择，不是 Franka 默认值，也不是其他夹爪／任务的通用参数；500 mm 工作区不保证某个姿态一定有 IK 解。
 
+## 已调通版本：四色积木 goal1 启动流程
+
+[demos/piper-blocks-goal1](demos/piper-blocks-goal1/README.md) 是 5090 上积木 goal1 版本的完整快照：
+
+- 主机代码、goal1 Web、控制器 `assembly_controller.main(ctx)`（提交 `da2352a`）、证据和封版记录；
+- 在 start1 基础上增加了目标照片识别、按目标描述规划执行，以及 Coal 碰撞预筛（原生碰撞检查约快 2.4 倍）。
+
+代码逐字保留，因此里面写死的 5090 路径没有改。下面是在 5090 原目录上的启动流程：
+
+```bash
+V=/home/ubuntu/code_junqi/rax-piper-franka-20261104/experiments/blocks-r9-ssik-sharedik-portfolio-inward1-blend1-carry2-gap68-start1-goal1-web-20261119
+PY=/home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/.venv/bin/python
+```
+
+1. 确认 Piper 设备空闲（同机的 Astribot 会话会被判为占用，需要先停掉）：
+
+   ```bash
+   cd $V/runtime && $PY -c "import sys; sys.path.insert(0,'scripts'); from piper_observe_only import no_existing_devices; no_existing_devices(); print('Piper devices free')"
+   ```
+
+2. 启动 Web。只监听本机，启动时不连接硬件：
+
+   ```bash
+   systemd-run --user --collect --unit rax-goal1-trial-web --working-directory=$V/runtime --setenv=PYTHONPATH=$V/runtime --setenv=PYTHONDONTWRITEBYTECODE=1 $PY -m services.dashboard.blocks_scale --port 18797
+   ```
+
+3. 在 Mac 上建隧道：
+
+   ```bash
+   ssh -fN -L 127.0.0.1:18797:127.0.0.1:18797 ubuntu@<5090 地址>
+   ```
+
+   然后读取令牌 `$V/runtime/runtime/blocks-scale-tests/access-token`，用浏览器打开 `http://127.0.0.1:18797/?token=<令牌>`。
+
+4. 页面操作顺序如下。除设置目标外，其余按钮都会操作硬件，需要有人在现场。
+
+   1. 桌面上只留四块积木。
+   2. （可选）上传目标照片，点"用 Gemini 解析"，核对后点"确认为本轮目标"；不设置时使用默认目标。
+   3. 点"连接 / 重新连接硬件"。
+   4. 点"回到 Prepare"。
+   5. 点"执行一次任务"：先核对封版和预检，再运行 `main(ctx)`，不启动主 Agent。
+   6. 需要中止时点"停止本轮"。
+
+5. 停止 Web：
+
+   ```bash
+   systemctl --user stop rax-goal1-trial-web
+   ```
+
+同一时间只能有一个控制台连接机械臂，start1 控制台在 8797 端口。
+
+换目录或换机器时用 `restore_goal1.py` 还原，详见 demo README。它会做两件事：
+
+- 从 PyPI 补回 Coal 和 SSIK 的二进制，并按清单核对哈希；
+- 从原目录复制没有公开的相机帧，用 git bundle 重建控制器仓库，再核对 32 个封版主机文件。
+
+demo README 里还写了需要在相同路径准备的环境和密钥文件、验证范围和已知问题。
+
 ## Repository layout
 
 | 路径 | 内容 |
@@ -121,8 +180,8 @@ v0.4 当前配置：50% SDK 速度、3 mm 抓取、40 mm 试抬、0.01 rad 关�
 | `services/` | 通用 frontend、Piper backend、相机／深度、控制、Web |
 | `scripts/` | 计划／启动／停止、任务与工作副本管理、验收工具 |
 | `agent_skills/`, `skills/` | RAX 任务技能和本设备的演练／组合经验 |
-| `examples/tasks/`, `examples/controllers/` | 独立任务模板、积木演练候选 |
-| `demos/` | v0.4 已调通控制器、独立轨迹实验版 |
+| `examples/tasks/`, `examples/controllers/` | 独立任务模板、积木早期演练候选 |
+| `demos/` | v0.4 已调通蓝杯控制器、独立轨迹实验版、积木 goal1 完整快照及还原脚本 |
 | `integrations/` | 当前依赖的 Piper legacy、XPolicy owner、policy adapter、MoveIt 源码 |
 | `docs/`, `local_tests/`, `tests/` | 说明、验收与离线回归 |
 | `web-console/` | 原独立 Web 打包入口；本仓库优先使用根目录服务 |

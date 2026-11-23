@@ -1,0 +1,29 @@
+profile_id: tianji_marvin_dual_arm_v1
+robot_type: tianji_marvin
+
+sdk:
+  bundled_root: third_party/robot_sdks/tianji_marvin
+  bundled_library: third_party/robot_sdks/tianji_marvin/contrlSDK100343/libMarvinSDK.so
+  source_revision: 720c58dfbe24255c94da10f8a8b486c383766851
+  library_env: TIANJI_SDK_LIBRARY
+  root_env: TIANJI_SDK_ROOT
+  controller_ip_env: TIANJI_CONTROLLER_IP
+  local_udp_port: 4730
+  required_controller_major: 100343
+
+body:
+  joint_count: 14
+  sdk_position_unit: degree
+  runtime_position_unit: radian
+  arm_mapping:
+    A: left
+    B: right
+
+read_only_probe:
+  status_timeout_seconds: 3.0
+  require_advancing_frames: true
+
+safety:
+  auto_clear_errors: false
+  auto_enable: false
+  auto_move: false

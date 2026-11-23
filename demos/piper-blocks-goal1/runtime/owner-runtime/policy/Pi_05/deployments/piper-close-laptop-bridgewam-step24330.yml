@@ -1,0 +1,70 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-close-laptop-bridgewam-step24330
+label: BridgeWAM Piper close-laptop intermediate raw step 24330
+release:
+  status: contract_complete
+  evidence: policy/BridgeWAM/contracts/piper_close_laptop_step24330.json
+  evidence_sha256: 82fd05f55dfce500a31b6f469bdbfc79c190f8b94847e0ed274199cb265388c3
+model:
+  backend: bridgewam
+bundle:
+  kind: bridgewam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/bridgewam/piper-close-laptop-v1/step-24330
+  required: [checkpoint/step_024330.pt, contract.json, infer.py]
+  verifier: policy/BridgeWAM/verify_piper_close_laptop_step24330_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/BridgeWAM/serve_piper_close_laptop_step24330.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: Close the laptop.
+  inline: [Close the laptop.]
+  catalog_path: "{repo_root}/policy/BridgeWAM/piper_close_laptop_task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/BridgeWAM/setup_piper_close_laptop_step24330.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: jxfang/real_songling_bushu/bridgewam/close_the_laptop_step_024330
+  expected_bytes: 11532064364
+  threads: 16
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: bridgewam
+    robot: dual_piper
+    dataset: only_close_laptop
+    task: close_laptop
+    step: 24330
+    params_semantics: raw
+qualification:
+  supported: true
+  verifier: policy/BridgeWAM/verify_piper_close_laptop_step24330_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+    - tests/test_bridgewam_piper.py
+  smoke_script: null

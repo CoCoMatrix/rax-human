@@ -1,0 +1,13 @@
+# C-speed0.2.2 — synchronize the actual owner trajectory gate
+
+Failure: web-main-20261113-165347-2f8ae5, red-hover-2. Preflight21.387s passed; empty-open6.254s completed; red-hover4.064s rejected with no arm dispatch. Owner journal's first cause is `trajectory joint increment exceeds 0.015 rad`. The subsequent consumed/reordered message is a consequence, not a network cause. Native stop confirmed measured rest. C-speed0.2.1 fixed the separate60deg adapter cap but its previous offline replay did not cover this owner gate.
+
+At30Hz the legacy0.015rad/sample limit permits25.7831deg/s. This failed command peaks at0.015822649rad/sample (27.19713deg/s), below the selected27.2deg/s trajectory limit but above the legacy owner gate. Do not confuse a per-sample command increment with the0.1rad following-error guard or the120deg total action scope.
+
+Only an explicitly configured RAX faster session selects the owner bound radians(32)*0.85/30+1e-6 =0.01582531855rad/sample. The1microradian reserve is float32 quantization allowance. Require30Hz; unknown profiles refuse. Ordinary/standard owners keep0.015. Incoming release metadata cannot select a higher profile. Launcher always sets standard/faster explicitly to avoid inherited shell overrides. SDK80%, jaw25mm/s,600mm translation,120deg per-joint step,0.1rad following,0.01rad arrival/binding,0.3s rest, collision/workspace and mechanical limits are unchanged.
+
+Bridge preserves the owner's original reason in stop/error data instead of replacing it with generic owner rejected release. First failure is retained; subsequent receipt errors do not overwrite it. No automatic retry, no false claim of safe dispatch, no relaxation of uncertain-stop handling.
+
+Validation:552 regressions+52 subtests. Replay of this exact failed95.252deg request through installed FCL collision/FK workspace and production float32 wire passed.24 cases (single60/95.27/120deg, blended waypoints, jaws1..75mm both directions and current recorded opening) yielded2926 accepted samples through production MotionTransport.tick and the actual BoundedReviewGate.reserve. Reproduced old gate refusal.11 negative cases reject excessive joint/jaw increments, stale/reordered release, anchor/following drift, wrong scheduling and unauthorized profile elevation. Synthetic path cases use collision fixtures; the recorded failed path alone has actual native geometry verification. Ideal feedback replay is not physical80% following qualification.
+
+Actual launcher graph was built offline; actual isolated owner interpreter loaded the new gate and80% profile without starting graph or hardware. Original/frozen versions remain intact. Web8797 switches to this independent runtime. User starts a new test; no automatic task movement.

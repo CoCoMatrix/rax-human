@@ -1,0 +1,17 @@
+# Isolated Astribot SDK/Dora owner runtime. Keep NumPy on the 1.x ABI used by
+# the pinned vendor SDK and update this file only with host-runtime evidence.
+annotated-types==0.8.0
+dora-rs==0.5.0
+h5py==3.16.0
+msgpack==1.2.1
+msgpack-numpy==0.4.8
+numpy==1.26.4
+opencv-python-headless==4.11.0.86
+pyarrow==25.0.0
+pydantic==2.13.4
+pydantic-core==2.46.4
+pyserial==3.5
+pyyaml==6.0.3
+typing-extensions==4.16.0
+typing-inspection==0.4.2
+websockets==16.1.1

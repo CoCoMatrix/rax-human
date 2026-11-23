@@ -1,0 +1,160 @@
+"""General 6R analytical IK via Raghavan-Roth + Manocha-Canny.
+
+KinBody-input wrapper around the numeric Raghavan-Roth pipeline in
+:mod:`ssik.solvers.ikgeo._raghavan_roth`. Closes the EAIK gap: any 6R chain,
+including non-Pieper non-orthogonal arms (Kinova JACO 2 with 60-degree DH
+twists, Agilex Piper, Flexiv Rizon 4) where subproblem-composition solvers
+do not apply.
+
+Pipeline:
+
+1. Convert POE-normalized ``KinBody`` to standard distal DH form via
+   :func:`~ssik.kinematics.poe_to_dh.poe_to_dh`. Returns
+   ``(alpha, a, d, theta_offset, T_pre, T_post)`` such that
+   ``FK_POE(q) = T_pre @ FK_DH(q + theta_offset) @ T_post``.
+2. Bridge target: ``T_dh = T_pre^{-1} @ T_target @ T_post^{-1}``.
+3. Run :func:`~ssik.solvers.ikgeo._raghavan_roth.solve_all_ik` (AE-3 leftvar
+   selection cached per arm).
+4. Convert the returned ``theta`` vectors back to POE-frame ``q`` by
+   subtracting ``theta_offset``.
+5. FK-validate each candidate against the POE chain (cross-check that
+   the conversion + DH solve round-trips).
+
+The DH-frame solver does the heavy lifting: algebraic candidates, each one
+that passes the FK gate polished to machine precision on its own branch
+(:mod:`ssik.refinement.polish`), and opt-in Newton refinement of near-misses.
+Per-arm cold-cache cost is one-time sympy preprocessing (~30-100s for AE-3
+leftvar selection); subsequent IKs are warm-cache single-digit milliseconds.
+
+Tier-2 alternative: :mod:`ssik.solvers.husty_pfurner.general_6r` uses
+Husty-Pfurner Study quaternion algebra. RR is faster on well-conditioned
+arms (~ ms); HP is more robust on highly-symmetric DH geometries
+(alpha = pi/2 with a_i = 0 throughout, e.g. KUKA iiwa locked sub-chains)
+where RR's m_quad conditioning blows up. The jointlock dispatcher
+prefers HP for post-lock geometries; the top-level dispatcher prefers
+RR for native 6R arms.
+"""
+
+from __future__ import annotations
+
+import logging
+
+import numpy as np
+from numpy.typing import NDArray
+
+from ssik._kinbody import KinBody
+from ssik.continuum import FlaggedSolution, rank_deficient
+from ssik.core.solution import Solution
+from ssik.core.tolerances import DEFAULT_TOLERANCE_POLICY, TolerancePolicy
+from ssik.kinematics.poe_to_dh import poe_to_dh
+from ssik.refinement import kinbody_fk_jacobian_batch
+from ssik.solvers.ikgeo._raghavan_roth import solve_all_ik
+
+_LOG = logging.getLogger(__name__)
+
+__all__ = ["solve"]
+
+_SOLVER_NAME = "ikgeo.general_6r"
+
+
+def solve(
+    kb: KinBody,
+    T_target: NDArray[np.float64],
+    policy: TolerancePolicy = DEFAULT_TOLERANCE_POLICY,
+    *,
+    allow_refinement: bool = False,
+    refinement_max_iters: int = 15,
+    linearity_joint: int | str = "auto",
+    apply_so3: bool = False,
+    max_solutions: int | None = None,
+    flag_continua: bool = False,
+) -> tuple[list[Solution], bool]:
+    """Analytic IK for any 6R chain via Raghavan-Roth + AE-3 leftvar selection.
+
+    :param kb: POE-normalized :class:`KinBody` with 6 revolute joints.
+    :param T_target: 4x4 target end-effector pose in the POE base frame.
+    :param policy: tolerance policy. ``subproblem_numerical`` is the
+        FK-closure threshold; ``subproblem_dedup`` is the per-joint
+        wrap-to-pi tolerance for collapsing equivalent solutions.
+    :param allow_refinement: opt into Newton-on-spatial-Jacobian polish for
+        algebraic candidates that don't meet ``policy.subproblem_numerical``
+        on their own. Default off (#74). Candidates that do meet it are always
+        polished to machine precision (:mod:`ssik.refinement.polish`); this
+        flag only decides whether the ones that miss get a chance.
+    :param refinement_max_iters: cap on Newton iterations per candidate
+        when ``allow_refinement=True``.
+    :returns: ``(solutions, is_ls)``. Each :class:`Solution.q` is in the
+        POE frame (matches ``FK_POE(q)``, not ``FK_DH(theta)``).
+        ``Solution.fk_residual`` is measured against the user's POE chain.
+        ``is_ls=True`` iff no candidate closed within
+        ``policy.subproblem_numerical``.
+    :param flag_continua: return a solution whose Jacobian may be rank
+        deficient as a :class:`ssik.continuum.FlaggedSolution`, for the
+        singular-continuum slide (``Manipulator.solve`` asks; an inner solver
+        user such as jointlock does not pay for it).
+    """
+    if len(kb.joints) != 6:
+        raise ValueError(f"general_6r requires a 6-DOF chain; got {len(kb.joints)} joints")
+    for joint in kb.joints:
+        if joint.joint_type != "revolute":
+            raise ValueError(f"general_6r requires all-revolute joints; got {joint.joint_type}")
+
+    dh = poe_to_dh(kb)
+    t_target = np.asarray(T_target, dtype=np.float64)
+    t_target_dh = np.linalg.solve(dh.t_pre, t_target) @ np.linalg.inv(dh.t_post)
+
+    fk_atol = policy.subproblem_numerical
+    dedup_atol = policy.subproblem_dedup
+    inner_solutions, _is_ls = solve_all_ik(
+        dh.to_dh_tuple(),
+        t_target_dh,
+        fk_atol=fk_atol,
+        dedup_atol=dedup_atol,
+        linearity_joint=linearity_joint,
+        apply_so3=apply_so3,
+        allow_refinement=allow_refinement,
+        refinement_max_iters=refinement_max_iters,
+        solver_name=_SOLVER_NAME,
+        max_solutions=max_solutions,
+        # The polish must not cross a limit (ssik.refinement.polish); in DH
+        # coordinates, q_dh = q + theta_offset.
+        limits=[
+            None if j.limits is None else (j.limits[0] + off, j.limits[1] + off)
+            for j, off in zip(kb.joints, dh.theta_offset.tolist(), strict=True)
+        ],
+    )
+
+    # The bridge ``T_pre @ FK_DH(theta) @ T_post = FK_POE(q)`` uses SE(3)-
+    # orthogonal pre/post transforms (rotation block is a rigid rotation;
+    # cond=1). The Frobenius residual is preserved to machine precision
+    # under that bridge, so the inner solver's DH-frame fk_residual is what
+    # the user would measure against their POE chain. Reporting the inner
+    # residual lets us skip a redundant POE FK per candidate (~0.3-0.5ms
+    # on JACO 2; closes part of #86).
+    solutions: list[Solution] = []
+    for inner in inner_solutions:
+        q = inner.q - dh.theta_offset
+        solutions.append(
+            Solution(
+                q=q,
+                fk_residual=inner.fk_residual,
+                refinement_used=inner.refinement_used,
+            )
+        )
+    # A solution whose Jacobian may be rank deficient may sample a singular
+    # continuum; flag it for the slide (ssik.continuum), as the artifact does.
+    if flag_continua and solutions:
+        _, jac = kinbody_fk_jacobian_batch(kb, np.array([s.q for s in solutions]))
+        solutions = [
+            FlaggedSolution(s.q, s.fk_residual, s.refinement_used) if flag else s
+            for s, flag in zip(solutions, rank_deficient(jac), strict=True)
+        ]
+
+    _LOG.info(
+        "%s: %d inner candidates -> %d solutions (is_ls=%s)",
+        _SOLVER_NAME,
+        len(inner_solutions),
+        len(solutions),
+        len(solutions) == 0,
+    )
+    return solutions, len(solutions) == 0

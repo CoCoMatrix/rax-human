@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.reward_target.v1",
+  "title": "XPolicy RECAP reward and return target",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "episode_id",
+    "frame_index",
+    "transition_id",
+    "task_id",
+    "reward",
+    "return_target",
+    "observation_refs",
+    "state_ref",
+    "intervention_observed",
+    "representative_action",
+    "causal_transitions_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.reward_target.v1"},
+    "episode_id": {"type": "string", "minLength": 1},
+    "frame_index": {"type": "integer", "minimum": 0},
+    "transition_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "reward": {"type": "number", "minimum": -1, "maximum": 0},
+    "return_target": {"type": "number", "minimum": -1, "maximum": 0},
+    "observation_refs": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "state_ref": {"type": "string", "minLength": 1},
+    "intervention_observed": {"type": "boolean"},
+    "representative_action": {
+      "type": "object",
+      "required": [
+        "execution_timestamp_ns",
+        "executed_action",
+        "action_source",
+        "policy_action",
+        "expert_action",
+        "expert_label_valid",
+        "intervention_id"
+      ],
+      "properties": {
+        "control_tick_id": {"type": ["integer", "null"], "minimum": 0},
+        "execution_timestamp_ns": {"type": "integer", "minimum": 0},
+        "executed_action": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "number"}
+        },
+        "action_source": {"enum": ["POLICY", "EXPERT", "HOLD", "SAFETY"]},
+        "policy_action": {
+          "type": ["array", "null"],
+          "items": {"type": "number"}
+        },
+        "expert_action": {
+          "type": ["array", "null"],
+          "items": {"type": "number"}
+        },
+        "expert_label_valid": {"type": "boolean"},
+        "intervention_id": {"type": "integer", "minimum": 0},
+        "alignment": {"enum": ["control_tick_id", "timestamp_fallback"]},
+        "source_rows": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "causal_transitions_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

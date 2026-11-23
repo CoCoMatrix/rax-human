@@ -1,0 +1,17 @@
+policy_name: Pi_05
+protocol: ws
+eval_batch: false
+
+host: 0.0.0.0
+port: 19001
+runtime_profile: gr3_anygrasp
+
+pi05_policy_root: null
+train_config_name: pi05_anygrasp
+checkpoint_path: null
+camera_name: cam_head
+action_frequency_hz: 30
+
+rtc_enabled: false
+allow_dummy_policy: false
+dummy_horizon: 50

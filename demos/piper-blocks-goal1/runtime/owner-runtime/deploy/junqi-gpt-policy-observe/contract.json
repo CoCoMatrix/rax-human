@@ -1,0 +1,21 @@
+{
+  "schema": "junqi.piper.gpt_policy_observation.v1",
+  "deployment": "junqi-gpt-policy-observe",
+  "source_revision": "4c43e57833d4314b066d386935e814d06940d027",
+  "robot_type": "piper_x_dual",
+  "state_dim": 14,
+  "camera_roles": [
+    "camera_head",
+    "camera_left",
+    "camera_right"
+  ],
+  "action_frequency_hz": 30,
+  "result_kind": "no_action",
+  "returned_action_shape": [
+    0,
+    14
+  ],
+  "hardware_write_allowed": false,
+  "checkpoint": null,
+  "task": "Pick up the brown bottled water and place it on the coaster."
+}

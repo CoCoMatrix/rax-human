@@ -1,0 +1,11 @@
+# Mac review notes — offline composition only
+
+1. Source identity: R8 native automatic software closeout completed while the copy was finalized. It committed `bd9713baa7d67281ad62a2499e617324614cf4ff`. The SOURCE.json copy had task git HEAD `c8a3fc6643814ac8d22291a7a5e82137a6ce1875` plus an uncommitted closeout working tree. Every copied non-git code file matches the final closeout bytes; this is documented in audit SOURCE-CLOSEOUT.json. Distinguish the rehearsed c8a3 task code from inherited offline closeout fixes and new composition. Do not claim stack_checks diffs versus c8a3 were authored as this composition optimization.
+
+2. Check green_transfer_inputs against the actual R8 calculation. R8 transfer-01 preserved current X/Z and set Y = measured orange top-center Y - 0.105 m; then raised 0.025 m; transfer-02 moved halfway in XY to stack_target; transfer-03 went to the target XY. The new implementation uses equal thirds from green to red. That is a changed route-selection rule, not merely compiling R8's hand-passed inputs. Since the user requested composition only, preserve the R8 relative first waypoint and existing two subsequent transfers, unless exact source evidence proves another intended rule. Keep bounds/path checks; don't replay absolute XYZ.
+
+3. Confirm real green_pregrasp -> refresh_stack_support -> subsequent history works with the new recorded semantic inputs and distinct invocation_inputs. Test the actual validators, not only stubbed successful function returns. Never add unsupported keyword arguments to the function call or rewrite historic reports.
+
+4. Aggregate report: make runtime primary Agent calls explicitly zero for main itself (not claim model-authoring calls were zero). Auxiliary counts must derive from real recorded tools. Keep offline authoring API calls separately in host phase.json; offline robot/Gemini calls are zero.
+
+5. Preserve all original function implementations/checker files relative to copied working-tree hashes except strictly necessary contract composition changes. Original stack check duplication, wrist FFS policy, speeds/tolerances/offset optimizations stay analysis-only. New scene-dependent main and meaningful first-failure/ambiguity tests are required before delivery.

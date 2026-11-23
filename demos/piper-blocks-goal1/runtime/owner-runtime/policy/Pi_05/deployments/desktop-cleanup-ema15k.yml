@@ -1,0 +1,54 @@
+schema: xpolicylab.piper-deployment/v1
+name: desktop-cleanup-ema15k
+label: Pi0.5 Piper desktop-cleanup EMA step 15000
+bundle:
+  kind: pytorch_safetensors
+  default_path: /home/ubuntu/michael_dev/model-store/models/pi05/desktop-cleanup-dual-piper-real-ema-v1/step-15000
+  required: [checkpoint/model.safetensors, contract.json]
+  verifier: policy/Pi_05/verify_piper_desktop_ema_bundle.py
+policy:
+  action_frequency_hz: 15
+  action_horizon: 16
+  default_execute_chunk: 8
+  default_execute_mode: auto
+server:
+  default_mode: managed
+  script: policy/Pi_05/serve_piper_desktop_ema15k.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Pick up one paper ball and place it in the trash bin.
+  inline:
+    - Close the laptop.
+    - Pick up one drink container and place it on the coaster.
+    - Pick up one mouse and place it on the mouse pad.
+    - Pick up one paper ball and place it in the trash bin.
+    - Pick up one pen and place it in the pen holder.
+  catalog_path: null
+pigey:
+  supported: true
+  harness_config: configs/real/harness_xpolicy_local_qwen.json
+  reinitialize_after_steps: 0
+  continuous_policy_prompts: []
+  vlm:
+    mode: local
+setup:
+  script: policy/Pi_05/setup_piper_desktop_ema15k.sh
+qualification:
+  supported: true
+  verifier: policy/Pi_05/verify_piper_desktop_ema_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 300
+  image_width: 1920
+  image_height: 1080
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_pi05_piper_desktop_ema.py
+  smoke_script: policy/Pi_05/smoke_piper_desktop_ema15k.py

@@ -1,0 +1,15 @@
+test_ambiguous_motion_error_holds_and_never_retries (test_controller.Tests) ... ok
+test_bad_retreat_rejected_before_any_motion (test_controller.Tests) ... ok
+test_grasp_exact_50_and_10mm_lift (test_controller.Tests) ... ok
+test_old_frame_cannot_authorize_motion (test_controller.Tests) ... ok
+test_retention_failure_holds_without_reopening (test_controller.Tests) ... ok
+test_successful_release_and_known_withdrawal (test_controller.Tests) ... ok
+test_target_command_not_skipped_by_feedback_tolerance (test_controller.Tests) ... ok
+test_uncertain_control_does_not_dispatch (test_controller.Tests) ... ok
+test_unconfirmed_support_never_opens (test_controller.Tests) ... ok
+test_unknown_motion_receipt_is_not_success (test_controller.Tests) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.000s
+
+OK

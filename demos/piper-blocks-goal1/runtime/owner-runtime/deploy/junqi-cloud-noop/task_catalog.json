@@ -1,0 +1,6 @@
+{
+  "exact_match_required": true,
+  "tasks": [
+    {"task_index": 0, "task": "Connectivity check only. Do not move."}
+  ]
+}

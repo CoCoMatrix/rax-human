@@ -1,0 +1,11 @@
+{
+  "source_archive": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/commissioning/blue-cup-explore-20261105-r8-joint-transition/packets-settling-20261105.tar.gz",
+  "source_packet": "packets/packet-001761-caa3c284538141048c9d01d1584b9a1f",
+  "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+  "serial": "262522073779",
+  "files": {
+    "packet.json": "f434f22d043debc3df884f7dc14f40f8b2f43f8f794a6254a99bfedc6fbba3a2",
+    "images.npz": "f334ce4afbe0674b8091b01ddc4108fe182ea931c22162259d14bff939c3025e"
+  },
+  "purpose": "offline model warmup only; never live scene evidence"
+}

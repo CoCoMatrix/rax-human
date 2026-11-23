@@ -1,0 +1,33 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-cloud-noop
+label: Junqi cloud transport only — NO ACTION / NO WEIGHTS
+release:
+  status: hardware_free_candidate
+bundle:
+  kind: transport_contract
+  default_path: "{repo_root}/deploy/junqi-cloud-noop"
+  required: [contract.json]
+  verifier: scripts/verify_junqi_noop_contract.py
+policy:
+  backend: transport_noop
+  action_frequency_hz: 30
+  # Scheduler capacity only. This deployment always returns zero targets.
+  action_horizon: 1
+  default_execute_chunk: 1
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: "{repo_root}/deploy/junqi-cloud-noop/task_catalog.json"
+  default: Connectivity check only. Do not move.
+  inline: [Connectivity check only. Do not move.]
+pigey:
+  supported: false
+qualification:
+  supported: false

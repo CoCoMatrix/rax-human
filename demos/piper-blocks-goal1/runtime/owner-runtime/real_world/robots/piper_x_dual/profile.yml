@@ -1,0 +1,340 @@
+profile_id: piper_x_dual_takeover_canary_v1
+robot_type: piper_x_dual
+maturity: supervised_takeover_canary
+device_instance:
+  schema_version: xpolicy.robot_devices.v1
+  default_path: runtime/robot_dagger/config/robot_instances/piper_x_dual_01.yml
+sdk:
+  bundled_root: third_party/robot_sdks/pyagxarm
+  root_env: PIPER_X_SDK_ROOT
+  required_commit: 8cd90f9106219a156c3c0d7e58ee36d838a89baf
+  robot_model: piper_x
+  firmware_driver_source: robot_instance
+  allowed_firmware_drivers:
+  - default
+  - v183
+  - v188
+  - v189
+  can_interface: socketcan
+  can_bitrate: 1000000
+  enable_timeout_seconds: 8.0
+  enable_retry_interval_seconds: 0.5
+leader_follower:
+  leader_role: left_arm
+  follower_role: right_arm
+  feedback_role: right_arm
+  native_linkage: false
+geometry:
+  root_frame: dual_base_link
+  convention: x_forward_y_left_z_up
+  arm_separation_m: 0.6
+  left_base_xyz_m:
+  - 0.0
+  - 0.3
+  - 0.008
+  right_base_xyz_m:
+  - 0.0
+  - -0.3
+  - 0.008
+  base_rpy_rad:
+  - 0.0
+  - 0.0
+  - 0.0
+  urdf_env: PIPER_X_DUAL_URDF
+  urdf_path: description/dual_piper_x_mink.urdf
+  urdf_kind: kinematics_only
+  urdf_source_sha256: 9f6dfedb85f2213e05567d6324fbd1f23ffe1e42b6f30f062422d3a6c462b395
+  expected_urdf_robot_name: dual_piper_x
+  end_effector_links:
+    left_arm: left_link6
+    right_arm: right_link6
+body:
+  arm_order:
+  - left_arm
+  - right_arm
+  arms:
+    left_arm:
+      joint_names:
+      - left_joint1
+      - left_joint2
+      - left_joint3
+      - left_joint4
+      - left_joint5
+      - left_joint6
+      sdk_joint_names:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+      direction:
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+    right_arm:
+      joint_names:
+      - right_joint1
+      - right_joint2
+      - right_joint3
+      - right_joint4
+      - right_joint5
+      - right_joint6
+      sdk_joint_names:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+      direction:
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+  joint_limits_rad:
+    left_joint1:
+    - -2.617994
+    - 2.617994
+    left_joint2:
+    - 0.0
+    - 3.141593
+    left_joint3:
+    - -2.96706
+    - 0.0
+    left_joint4:
+    - -1.553344
+    - 1.553344
+    left_joint5:
+    - -1.553344
+    - 1.553344
+    left_joint6:
+    - -3.141593
+    - 3.141593
+    right_joint1:
+    - -2.617994
+    - 2.617994
+    right_joint2:
+    - 0.0
+    - 3.141593
+    right_joint3:
+    - -2.96706
+    - 0.0
+    right_joint4:
+    - -1.553344
+    - 1.553344
+    right_joint5:
+    - -1.553344
+    - 1.553344
+    right_joint6:
+    - -3.141593
+    - 3.141593
+  grippers:
+    left_gripper:
+      arm: left_arm
+      unit: m
+      limits:
+      - 0.0
+      - 0.1
+    right_gripper:
+      arm: right_arm
+      unit: m
+      limits:
+      - 0.0
+      - 0.1
+cameras:
+  required_roles:
+  - camera_head
+  - camera_left
+  - camera_right
+  bind_by: serial
+  startup:
+    max_attempts: 3
+    retry_delay_seconds: 1.0
+    readiness_seconds: 0.5
+  recovery:
+    frame_timeout_ms: 3000
+    max_frame_age_ms: 1000
+    max_attempts: 3
+    retry_delay_seconds: 1.0
+  color:
+    width: 1920
+    height: 1080
+    fps: 15
+    encoding: bgr8
+  depth:
+    enabled: false
+read_only_probe:
+  status_timeout_seconds: 3.0
+  require_both_arms: true
+  require_advancing_frames: true
+  minimum_arm_status_hz: 100.0
+  minimum_gripper_status_hz: 100.0
+  max_state_age_ms: 100.0
+  max_inter_arm_skew_ms: 20.0
+  gripper_feedback_tolerance_m: 0.005
+prepare:
+  initial_pose:
+    left_arm:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    right_arm:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    left_gripper: 0.0003
+    right_gripper: 0.0022
+  source: pyAgxArm Piper X official demo move_j([0.0] * joint_nums)
+  command: move_j
+  speed_percent: 15
+  position_tolerance_rad: 0.03
+  gripper_tolerance_m: 0.003
+  timeout_seconds: 15.0
+transition_pose:
+  speed_percent: 12
+  position_tolerance_rad: 0.04
+  timeout_seconds: 18.0
+  max_joint_delta_rad: 1.75
+  segmented_transition_enabled: true
+  segmented_max_joint_delta_rad: 2.5
+  max_segmented_waypoints: 4
+  home_fallback_enabled: true
+  home_fallback_max_waypoints: 8
+  interpolation_samples: 25
+  minimum_interpolated_flange_height_m: 0.14
+  gripper_policy: preserve_measured
+write_canary:
+  arm_order:
+  - left_arm
+  - right_arm
+  installation_position: horizontal
+  speed_percent: 5
+  test_joint_index: 1
+  test_delta_rad: 0.03
+  cartesian_test_axis: x
+  cartesian_test_delta_m: 0.005
+  cartesian_position_tolerance_m: 0.003
+  cartesian_rotation_tolerance_rad: 0.03
+  gripper_test_delta_m: 0.005
+  gripper_position_tolerance_m: 0.003
+  gripper_force_n: 1.0
+  measured_state_limit_tolerance_rad: 0.1
+  position_tolerance_rad: 0.02
+  timeout_seconds: 8.0
+  return_to_measured_start: true
+live_takeover:
+  qualification: supervised_external_takeover
+  command: move_j
+  control_hz: 100
+  speed_percent: 10
+  max_state_age_ms: 100.0
+  max_command_age_ms: 100.0
+  measured_state_limit_tolerance_rad: 0.01
+  gripper_write_enabled: false
+  model_boundary_normalization:
+    enabled: true
+    joint_tolerance_rad: 0.03
+    gripper_mode: clamp_physical_range
+safety:
+  auto_clear_errors: false
+  auto_enable: false
+  auto_move: false
+  write_enabled: false
+shadow_teleop:
+  qualification: supervised_takeover_canary
+  arm_mapping: host_urdf_ik_joint_stream
+  gripper_mapping: trigger_to_absolute_width
+  waist_pitch: disabled
+  waist_yaw: disabled
+  max_gripper_width_m: 0.1
+  gripper_force_n: 1.0
+  sdk_cartesian:
+    qualification: offline_firmware_canary_only
+    command: move_p
+    ik_feedback: get_ik_joint_angles
+    flange_feedback: get_flange_pose
+    translation_scale: 1.0
+    rotation_scale: 1.0
+    max_translation_m: null
+    max_rotation_rad: null
+    translation_filter_alpha: 0.3
+    rotation_filter_alpha: 0.22
+    workspace_xyz_m:
+      x:
+      - 0.05
+      - 0.5
+      y:
+      - -0.35
+      - 0.35
+      z:
+      - 0.08
+      - 0.65
+    axis_map_left:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+    axis_map_right:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+  mink:
+    solver: daqp
+    control_hz: 100
+    max_iterations: 50
+    translation_scale: 1.0
+    rotation_scale: 1.0
+    max_translation_m: null
+    max_rotation_rad: null
+    translation_filter_alpha: 0.3
+    rotation_filter_alpha: 0.22
+    position_tolerance_m: 0.002
+    orientation_tolerance_rad: 0.03
+    position_cost: 1.0
+    orientation_cost: 0.1
+    posture_cost: 0.001
+    lm_damping: 0.001
+    max_solution_jump_rad: 0.5235987756
+    axis_map_left:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+    axis_map_right:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0

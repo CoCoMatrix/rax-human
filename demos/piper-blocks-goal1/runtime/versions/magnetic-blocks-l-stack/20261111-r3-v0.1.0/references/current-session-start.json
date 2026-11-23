@@ -1,0 +1,454 @@
+{
+  "measured_at_ns": 1794369824349215129,
+  "state": {
+    "cameras": {
+      "head": {
+        "age_seconds": 0.14,
+        "available": true,
+        "camera_role": "camera_head",
+        "camera_serial": "262522073779",
+        "device_frame_index": 61,
+        "device_time_ns": 1794369824169243904,
+        "encoding": "bgr8",
+        "height": 720,
+        "jpeg_bytes": 227588,
+        "source_timestamp_ns": 1794369824203380561,
+        "status": "live",
+        "timestamp_domain": "global_time",
+        "timestamp_ns": 1794369824203380561,
+        "width": 1280
+      },
+      "left": {
+        "age_seconds": 0.09,
+        "available": true,
+        "camera_role": "camera_left",
+        "camera_serial": "262422071560",
+        "device_frame_index": 93,
+        "device_time_ns": 1794369824213015808,
+        "encoding": "bgr8",
+        "height": 720,
+        "jpeg_bytes": 197358,
+        "source_timestamp_ns": 1794369824246191226,
+        "status": "live",
+        "timestamp_domain": "global_time",
+        "timestamp_ns": 1794369824246191226,
+        "width": 1280
+      },
+      "right": {
+        "age_seconds": 0.011,
+        "available": true,
+        "camera_role": "camera_right",
+        "camera_serial": "262522070284",
+        "device_frame_index": 34,
+        "device_time_ns": 1794369824293843456,
+        "encoding": "bgr8",
+        "height": 720,
+        "jpeg_bytes": 199034,
+        "source_timestamp_ns": 1794369824324703338,
+        "status": "live",
+        "timestamp_domain": "global_time",
+        "timestamp_ns": 1794369824324703338,
+        "width": 1280
+      }
+    },
+    "collection": {
+      "episode_active": false,
+      "label_valid": false,
+      "lifecycle_state": "prepared",
+      "locked": true,
+      "mode": "OFF",
+      "record_dir": "",
+      "recorder_enabled": false,
+      "selected_action_source": "HOLD"
+    },
+    "command_pending": true,
+    "control_source": "keyboard",
+    "dagger_expert_source": "qnexo",
+    "deployment": {
+      "id": "",
+      "label": "RAX exploration"
+    },
+    "execution": {
+      "action_horizon": 600,
+      "default_steps": 600,
+      "effective_steps": null,
+      "fixed_steps": 600,
+      "locked": false,
+      "mode": "auto"
+    },
+    "expert": {
+      "feedback_role": "right_arm",
+      "follower_role": "right_arm",
+      "leader_role": "left_arm",
+      "locked": false,
+      "max_age_ms": 100.0,
+      "native_linkage": false,
+      "source": "qnexo"
+    },
+    "gripper_control": {
+      "can_open": false,
+      "last_request": {},
+      "reason": "\u8bf7\u7b49\u5f85\u4e0a\u4e00\u6761\u6307\u4ee4\u5904\u7406\u5b8c\u6210",
+      "supports_open_left_only": true
+    },
+    "human_demo": {
+      "active": false,
+      "camera": "head",
+      "frame_count": 0,
+      "max_seconds": 600.0,
+      "record_fps": 5.0,
+      "root": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/commissioning/magnetic-blocks-explore-20261111-r3/ui-demo",
+      "status": "idle"
+    },
+    "last_command": "prepare",
+    "model_info": {},
+    "operator_recording": {
+      "active": false,
+      "cameras": [
+        "left",
+        "head",
+        "right"
+      ],
+      "capture_mode": "operator_three_camera",
+      "frame_count": 0,
+      "max_seconds": 600.0,
+      "message": "Ready to record all three operator UI views.",
+      "record_fps": 10.0,
+      "root": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/commissioning/magnetic-blocks-explore-20261111-r3/ui-video",
+      "status": "idle"
+    },
+    "pigey": {
+      "active": false,
+      "age_seconds": null,
+      "available": false,
+      "observation_available": false,
+      "operator_control": {
+        "command": null,
+        "requested_timestamp_ns": 0,
+        "sequence": 0
+      },
+      "operator_controls": [],
+      "sequence_presets": [],
+      "sequence_selection": {
+        "preset_id": null,
+        "selected_timestamp_ns": 0,
+        "sequence": 0
+      }
+    },
+    "policy_label": "RAX exploration",
+    "policy_status": {
+      "execution_chunk_default_steps": 600,
+      "execution_chunk_effective_steps": null,
+      "execution_chunk_fixed_steps": 600,
+      "execution_chunk_mode": "auto",
+      "execution_dispatch_steps": null,
+      "execution_timebase": {
+        "channels": "all_absolute_position_channels",
+        "dispatch_frequency_hz": 30.0,
+        "rtc_step_units": "dispatch_ticks",
+        "source_phase_steps_per_second": 30.0,
+        "trajectory_time_scale": 1.0
+      },
+      "generation": 0,
+      "image_transport": {
+        "enabled": false
+      },
+      "review_profile": "legacy",
+      "rtc": {
+        "latency_margin_steps": 1,
+        "latency_quantile": 0.95,
+        "latency_window_size": 32,
+        "mode": "disabled",
+        "new_weight_end": 1.0,
+        "new_weight_start": 0.0,
+        "preserve_steps": 0,
+        "request_remaining_steps": 0,
+        "transition_curve": "smoothstep",
+        "transition_steps": 0
+      },
+      "status": "paused",
+      "task": "Magnetic blocks L stack exploration",
+      "training_time_rtc": null
+    },
+    "recording_folder": {
+      "available": false,
+      "error": "\u5f55\u50cf\u6587\u4ef6\u5939\u4e0d\u5b58\u5728"
+    },
+    "robot_state": {
+      "available": true,
+      "feedback_metadata": {
+        "inter_arm_skew_ms": 0.09107589721679688,
+        "maximum_age_ms": 1.188516616821289,
+        "source_timestamp_ns": 1794369824334509561,
+        "timestamp_ns": 1794369824334739059
+      },
+      "names": [
+        "left_joint1",
+        "left_joint2",
+        "left_joint3",
+        "left_joint4",
+        "left_joint5",
+        "left_joint6",
+        "left_gripper",
+        "right_joint1",
+        "right_joint2",
+        "right_joint3",
+        "right_joint4",
+        "right_joint5",
+        "right_joint6",
+        "right_gripper"
+      ],
+      "schema_id": "xpolicy.piper_x_dual.state.v1",
+      "units": [
+        "rad",
+        "rad",
+        "rad",
+        "rad",
+        "rad",
+        "rad",
+        "m",
+        "rad",
+        "rad",
+        "rad",
+        "rad",
+        "rad",
+        "rad",
+        "m"
+      ],
+      "values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0003,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002
+      ]
+    },
+    "robot_status": {
+      "arm_mapping": "host_mink_joint_stream_live",
+      "boundary_event": null,
+      "camera_details": {
+        "camera_head": {
+          "dropped_frames": 0,
+          "error": "",
+          "frames": 44,
+          "head_stereo_export": {
+            "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+            "error": "",
+            "max_packets": 7200,
+            "output": "/run/user/1000/rax-sensors-b6c434919027920a2c315794/packets",
+            "packets_queued": 2,
+            "packets_rejected": 1,
+            "packets_written": 2,
+            "pending_replaced": 0,
+            "robot_action_included": false,
+            "status": "EXPORTING"
+          },
+          "last_frame_number": 45,
+          "latest_frame_age_ms": 31.575244,
+          "recovery_attempts": 0,
+          "restart_count": 0,
+          "serial": "262522073779",
+          "status": "STREAMING",
+          "stereo_export": {
+            "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+            "error": "",
+            "max_packets": 7200,
+            "output": "/run/user/1000/rax-sensors-b6c434919027920a2c315794/packets",
+            "packets_queued": 2,
+            "packets_rejected": 1,
+            "packets_written": 2,
+            "pending_replaced": 0,
+            "robot_action_included": false,
+            "status": "EXPORTING"
+          },
+          "timeout_count": 0
+        },
+        "camera_left": {
+          "dropped_frames": 2,
+          "error": "",
+          "frames": 75,
+          "last_frame_number": 76,
+          "latest_frame_age_ms": 21.877584,
+          "recovery_attempts": 0,
+          "restart_count": 0,
+          "serial": "262422071560",
+          "status": "STREAMING",
+          "stereo_export": {
+            "calibration_payload_sha256": "c82d6b82c46a76081035271cf5a87283cbaec36c700a455b05939a92a1825c94",
+            "error": "",
+            "max_packets": 7200,
+            "output": "/run/user/1000/rax-sensors-b6c434919027920a2c315794/left-packets",
+            "packets_queued": 4,
+            "packets_rejected": 1,
+            "packets_written": 4,
+            "pending_replaced": 0,
+            "robot_action_included": false,
+            "status": "EXPORTING"
+          },
+          "timeout_count": 0
+        },
+        "camera_right": {
+          "dropped_frames": 0,
+          "error": "",
+          "frames": 16,
+          "last_frame_number": 15,
+          "latest_frame_age_ms": 10.247536,
+          "recovery_attempts": 0,
+          "restart_count": 0,
+          "serial": "262522070284",
+          "status": "STREAMING",
+          "timeout_count": 0
+        }
+      },
+      "camera_status": "READY_STREAMING",
+      "collection_mode": "OFF",
+      "component_health": {
+        "left_arm": {
+          "controller_mode": "CAN_CTRL",
+          "disabled_joints": [],
+          "message": "\u53cd\u9988\u6b63\u5e38 \u00b7 \u5173\u8282\u5df2\u4f7f\u80fd",
+          "ok": true
+        },
+        "left_gripper": {
+          "enabled": true,
+          "message": "\u53cd\u9988\u6b63\u5e38",
+          "ok": true,
+          "width_m": 0.0003
+        },
+        "right_arm": {
+          "controller_mode": "CAN_CTRL",
+          "disabled_joints": [],
+          "message": "\u53cd\u9988\u6b63\u5e38 \u00b7 \u5173\u8282\u5df2\u4f7f\u80fd",
+          "ok": true
+        },
+        "right_gripper": {
+          "enabled": true,
+          "message": "\u53cd\u9988\u6b63\u5e38",
+          "ok": true,
+          "width_m": 0.002
+        }
+      },
+      "dagger_expert_source": "qnexo",
+      "expert_candidates": 0,
+      "generation": 0,
+      "gripper_control": {},
+      "hardware_write_count": 0,
+      "hardware_write_enabled": true,
+      "label_valid": false,
+      "last_dispatch_skew_ms": 0.0,
+      "last_owner_dispatch": "NOT_STARTED",
+      "leader_follower": {
+        "feedback_role": "right_arm",
+        "follower_role": "right_arm",
+        "leader_role": "left_arm",
+        "max_age_ms": 100.0,
+        "native_linkage": false
+      },
+      "lifecycle_state": "prepared",
+      "model_boundary_normalizations": 0,
+      "model_candidates": 0,
+      "model_filter": {
+        "alpha": 0.6,
+        "enabled": false,
+        "fields": "arm_joints_only",
+        "grippers": "bypass",
+        "initialized": false,
+        "placement": "post_rtc_post_boundary_pre_dispatch"
+      },
+      "motion_trace": {
+        "command_statistics": {
+          "active_limit_run": null,
+          "boundary_normalized_samples": 0,
+          "incomplete_limit_runs": 0,
+          "invalid_joint_counts": {},
+          "last_limit_run": null,
+          "limit_rejected_samples": 0,
+          "limit_runs_started": 0,
+          "max_limit_dispatch_gap_ms": 0.0,
+          "missing_sequence_samples": 0,
+          "other_rejected_samples": 0,
+          "samples": 0,
+          "successful_dispatches": 0,
+          "timing_definition": "successful SDK command gap; not measured physical stop duration"
+        },
+        "dropped": 0,
+        "enabled": false,
+        "error": null,
+        "path": "",
+        "queue_size": 0,
+        "ready": false,
+        "submitted": 0,
+        "written": 0
+      },
+      "observations": 7,
+      "rax_motion": {
+        "active_request": null,
+        "enabled": true,
+        "heartbeat_budget_ms": 250,
+        "last_stop": null,
+        "left_gripper_dispatch": true,
+        "max_joint_arrival_tolerance_rad": 0.01
+      },
+      "record_dir": "",
+      "recorder_enabled": false,
+      "recording": false,
+      "review_profile": "legacy",
+      "rollout": {
+        "active_max_control_steps": 0,
+        "active_rollout_id": 0,
+        "last": {},
+        "model_steps": 0,
+        "pending_max_control_steps": 0,
+        "rollout_id": 0
+      },
+      "selected_action_source": "HOLD",
+      "startup_feedback_error": null,
+      "status": "READY_LIVE_TAKEOVER",
+      "takeover": false,
+      "transition_pose": {
+        "phase": "disabled"
+      },
+      "transition_pose_library": {
+        "enabled": false
+      },
+      "waist_pitch": "disabled",
+      "waist_yaw": "disabled"
+    },
+    "robot_status_age_seconds": 0.19048122002277523,
+    "rollout": {
+      "configured_max_control_steps": null,
+      "locked": false,
+      "owner": {
+        "active_max_control_steps": 0,
+        "active_rollout_id": 0,
+        "last": {},
+        "model_steps": 0,
+        "pending_max_control_steps": 0,
+        "rollout_id": 0
+      }
+    },
+    "rtc": {
+      "locked": false,
+      "mode": "disabled",
+      "request_remaining_steps": 0,
+      "transition_curve": "smoothstep",
+      "transition_steps": 0
+    },
+    "task": "Magnetic blocks L stack exploration",
+    "tasks": [
+      "Magnetic blocks L stack exploration"
+    ],
+    "write_enabled": true
+  },
+  "frame_id": "9bf6f59090c64813b0cda4609252023e",
+  "source": "new physical session; independent of historical handoff"
+}

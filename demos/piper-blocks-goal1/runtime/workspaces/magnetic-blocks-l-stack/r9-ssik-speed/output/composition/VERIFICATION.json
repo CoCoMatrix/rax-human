@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "passed": true,
+  "aplus_test_snapshot_ready": true,
+  "commit": "da2352a170232b7fb910ac60962b88b755950ae6",
+  "candidate_revision": "r9-ssik-sharedik-portfolio-inward1-blend1-carry2-gap68-start1-goal1",
+  "validation_report": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/experiments/blocks-r9-ssik-sharedik-portfolio-inward1-blend1-carry2-gap68-start1-goal1-web-20261119/WEB-VALIDATION.json",
+  "offline_only": true,
+  "live_qualified": false,
+  "hardware_actions_started": false
+}
