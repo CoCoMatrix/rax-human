@@ -1,0 +1,69 @@
+{
+  "storage_format": "xpolicylab_dagger_parquet_v1",
+  "schema_version": "piper_x_dual_v1",
+  "robot_type": "piper_x_dual",
+  "profile_id": "piper_x_dual_14d_v1",
+  "qualification": "static_contract_only",
+  "write_qualified": false,
+  "data_collection_qualified": false,
+  "primary_camera": "camera_head",
+  "state_dim": 14,
+  "action_dim": 14,
+  "state_order": [
+    "left_joint1",
+    "left_joint2",
+    "left_joint3",
+    "left_joint4",
+    "left_joint5",
+    "left_joint6",
+    "left_gripper",
+    "right_joint1",
+    "right_joint2",
+    "right_joint3",
+    "right_joint4",
+    "right_joint5",
+    "right_joint6",
+    "right_gripper"
+  ],
+  "action_order": [
+    "left_joint1",
+    "left_joint2",
+    "left_joint3",
+    "left_joint4",
+    "left_joint5",
+    "left_joint6",
+    "left_gripper",
+    "right_joint1",
+    "right_joint2",
+    "right_joint3",
+    "right_joint4",
+    "right_joint5",
+    "right_joint6",
+    "right_gripper"
+  ],
+  "state_units": [
+    "rad", "rad", "rad", "rad", "rad", "rad", "m",
+    "rad", "rad", "rad", "rad", "rad", "rad", "m"
+  ],
+  "action_units": [
+    "rad", "rad", "rad", "rad", "rad", "rad", "m",
+    "rad", "rad", "rad", "rad", "rad", "rad", "m"
+  ],
+  "controller_type": {
+    "arms": "absolute_joint_position",
+    "grippers": "absolute_width"
+  },
+  "arm_geometry": {
+    "mirrored": false,
+    "base_separation_m": 0.6,
+    "left_base_y_m": 0.3,
+    "right_base_y_m": -0.3
+  },
+  "retarget_mapping_version": "unqualified",
+  "controller_version": "unqualified",
+  "cameras": {
+    "camera_head": {"required": true, "hardware": "Intel RealSense D435"},
+    "camera_left": {"required": true, "hardware": "Intel RealSense D435"},
+    "camera_right": {"required": true, "hardware": "Intel RealSense D435"}
+  }
+}

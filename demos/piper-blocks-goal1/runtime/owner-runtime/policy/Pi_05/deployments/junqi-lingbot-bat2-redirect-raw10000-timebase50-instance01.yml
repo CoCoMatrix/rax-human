@@ -1,0 +1,56 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-lingbot-bat2-redirect-raw10000-timebase50-instance01
+label: LingBot BAT2 RAW10000 | trajectory 50% + RTC | synchronized gripper
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_01.yml
+release:
+  status: contract_complete
+  evidence: policy/LingBotSelectedReal/contracts/bat2-timebase50-release.json
+  evidence_sha256: 6784bff851761309145b782280094d9d784cdc63ec7d67ade29b8b5ae2c15a94
+bundle:
+  kind: pytorch_hf
+  default_path: /home/ubuntu/code_junqi/model-store/models/lingbot/cup_bat2_redirect_lingbotv2_raw_step10000_ckpt
+  required:
+  - checkpoint/model.safetensors.index.json
+  - assets/norm_stats.json
+  - contract.json
+  - deploy_input.json
+  - runtime_processing.json
+  - package_manifest.json
+  - infer.py
+  verifier: policy/LingBotSelectedReal/verify_retimed.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 50
+  default_execute_chunk: 15
+  default_execute_mode: fixed
+  trajectory_profile: policy/LingBotSelectedReal/contracts/bat2-timebase50-profile.json
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/LingBotSelectedReal/serve_retimed.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: '{repo_root}/policy/LingBotSelectedReal/contracts/bat2-tasks.json'
+  default: 拿起桌上的杯子；运输途中杯垫出现时，改变方向并将杯子放到杯垫上，放稳后松爪并撤回。
+  inline:
+  - 拿起桌上的杯子；运输途中杯垫出现时，改变方向并将杯子放到杯垫上，放稳后松爪并撤回。
+pigey:
+  supported: false
+qualification:
+  supported: true
+  verifier: policy/LingBotSelectedReal/verify_retimed.py
+  verifier_args:
+  - --full-manifest
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 1200
+  image_width: 1280
+  image_height: 720
+  tests:
+  - tests/test_lingbot_selected_real.py
+  - tests/test_action_timebase.py
+  - tests/test_trajectory_profile.py

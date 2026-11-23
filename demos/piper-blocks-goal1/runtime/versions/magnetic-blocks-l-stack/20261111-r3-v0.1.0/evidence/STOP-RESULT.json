@@ -1,0 +1,30 @@
+{
+  "disarmed": true,
+  "stop_acknowledged": {
+    "command": "stop",
+    "ok": true
+  },
+  "rest": {
+    "measured_rest": true,
+    "samples": 8,
+    "measured14": [
+      -0.1607971839862376,
+      1.5545996713363892,
+      -1.3983577966978569,
+      1.4976670311363343,
+      0.0,
+      -0.158824961931484,
+      0.0686,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.002
+    ],
+    "source_span_s": 0.359479006,
+    "physical_emergency_stop_tested": false
+  },
+  "errors": []
+}

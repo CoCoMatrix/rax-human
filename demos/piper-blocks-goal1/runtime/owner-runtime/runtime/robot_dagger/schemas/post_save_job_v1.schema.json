@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xpolicylab.local/schemas/post_save_job_v1.schema.json",
+  "title": "XPolicyLab recoverable post-save job v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_id",
+    "episode_id",
+    "episode_path",
+    "profile_path",
+    "output_dir",
+    "status",
+    "attempts",
+    "created_at_ns",
+    "updated_at_ns",
+    "worker_id",
+    "lease_expires_at_ns",
+    "error",
+    "validation_errors",
+    "validation_warnings",
+    "result"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "xpolicy.recap.post_save_job.v1"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "episode_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "episode_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_dir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PENDING",
+        "VALIDATING",
+        "MATERIALIZING",
+        "MATERIALIZED",
+        "QUARANTINED",
+        "FAILED"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "created_at_ns": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at_ns": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "worker_id": {
+      "type": ["string", "null"]
+    },
+    "lease_expires_at_ns": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "error": {
+      "type": ["string", "null"]
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "validation_warnings": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "result": {
+      "type": ["object", "null"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {"enum": ["VALIDATING", "MATERIALIZING"]}
+        }
+      },
+      "then": {
+        "properties": {
+          "worker_id": {"type": "string", "minLength": 1},
+          "lease_expires_at_ns": {"type": "integer", "minimum": 1}
+        }
+      },
+      "else": {
+        "properties": {
+          "worker_id": {"type": "null"},
+          "lease_expires_at_ns": {"type": "null"}
+        }
+      }
+    }
+  ]
+}

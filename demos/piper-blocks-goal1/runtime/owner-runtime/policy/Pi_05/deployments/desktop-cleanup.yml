@@ -1,0 +1,47 @@
+schema: xpolicylab.piper-deployment/v1
+name: desktop-cleanup
+label: Pi0.5 Piper desktop-cleanup raw step 10000
+bundle:
+  kind: pytorch_safetensors
+  default_path: /home/ubuntu/michael_dev/model-store/models/pi05/desktop-cleanup-dual-piper-v1/step-10000
+  required: [checkpoint/model.safetensors, contract.json]
+  verifier: null
+policy:
+  action_frequency_hz: 15
+  action_horizon: 10
+  default_execute_chunk: 10
+  default_execute_mode: auto
+server:
+  default_mode: managed
+  script: policy/Pi_05/serve_piper_desktop_cleanup.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Pick up one paper ball and place it in the trash bin.
+  inline: &desktop_tasks
+    - Close the laptop.
+    - Pick up one drink container and place it on the coaster.
+    - Pick up one mouse and place it on the mouse pad.
+    - Pick up one paper ball and place it in the trash bin.
+    - Pick up one pen and place it in the pen holder.
+  catalog_path: null
+setup:
+  script: policy/Pi_05/setup_piper_desktop_cleanup.sh
+qualification:
+  supported: true
+  verifier: policy/Pi_05/verify_dual_piper_bundle.py
+  verifier_args: []
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 300
+  image_width: 1920
+  image_height: 1080
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_pi05_piper_desktop_cleanup.py
+  smoke_script: null

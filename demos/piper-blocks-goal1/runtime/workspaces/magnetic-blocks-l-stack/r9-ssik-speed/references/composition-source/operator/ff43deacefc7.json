@@ -1,0 +1,29 @@
+{
+ "id": "ff43deacefc7",
+ "kind": "help",
+ "message": "R8 green release is blocked; no release motion executed. Current left arm holds green at the final red-top placement pose (jaw51.3mm, frame e5236683cefa43d7822b4660ca06db71). Head is occluded and wrist perspective produced conflicting assessments. Without moving blocks or robot, please inspect onsite: is green's bottom actually resting stably on RED's top, broadly aligned over red (not in front of it or bridging onto orange), and can the gripper safely open in place? Please state any visible offset/hover or hazard. This confirmation is only for this current pose and one opening.",
+ "created": 1794395849.9124587,
+ "status": "answered",
+ "context": {
+  "measured14": [
+   -0.04291764630654057,
+   1.5434644707086653,
+   -1.264683029287611,
+   1.375563796666811,
+   0.0,
+   -0.04352851154473858,
+   0.0513,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.002
+  ],
+  "owner_generation": 1,
+  "bridge_instance": "fc52f55c9e9e417eaba121d0a0e24a4e"
+ },
+ "timed_out_at": 1794395850.912958,
+ "answered": 1794397100.0684617
+}

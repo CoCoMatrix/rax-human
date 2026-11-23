@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "skill": "learned-magnetic-block-stack-support-boundary",
+  "confirmation": "observed refusal only; not task-confirmed",
+  "whole_task_success": false,
+  "reports": [
+    {
+      "report": "references/web-evidence-original/magnetic-block-stack-support-boundary/r8-stack-lower-01.json",
+      "sha256": "6f73bf5e6fdabf0a89e567a3df5c909c786d485ed3dfade9b7a33462354503f1",
+      "function": "green_stack_lower",
+      "ok": true,
+      "executed": true,
+      "motion_receipts": 1
+    },
+    {
+      "report": "references/web-evidence-original/magnetic-block-stack-support-boundary/r8-stack-release-01.json",
+      "sha256": "38cc29f7edc525d30494fa4f50961662188c07c701dbb635ef3b46eef73e79d7",
+      "function": "green_stack_release",
+      "ok": false,
+      "executed": false,
+      "motion_receipts": 0
+    },
+    {
+      "report": "references/web-evidence-original/magnetic-block-stack-support-boundary/r8-support-refresh-01.json",
+      "sha256": "7317e8f6bcd81bca22b53676b297a46a3c7149d397195e1d12c544a73e77b69a",
+      "function": "refresh_stack_support",
+      "ok": true,
+      "executed": false,
+      "motion_receipts": 0
+    },
+    {
+      "report": "references/web-evidence-original/magnetic-block-stack-support-boundary/r8-retreat-01.json",
+      "sha256": "627df5634a87b0dcf3f00edf7641fbf566d33bafafe84c7e2bcbd38f1f6e05d4",
+      "function": "retreat",
+      "ok": true,
+      "executed": true,
+      "motion_receipts": 1
+    }
+  ],
+  "frames": [
+    "runtime/frames/5fbe143183bf4e64a681eaa83e37ef60/",
+    "runtime/frames/0911a4aa530f4e77b37be72f1fbbb38d/"
+  ],
+  "operator_assistance": {
+    "request_id": "ff43deacefc7",
+    "answer_in_historical_record": null
+  },
+  "offline_changes": {
+    "tests": "code/magnetic_blocks/test_closeout_r8.py",
+    "physical_rehearsal": false
+  },
+  "publication": "local only; shared-library publication pending",
+  "examples": [
+    {
+      "frames": [
+        "runtime/frames/5fbe143183bf4e64a681eaa83e37ef60/head.jpg"
+      ],
+      "description": "Historical frame only"
+    },
+    {
+      "frames": [
+        "runtime/frames/5fbe143183bf4e64a681eaa83e37ef60/left.jpg"
+      ],
+      "description": "Historical frame only"
+    },
+    {
+      "frames": [
+        "runtime/frames/5fbe143183bf4e64a681eaa83e37ef60/right.jpg"
+      ],
+      "description": "Historical frame only"
+    },
+    {
+      "frames": [
+        "runtime/frames/0911a4aa530f4e77b37be72f1fbbb38d/head.jpg"
+      ],
+      "description": "Historical frame only"
+    },
+    {
+      "frames": [
+        "runtime/frames/0911a4aa530f4e77b37be72f1fbbb38d/left.jpg"
+      ],
+      "description": "Historical frame only"
+    },
+    {
+      "frames": [
+        "runtime/frames/0911a4aa530f4e77b37be72f1fbbb38d/right.jpg"
+      ],
+      "description": "Historical frame only"
+    }
+  ],
+  "web_packaging_original": "references/web-evidence-original/magnetic-block-stack-support-boundary/evidence.json"
+}

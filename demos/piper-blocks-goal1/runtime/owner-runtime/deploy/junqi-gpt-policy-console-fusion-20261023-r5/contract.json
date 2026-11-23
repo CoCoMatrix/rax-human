@@ -1,0 +1,270 @@
+{
+  "schema": "junqi.piper.direct_gpt_xpolicy.v1",
+  "deployment": "junqi-gpt-policy-console-fusion-20261023-r5",
+  "checkpoint": null,
+  "action_frequency_hz": 30,
+  "horizon": 600,
+  "owner": "formal_xpolicy",
+  "task": "先将蓝色杯子放到杯架左侧并松爪撤离，再将粉色杯子放到杯架右侧；搬运粉杯时若出现粉色杯垫，改放杯垫。放稳后松爪撤离，确认完成并停止。",
+  "files": {
+    "/home/ubuntu/code_junqi/GPT-as-Policy/real_robot/piper/contracts.py": "fe0d9a8f9b59803ba87f34521348957346223649d0959fc40fb2816e4dfeaedf",
+    "/home/ubuntu/code_junqi/GPT-Policy/scripts/junqi_live.py": "3e7224f5f3181661f570d2ca44e4868a775060b2a0f65becd141ee002e7be9f0",
+    "/home/ubuntu/code_junqi/xpolicylab-robot-runtime/real_world/robots/piper_x_dual/review_release.py": "3c95dad59394c11715102dd502ad67c50b6fb9b076a6af1d3d4c679b73637ab0",
+    "/home/ubuntu/code_junqi/xpolicylab-robot-runtime/real_world/robots/piper_x_dual/dora_owner_node.py": "4b29a826d61d58bb04153d5ffbb3ab7f63ce6395e9fb128970cf49cd9e5de88e",
+    "/home/ubuntu/code_junqi/xpolicylab-robot-runtime/real_world/robots/piper_x_dual/policy_node.py": "1fc1b0ae19b3c49ce9bbb7b740584540f5fd02461e2bb56aa4f0d6de93dfe15c",
+    "/home/ubuntu/code_junqi/GPT-as-Policy/real_robot/piper/kinematics.py": "4ca5f219a06a015149936341d0326c3309cf2bc58b78375878a0b4c38cb2a0be",
+    "/home/ubuntu/code_junqi/GPT-Policy/src/gpt_policy/junqi_piper/live_transport.py": "9b9b2f97571cd7569d2ce42eed1a36bcd448c4d9e34cd1a5327c8f70c51aec50",
+    "/home/ubuntu/code_junqi/GPT-Policy/src/gpt_policy/junqi_piper/rgb_localizer.py": "64df74d9f1466f43748757d04c7357a34b2f739b06ca883cf7089c93c1929fd2",
+    "/home/ubuntu/code_junqi/GPT-Policy/src/gpt_policy/junqi_piper/adapter.py": "ce4bd3ae31af20bfacc9dc0568548f77842aa1603fcbaa41718b3813a7aed843",
+    "/home/ubuntu/code_junqi/GPT-Policy/src/gpt_policy/junqi_piper/task_stages.py": "be113f96db76532c6c12af994354116367836eb833bb6f7744f2cb22c0e43bd4",
+    "/home/ubuntu/code_junqi/GPT-Policy/src/gpt_policy/junqi_piper/entry.py": "dcb5be6aef1305ad8d7158b896352a727eb7be9e857b9c3fe1bdf9e2e45f0954",
+    "/home/ubuntu/code_junqi/GPT-as-Policy/real_robot/piper/description.py": "aab343c5a9fa8f4124ed1c175fd2cbbfa7b56eecd3bd1d6be1a48b9d30b30bc2",
+    "/home/ubuntu/code_junqi/GPT-as-Policy/real_robot/piper/description_config.py": "ce848bd2a4ae6983fa46571950851e9d9c9b673cdb4b091403ba9d7755f6b1f4",
+    "/home/ubuntu/code_junqi/GPT-as-Policy/real_robot/piper/calibration_nominal.py": "d8d7f701dfbedcf0eba36ed4de6f69da3a229d4395b25499ce740a2535bbd0aa",
+    "/home/ubuntu/code_junqi/GPT-as-Policy/real_robot/piper/mast_config.json": "b674238a8d963ae3bd07041b451002ef8acd1888bac268cd3a859f95f2b1a3c2",
+    "/home/ubuntu/code_junqi/GPT-Policy/scripts/junqi_web.py": "e89c92a4f675debc159e6ad04ca11baa39625bcf93f5c6954672b27c94c1e3cb",
+    "/home/ubuntu/code_junqi/GPT-Policy/web/index.html": "33adca8a39f78bce752cfc651cf200b1b02426b5bb7b0c5c4633ae14f5da6645",
+    "/home/ubuntu/code_junqi/GPT-Policy/configs/junqi-piper.json": "680a7445682efa98552c165dff9534a2d91c81dedb2c56cde8f49b3c91e9e45e",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/asset-manifest.json": "42d11a2998b7afc835f48a12c24fb7eb6b62f514fa2960fb46ce64967f228b1e",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/head_camera_extrinsics.json": "ff8696d7683078dd95306d9a4994b2bce0b239260d3a784a357f51515d248254",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/nominal_tcp.json": "95a428c5f295a305daf97e692485094a2622d3ed4479ed638a00c898940ae98e",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/link2.stl": "0316b881cd0bae6c9f8f794fabdee7fbf041f83f2f75980d34b67555fe8a3561",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/base_plate.stl": "90ed12b9719cd716276d74f4a8b2534ca5450f276906f8dd2d66014881f7e60f",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/base_link.stl": "b732cf8a1f8435f51e3ec860f11189c3ec63744d3df008b7d3e9b6505dfc483d",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/link6.stl": "8c391520fd963fe4f9b46afcde82ceeab2a93b73c01fc5debe039fe632f597e6",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/flange.stl": "f9ce752f93a6598858a779e3d8755a09e466b588efcffc3a1c3953773753a22b",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/link3.stl": "c51994fa4ca6a0577cfc65fe5a666ad47ad6af8dc98fbe81b71c4a7fe8ad09a5",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/gripper_base.stl": "0b839dc0bcb7d94e3422c74f6396b54a0441ba4836448ab5586e7f372d1bdbf3",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/link4.stl": "10b69bde5305c53fbb4a6dc4e910e8604d54d250a969e6cda8128d8244989831",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/d435.dae": "42f3b66f47a1f8f425a2e4dc07c1d9c283183167d8441f520a15623d98f9bf78",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/link1.stl": "60c53c4d5d20c5b663cc4ced2f5e322d2a857baa6e79cef04a33b5f9f7c1e985",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/gripper_link1.stl": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/realsense_d435_mount_centered.stl": "7d722a2809b3ec8c8ea3b4575b1857e71d15995e62356d034004fb740df61fb9",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/link5.stl": "fb7ab27270e6b5fa0b2e6df9fa37722062f4ff397cd4f89883d23551bedd0801",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/gripper_link2.stl": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/link3.dae": "5398179d224cb1399270e7939ff0f6dd990499597d7a371b7952b6b0857235f0",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/gripper_link1.dae": "526f389a10a82888e9276ed50f41bab13e7bd17b94a4b0bc473deae5d1e59299",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/link5.dae": "8ddba6802ba1765aaa06b8f9246900b89e5c115ef4ae82ff71c40dbee8486804",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/link6.dae": "de13aebcf4876f7e603ee3459aa574d560d26e1bcc3d723e0c6a003226128520",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/base_link.dae": "a99f9875fc3528f75513fc09829d3979e004fd45f4712125ab8ee9b3cf2402bd",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/link1.dae": "8d3873f799ca38e39757db6591346252ee597238a5d4cac1373976990751610a",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/gripper_link2.dae": "f5a0f658abb1333e57e5a5f386a172c801659f95bc5e56072f0a75fb83e8e871",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/link2.dae": "6363ac7227755660a70a55c537d6ba074c73fc06bebe5311522038c62ab84fd8",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/flange.dae": "07f8a0ccc18a72116f44e33e271765ed53d1d38b11695085a1c4af9ea7213b7f",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/gripper_base.dae": "297b6bce631a1b78acf5176b84bcb312c369262571f33ccc6ee275ee3b6b5d6e",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/meshes/dae/link4.dae": "5b9b614a83f1a78891bfc130d8ed50735355eb9073c74ac748aaa2df93e7b76b",
+    "/home/ubuntu/code_junqi/GPT-Policy/assets/junqi_piper/geometry-32cm-20261023/dual_piper_x_description/urdf/dual_piper_x.urdf": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+    "/home/ubuntu/code_junqi/xpolicylab-robot-runtime/real_world/robots/piper_x_dual/profile.yml": "5230d606e67b58ffbcd67f9a977a7883435ec8f1a9be7d0b97027b67ee70f021",
+    "/home/ubuntu/code_junqi/GPT-Policy/bin/codex-junqi": "99031ebf62e7b2f607fcd936870c112b2776196f7bccf993e1f04ce635c83932",
+    "/home/ubuntu/code_junqi/GPT-Policy/configs/agents/codex.json": "c6f48d6609cbbb4e336de2d2295f4bedcd57dd15b9b6dd2ea3f00f5c44a14ba7"
+  },
+  "robot_identity": {
+    "robot_type": "piper_x_dual",
+    "robot_id": "piper_x_dual_01",
+    "profile_id": "piper_x_dual_takeover_canary_v1",
+    "profile_sha256": "5230d606e67b58ffbcd67f9a977a7883435ec8f1a9be7d0b97027b67ee70f021",
+    "urdf_sha256": "9f6dfedb85f2213e05567d6324fbd1f23ffe1e42b6f30f062422d3a6c462b395",
+    "device_instance_sha256": "01afef1c91bea88c4a24cad3d2a5e1f8f82a80542a6931f62b7c998e5655c33d",
+    "coordinate_frame": "dual_base_link",
+    "axis_convention": "x_forward_y_left_z_up",
+    "kinematics_only": true
+  },
+  "action_schema": {
+    "schema_id": "xpolicy.piper_x_dual.joint_position.v1",
+    "fields": [
+      "left_joint1",
+      "left_joint2",
+      "left_joint3",
+      "left_joint4",
+      "left_joint5",
+      "left_joint6",
+      "left_gripper",
+      "right_joint1",
+      "right_joint2",
+      "right_joint3",
+      "right_joint4",
+      "right_joint5",
+      "right_joint6",
+      "right_gripper"
+    ],
+    "units": [
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "m",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "m"
+    ],
+    "semantics": [
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_gripper_width",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_gripper_width"
+    ]
+  },
+  "observation_schema": {
+    "schema_id": "xpolicy.piper_x_dual.state.v1",
+    "fields": [
+      "left_joint1",
+      "left_joint2",
+      "left_joint3",
+      "left_joint4",
+      "left_joint5",
+      "left_joint6",
+      "left_gripper",
+      "right_joint1",
+      "right_joint2",
+      "right_joint3",
+      "right_joint4",
+      "right_joint5",
+      "right_joint6",
+      "right_gripper"
+    ],
+    "units": [
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "m",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "rad",
+      "m"
+    ],
+    "semantics": [
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_gripper_width",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_joint",
+      "absolute_gripper_width"
+    ]
+  },
+  "description_urdf_version": "v13_32cm",
+  "nominal_urdf_authorized_by_user": true,
+  "single_owner": true,
+  "bounded_release_and_sdk_receipts": true,
+  "no_automatic_home": true,
+  "validation": {
+    "console_controls": "27 offline lifecycle tests passed; no physical motion test",
+    "physical_execution_verified": false
+  },
+  "geometry_migration": {
+    "receipt": "/home/ubuntu/code_junqi/migration/piper-urdf-32cm-20261023/verification.json",
+    "physical_calibration_verified": false
+  },
+  "previous_release": {
+    "path": "/home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-console-fusion-20261023-r4/contract.json",
+    "sha256": "fb032c630e33656e51b4cee0c95891978bf2a9f51b8fc3d42b358a73ff7272b6"
+  },
+  "perception": {
+    "mode": "rgb",
+    "sam3": false,
+    "ffs": false,
+    "scene_prepass": false
+  },
+  "lifecycle": {
+    "connect": "idle writable owner",
+    "prepare": "current pose; no automatic Start",
+    "start": "requires prepared identical task",
+    "hold": "invalidate session and clear queued actions"
+  },
+  "source": {
+    "upstream_git_head": "2ca201638e1139fe35973c8a2d209a894b389db1",
+    "local_changes": "pinned by files manifest"
+  },
+  "console_features": {
+    "model_switching": false,
+    "lifecycle": [
+      "prepare",
+      "start",
+      "hold",
+      "finish"
+    ],
+    "hardware_health": true,
+    "manual_grippers": true,
+    "reconnect_same_deployment": true,
+    "recording_and_folder": true,
+    "keyboard": "I/S/X/F opt-in",
+    "runtime_details": true,
+    "gpt_trajectory_compatibility": "Auto; RTC disabled; DAgger unavailable unless launched"
+  },
+  "preparation": {
+    "hold_current": false,
+    "profile": "/home/ubuntu/code_junqi/xpolicylab-robot-runtime/real_world/robots/piper_x_dual/profile.yml",
+    "target": {
+      "initial_pose": {
+        "left_arm": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "right_arm": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "left_gripper": 0.0,
+        "right_gripper": 0.0
+      },
+      "source": "pyAgxArm Piper X official demo move_j([0.0] * joint_nums)",
+      "command": "move_j",
+      "speed_percent": 15,
+      "position_tolerance_rad": 0.03,
+      "gripper_tolerance_m": 0.003,
+      "timeout_seconds": 15.0
+    },
+    "completion": "owner actual joint and gripper feedback gate"
+  },
+  "authentication": {
+    "selection": "explicit user authorization: reuse 5090 terminal Codex login",
+    "credential_home": "/home/ubuntu/.codex",
+    "executable": "/home/ubuntu/.local/bin/codex",
+    "copied_credentials": false,
+    "global_configuration_modified": false,
+    "smoke_evidence": "/home/ubuntu/code_junqi/migration/gpt-policy-terminal-auth-20261023/model-smoke.json"
+  },
+  "request_reliability": {
+    "evidence": "/home/ubuntu/code_junqi/migration/gpt-policy-timeout-20261023/candidate-acceptance.json",
+    "deadline_s": 120,
+    "late_results": "discard",
+    "automatic_fallback": false
+  }
+}

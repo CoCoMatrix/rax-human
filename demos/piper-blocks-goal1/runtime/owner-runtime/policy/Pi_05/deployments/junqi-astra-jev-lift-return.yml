@@ -1,0 +1,39 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-astra-jev-lift-return
+label: Junqi Astra upper / Jev lower / xpolicy lift-return canary
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-astra-jev-lift-return/contract.json
+  evidence_sha256: 2175833e4162041ba950b4316b5e9313d14af49679ca3e015f135627f007edbd
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-astra-jev-lift-return
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_astra_jev_lift_return.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-astra-jev-lift-return/task_catalog.json
+  default: Lift both PiPER tool centers by 0.02 m, then return to their measured starting
+    poses; keep grippers unchanged.
+  inline:
+  - Lift both PiPER tool centers by 0.02 m, then return to their measured starting
+    poses; keep grippers unchanged.
+pigey:
+  supported: false
+qualification:
+  supported: false

@@ -1,0 +1,27 @@
+{
+  "previous_report": "output/rehearsal/r4-approach-mid-01.json",
+  "initial_scene_report": "output/rehearsal/r4-transition-01.json",
+  "empty_history": [
+    "output/rehearsal/r4-transition-01.json",
+    "output/rehearsal/r4-transition-02.json",
+    "output/rehearsal/r4-hover-05.json",
+    "output/rehearsal/r4-approach-hover-02.json",
+    "output/rehearsal/r4-approach-mid-01.json"
+  ],
+  "color": "orange",
+  "waypoints": [
+    [
+      0.30543797801691297,
+      -0.18038823113969238,
+      0.20476019866229522
+    ]
+  ],
+  "quaternion": [
+    0.9996573249755574,
+    -0.026176948307873156,
+    0.0,
+    0.0
+  ],
+  "engage": true,
+  "insertion_fact_request_id": "94b67f7d2aa3"
+}

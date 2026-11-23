@@ -1,0 +1,3349 @@
+{
+  "schema": "xpolicylab.piper-transition-pose-library/v1",
+  "library_id": "object50-h32-v1-preaction-onset-20260902-v3",
+  "robot_type": "piper_x_dual",
+  "state_semantics": "follower_joint_and_gripper_feedback",
+  "action_semantics": "absolute_joint_position_rad from a recorded follower state; candidate is 8 30Hz frames before detected sustained motion onset; vendor boundary normalization <=0.03 rad; grippers preserve measured widths",
+  "dataset": {
+    "artifact_id": "dual_piper_object50_from_dagger4999_h32_v1",
+    "source_uri": "oss://cocomatrix-robot/demo/20260830/piper/",
+    "sample_rate_hz": 30,
+    "checkpoint_family": "object50-h32-v1",
+    "raw_state_field": "observation.state",
+    "raw_state_semantics": "follower_joint_and_gripper_feedback",
+    "resampling": "nearest timestamp onto a 30Hz grid"
+  },
+  "candidate_contract": {
+    "episode_fraction_min": 0.04,
+    "episode_fraction_max": 0.22,
+    "minimum_pre_action_lead_frames_30hz": 8,
+    "movement_onset_speed_threshold_rad_s": 0.4,
+    "movement_onset_window_frames_30hz": 5,
+    "movement_onset_min_active_frames": 3,
+    "minimum_future_frames_30hz": 120,
+    "minimum_future_motion_linf_rad": 0.25,
+    "minimum_terminal_distance_l2_rad": 0.4,
+    "minimum_initial_distance_l2_rad": 0.0,
+    "maximum_initial_distance_l2_rad": 0.5,
+    "maximum_local_speed_p75_rad_s": 0.8,
+    "minimum_flange_height_m": 0.18,
+    "terminal_or_post_completion_frames_allowed": false,
+    "pose_is_recorded_state_not_average": true,
+    "maximum_boundary_normalization_rad": 0.03
+  },
+  "selection": {
+    "method": "task-conditioned motion-onset-minus-lead medoids",
+    "poses_per_task": 12,
+    "source_episode_uniqueness": true,
+    "pre_action_lead_frames_30hz": 8,
+    "runtime_metric": "normalized_l2_over_12_arm_joints",
+    "runtime_max_joint_delta_rad": 1.75,
+    "segmented_transition_max_joint_delta_rad": 2.5
+  },
+  "entries": [
+    {
+      "pose_id": "grab_paper_ball-preaction-01-ep010",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00888373,
+        0.00282743,
+        0.0,
+        0.0,
+        0.0,
+        0.02178171,
+        0.00909317,
+        0.00844739,
+        0.0,
+        0.01239184,
+        0.01822124,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00888373,
+        0.00282743,
+        0.01317724,
+        0.0,
+        0.0,
+        0.02178171,
+        0.00909317,
+        0.00844739,
+        0.01043707,
+        0.01239184,
+        0.01822124,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01317724,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01317724
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01043707,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01043707
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000010.parquet",
+        "episode_index": 10,
+        "resampled_frame_index_30hz": 20,
+        "episode_frames_30hz": 446
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.0449438202247191,
+        "movement_onset_frame_30hz": 28,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 425,
+        "future_motion_linf_rad": 1.5975173437036574,
+        "terminal_distance_l2_rad": 1.7778554651676364,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.224530978256302,
+          "right": 0.22262921373739714
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-02-ep046",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00392699,
+        0.00115192,
+        0.0,
+        0.05391322,
+        0.0617672,
+        0.13180727,
+        0.00980875,
+        0.00904081,
+        0.0,
+        0.0127409,
+        0.01745329,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00392699,
+        0.00115192,
+        0.01596976,
+        0.05391322,
+        0.0617672,
+        0.13180727,
+        0.00980875,
+        0.00904081,
+        0.01048943,
+        0.0127409,
+        0.01745329,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01596976,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01596976
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01048943,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01048943
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000046.parquet",
+        "episode_index": 46,
+        "resampled_frame_index_30hz": 22,
+        "episode_frames_30hz": 329
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06707317073170732,
+        "movement_onset_frame_30hz": 30,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 306,
+        "future_motion_linf_rad": 1.98471858818084,
+        "terminal_distance_l2_rad": 2.6032632623539413,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.21878994426553233,
+          "right": 0.2225331651275035
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-03-ep056",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00188496,
+        0.11253883,
+        0.0,
+        0.0,
+        0.0,
+        0.02076942,
+        0.00846485,
+        0.00834267,
+        0.0,
+        0.00912807,
+        0.0,
+        0.01000074
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00188496,
+        0.11253883,
+        0.01389282,
+        0.0,
+        0.0,
+        0.02076942,
+        0.00846485,
+        0.00834267,
+        0.01059415,
+        0.00912807,
+        0.0,
+        0.01000074
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01389282,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01389282
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01059415,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01059415
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000056.parquet",
+        "episode_index": 56,
+        "resampled_frame_index_30hz": 22,
+        "episode_frames_30hz": 351
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06285714285714286,
+        "movement_onset_frame_30hz": 30,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 328,
+        "future_motion_linf_rad": 1.7201616261154413,
+        "terminal_distance_l2_rad": 2.479349382953788,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.21335861239522932,
+          "right": 0.2229968881143225
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-04-ep082",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00869174,
+        0.00256563,
+        0.0,
+        0.10016444,
+        0.0,
+        0.02120575,
+        -0.00268781,
+        0.0084823,
+        0.0,
+        0.00804597,
+        0.01668535,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00869174,
+        0.00256563,
+        0.01317724,
+        0.10016444,
+        0.0,
+        0.02120575,
+        -0.00268781,
+        0.0084823,
+        0.01204277,
+        0.00804597,
+        0.01668535,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01317724,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01317724
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01204277,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01204277
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000082.parquet",
+        "episode_index": 82,
+        "resampled_frame_index_30hz": 23,
+        "episode_frames_30hz": 448
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.05145413870246085,
+        "movement_onset_frame_30hz": 31,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 424,
+        "future_motion_linf_rad": 1.3982879999093711,
+        "terminal_distance_l2_rad": 1.5757781320096123,
+        "initial_distance_l2_rad": 0.0006632255390286446,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.21358341484497134,
+          "right": 0.22310130422063515
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-05-ep095",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00781908,
+        0.00280998,
+        0.0,
+        0.00938987,
+        -0.08054695,
+        0.02406809,
+        0.0,
+        0.00013963,
+        0.0,
+        0.01429425,
+        0.01101303,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00781908,
+        0.00280998,
+        0.00865683,
+        0.00938987,
+        -0.08054695,
+        0.02406809,
+        0.0,
+        0.00013963,
+        0.01157153,
+        0.01429425,
+        0.01101303,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00865683,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00865683
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01157153,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01157153
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000095.parquet",
+        "episode_index": 95,
+        "resampled_frame_index_30hz": 57,
+        "episode_frames_30hz": 476
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.12,
+        "movement_onset_frame_30hz": 65,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 418,
+        "future_motion_linf_rad": 1.9013616716110846,
+        "terminal_distance_l2_rad": 2.8044085797132507,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22349774876641357,
+          "right": 0.22322843745861864
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-06-ep070",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        -0.04626868,
+        0.00263545,
+        0.0,
+        -0.01261873,
+        0.0,
+        0.02178171,
+        0.00781908,
+        0.00876155,
+        0.0,
+        0.00888373,
+        0.01750565,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.04626868,
+        0.00263545,
+        0.01275836,
+        -0.01261873,
+        0.0,
+        0.02178171,
+        0.00781908,
+        0.00876155,
+        0.01048943,
+        0.00888373,
+        0.01750565,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01275836,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01275836
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01048943,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01048943
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000070.parquet",
+        "episode_index": 70,
+        "resampled_frame_index_30hz": 52,
+        "episode_frames_30hz": 541
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.0962962962962963,
+        "movement_onset_frame_30hz": 60,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 488,
+        "future_motion_linf_rad": 1.114305408904329,
+        "terminal_distance_l2_rad": 1.9373501693690993,
+        "initial_distance_l2_rad": 0.012618730776011944,
+        "local_speed_p75_rad_s": 0.26991514954715967,
+        "flange_height_m": {
+          "left": 0.22592764528009487,
+          "right": 0.2229824014925854
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-07-ep052",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00836013,
+        0.00228638,
+        0.0,
+        0.00914553,
+        0.0,
+        0.0765676,
+        0.00898845,
+        0.00869174,
+        0.0,
+        0.00696386,
+        0.01628392,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00836013,
+        0.00228638,
+        0.00884882,
+        0.00914553,
+        0.0,
+        0.0765676,
+        0.00898845,
+        0.00869174,
+        0.01195551,
+        0.00696386,
+        0.01628392,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00884882,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00884882
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01195551,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01195551
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000052.parquet",
+        "episode_index": 52,
+        "resampled_frame_index_30hz": 18,
+        "episode_frames_30hz": 424
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.0425531914893617,
+        "movement_onset_frame_30hz": 26,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 405,
+        "future_motion_linf_rad": 1.5602021745871753,
+        "terminal_distance_l2_rad": 1.9238521349520281,
+        "initial_distance_l2_rad": 0.054646262899041176,
+        "local_speed_p75_rad_s": 0.1361357420682907,
+        "flange_height_m": {
+          "left": 0.22358372549212682,
+          "right": 0.22319926043179308
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-08-ep081",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00132645,
+        0.00233874,
+        0.0,
+        0.00968658,
+        0.0,
+        -0.02143264,
+        -0.00268781,
+        0.0084823,
+        0.0,
+        0.00804597,
+        0.01668535,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00132645,
+        0.00233874,
+        0.01665044,
+        0.00968658,
+        0.0,
+        -0.02143264,
+        -0.00268781,
+        0.0084823,
+        0.01085595,
+        0.00804597,
+        0.01668535,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01665044,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01665044
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01085595,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01085595
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000081.parquet",
+        "episode_index": 81,
+        "resampled_frame_index_30hz": 35,
+        "episode_frames_30hz": 412
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.0851581508515815,
+        "movement_onset_frame_30hz": 43,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 376,
+        "future_motion_linf_rad": 1.4717663784977049,
+        "terminal_distance_l2_rad": 1.7457459607904744,
+        "initial_distance_l2_rad": 0.036963605779052354,
+        "local_speed_p75_rad_s": 0.379870911128819,
+        "flange_height_m": {
+          "left": 0.22351948653407275,
+          "right": 0.22310130422063515
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-09-ep029",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00293215,
+        0.00293215,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.00205949,
+        0.0084823,
+        0.0,
+        0.0087441,
+        -0.0129678,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00293215,
+        0.00293215,
+        0.00928515,
+        0.0,
+        0.0,
+        0.0,
+        -0.00205949,
+        0.0084823,
+        0.01026254,
+        0.0087441,
+        -0.0129678,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00928515,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00928515
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01026254,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01026254
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000029.parquet",
+        "episode_index": 29,
+        "resampled_frame_index_30hz": 26,
+        "episode_frames_30hz": 376
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06933333333333333,
+        "movement_onset_frame_30hz": 34,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 349,
+        "future_motion_linf_rad": 1.8314961567521095,
+        "terminal_distance_l2_rad": 2.5194838652866456,
+        "initial_distance_l2_rad": 0.003228859044611454,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.2245208300981203,
+          "right": 0.22302507379041858
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-10-ep036",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00764454,
+        0.00287979,
+        0.0,
+        -0.00705113,
+        -0.00767945,
+        0.0219737,
+        -0.0211883,
+        0.00865683,
+        0.0,
+        0.01302016,
+        0.01785472,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00764454,
+        0.00287979,
+        0.00760964,
+        -0.00705113,
+        -0.00767945,
+        0.0219737,
+        -0.0211883,
+        0.00865683,
+        0.01097812,
+        0.01302016,
+        0.01785472,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00760964,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00760964
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01097812,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01097812
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000036.parquet",
+        "episode_index": 36,
+        "resampled_frame_index_30hz": 27,
+        "episode_frames_30hz": 411
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06585365853658537,
+        "movement_onset_frame_30hz": 35,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 383,
+        "future_motion_linf_rad": 1.5287513993680477,
+        "terminal_distance_l2_rad": 2.283838906529905,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.13849186711013317,
+        "flange_height_m": {
+          "left": 0.22529606138285407,
+          "right": 0.2225400534128085
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-11-ep034",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00563741,
+        0.00260054,
+        0.0,
+        0.01464331,
+        0.0,
+        0.0,
+        -0.00225147,
+        0.00827286,
+        0.0,
+        0.02338741,
+        0.01659808,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00563741,
+        0.00260054,
+        0.00804597,
+        0.01464331,
+        0.0,
+        0.0,
+        -0.00225147,
+        0.00827286,
+        0.01015782,
+        0.02338741,
+        0.01659808,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00804597,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00804597
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01015782,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01015782
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000034.parquet",
+        "episode_index": 34,
+        "resampled_frame_index_30hz": 29,
+        "episode_frames_30hz": 401
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.0725,
+        "movement_onset_frame_30hz": 37,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 371,
+        "future_motion_linf_rad": 1.1032749514561146,
+        "terminal_distance_l2_rad": 1.5587750317883513,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0345575250685215,
+        "flange_height_m": {
+          "left": 0.22295197006759856,
+          "right": 0.2214428201891774
+        }
+      }
+    },
+    {
+      "pose_id": "grab_paper_ball-preaction-12-ep078",
+      "task_prompt": "Pick up all paper balls and place them in the trash bin.",
+      "arm_joint_position_rad": [
+        0.00780162,
+        0.00268781,
+        0.0,
+        -0.00605629,
+        0.0,
+        0.02127556,
+        -0.00251327,
+        0.00829031,
+        0.0,
+        0.02333505,
+        0.0,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00780162,
+        0.00268781,
+        0.00842994,
+        -0.00605629,
+        0.0,
+        0.02127556,
+        -0.00251327,
+        0.00829031,
+        0.01068141,
+        0.02333505,
+        0.0,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00842994,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00842994
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01068141,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01068141
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Grab_paper_ball/arm_data/chunk-000/file-000078.parquet",
+        "episode_index": 78,
+        "resampled_frame_index_30hz": 33,
+        "episode_frames_30hz": 622
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.05314009661835749,
+        "movement_onset_frame_30hz": 41,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 588,
+        "future_motion_linf_rad": 2.149879193864763,
+        "terminal_distance_l2_rad": 2.6030722391630543,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22520610272691446,
+          "right": 0.22144711692296548
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-01-ep007",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.00757473,
+        0.00207694,
+        0.0,
+        -0.00630064,
+        0.0,
+        0.02270673,
+        0.00802851,
+        0.00764454,
+        0.0,
+        0.01452114,
+        0.0,
+        0.00757473
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00757473,
+        0.00207694,
+        0.00619592,
+        -0.00630064,
+        0.0,
+        0.02270673,
+        0.00802851,
+        0.00764454,
+        0.01343904,
+        0.01452114,
+        0.0,
+        0.00757473
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00619592,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00619592
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01343904,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01343904
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000007.parquet",
+        "episode_index": 7,
+        "resampled_frame_index_30hz": 20,
+        "episode_frames_30hz": 195
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.10309278350515463,
+        "movement_onset_frame_30hz": 28,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 174,
+        "future_motion_linf_rad": 1.262117427540943,
+        "terminal_distance_l2_rad": 1.4655689820842759,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22529191996596895,
+          "right": 0.2224748761982272
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-02-ep020",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        -0.03241076,
+        0.0,
+        0.0,
+        -0.37203437,
+        -0.15423475,
+        0.23500858,
+        0.00802851,
+        0.00764454,
+        0.0,
+        0.01574287,
+        0.0,
+        0.01003564
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.03241076,
+        -0.00013963,
+        0.00836013,
+        -0.37203437,
+        -0.15423475,
+        0.23500858,
+        0.00802851,
+        0.00764454,
+        0.01343904,
+        0.01574287,
+        0.0,
+        0.01003564
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 1,
+          "joint_name": "left_joint2",
+          "recorded_rad": -0.00013963,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00013963
+        },
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00836013,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00836013
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01343904,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01343904
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000020.parquet",
+        "episode_index": 20,
+        "resampled_frame_index_30hz": 24,
+        "episode_frames_30hz": 225
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.10714285714285714,
+        "movement_onset_frame_30hz": 32,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 200,
+        "future_motion_linf_rad": 1.5410908783233026,
+        "terminal_distance_l2_rad": 0.6916832427969238,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.26367951477641477,
+          "right": 0.2223411782505122
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-03-ep033",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        -0.00148353,
+        0.0023911,
+        0.0,
+        -0.11917108,
+        0.0,
+        -0.00745256,
+        -0.00174533,
+        0.00844739,
+        0.0,
+        0.01370083,
+        -0.01340413,
+        0.0122173
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.00148353,
+        0.0023911,
+        0.01314233,
+        -0.11917108,
+        0.0,
+        -0.00745256,
+        -0.00174533,
+        0.00844739,
+        0.01185079,
+        0.01370083,
+        -0.01340413,
+        0.0122173
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01314233,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01314233
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01185079,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01185079
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000033.parquet",
+        "episode_index": 33,
+        "resampled_frame_index_30hz": 25,
+        "episode_frames_30hz": 362
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06925207756232687,
+        "movement_onset_frame_30hz": 33,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 336,
+        "future_motion_linf_rad": 1.609821930527687,
+        "terminal_distance_l2_rad": 1.773478021624132,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.23749810494833787,
+          "right": 0.22248615842275374
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-04-ep086",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.01062906,
+        0.00200713,
+        0.0,
+        -0.00572468,
+        0.0,
+        -0.00827286,
+        0.0093026,
+        0.00863938,
+        0.0,
+        -0.01328196,
+        -0.01293289,
+        0.0127409
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.01062906,
+        0.00200713,
+        0.00945968,
+        -0.00572468,
+        0.0,
+        -0.00827286,
+        0.0093026,
+        0.00863938,
+        0.01059415,
+        -0.01328196,
+        -0.01293289,
+        0.0127409
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00945968,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00945968
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01059415,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01059415
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000086.parquet",
+        "episode_index": 86,
+        "resampled_frame_index_30hz": 23,
+        "episode_frames_30hz": 171
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.13529411764705881,
+        "movement_onset_frame_30hz": 31,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 147,
+        "future_motion_linf_rad": 1.6492313900962472,
+        "terminal_distance_l2_rad": 1.9694896020146222,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22523577798323524,
+          "right": 0.2254171579697859
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-05-ep046",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.0,
+        0.00209439,
+        0.0,
+        0.00921534,
+        0.00938987,
+        -0.00923279,
+        0.00904081,
+        0.00870919,
+        0.0,
+        0.0158825,
+        0.0,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.0,
+        0.00209439,
+        0.012706,
+        0.00921534,
+        0.00938987,
+        -0.00923279,
+        0.00904081,
+        0.00870919,
+        0.01174607,
+        0.0158825,
+        0.0,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.012706,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.012706
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01174607,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01174607
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000046.parquet",
+        "episode_index": 46,
+        "resampled_frame_index_30hz": 18,
+        "episode_frames_30hz": 295
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.061224489795918366,
+        "movement_onset_frame_30hz": 26,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 276,
+        "future_motion_linf_rad": 1.5122231235727668,
+        "terminal_distance_l2_rad": 2.1490699291654565,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22359458302888083,
+          "right": 0.22222206744403775
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-06-ep032",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.00143117,
+        0.00200713,
+        0.0,
+        0.0,
+        0.0,
+        0.03752458,
+        -0.00165806,
+        0.00862193,
+        0.0,
+        -0.01340413,
+        -0.01331686,
+        0.01164135
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00143117,
+        0.00200713,
+        0.01471313,
+        0.0,
+        0.0,
+        0.03752458,
+        -0.00165806,
+        0.00862193,
+        0.01054179,
+        -0.01340413,
+        -0.01331686,
+        0.01164135
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01471313,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01471313
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01054179,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01054179
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000032.parquet",
+        "episode_index": 32,
+        "resampled_frame_index_30hz": 18,
+        "episode_frames_30hz": 256
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.07058823529411765,
+        "movement_onset_frame_30hz": 26,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 237,
+        "future_motion_linf_rad": 1.8758972929790616,
+        "terminal_distance_l2_rad": 1.7227278046015797,
+        "initial_distance_l2_rad": 0.01616174727678299,
+        "local_speed_p75_rad_s": 0.24452065117657185,
+        "flange_height_m": {
+          "left": 0.22461043665250313,
+          "right": 0.22543218104647278
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-07-ep098",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.00830777,
+        0.00211185,
+        0.0,
+        -0.00699877,
+        0.0,
+        0.02188643,
+        0.0095644,
+        0.00860447,
+        0.0,
+        -0.01347394,
+        0.01797689,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00830777,
+        0.00211185,
+        0.00855211,
+        -0.00699877,
+        0.0,
+        0.02188643,
+        0.0095644,
+        0.00860447,
+        0.01073377,
+        -0.01347394,
+        0.01797689,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00855211,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00855211
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01073377,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01073377
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000098.parquet",
+        "episode_index": 98,
+        "resampled_frame_index_30hz": 17,
+        "episode_frames_30hz": 149
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.11486486486486487,
+        "movement_onset_frame_30hz": 25,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 131,
+        "future_motion_linf_rad": 1.5473740631714463,
+        "terminal_distance_l2_rad": 1.6333456325607367,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22536477791481965,
+          "right": 0.22544126829426386
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-08-ep087",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.00827286,
+        0.00193732,
+        0.0,
+        -0.00631809,
+        0.0,
+        -0.00827286,
+        0.00851721,
+        0.0084823,
+        0.0,
+        0.0,
+        0.01743584,
+        0.01085595
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00827286,
+        0.00193732,
+        0.00834267,
+        -0.00631809,
+        0.0,
+        -0.00827286,
+        0.00851721,
+        0.0084823,
+        0.01090831,
+        0.0,
+        0.01743584,
+        0.01085595
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00834267,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00834267
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01090831,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01090831
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000087.parquet",
+        "episode_index": 87,
+        "resampled_frame_index_30hz": 14,
+        "episode_frames_30hz": 203
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06930693069306931,
+        "movement_onset_frame_30hz": 22,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 188,
+        "future_motion_linf_rad": 1.8486876860260963,
+        "terminal_distance_l2_rad": 1.9798412849085185,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22530733688289586,
+          "right": 0.2239810952659044
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-09-ep045",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.0,
+        0.00923279,
+        0.0,
+        0.0,
+        0.00989602,
+        0.01446878,
+        -0.00178024,
+        0.00855211,
+        0.0,
+        0.0,
+        -0.01286308,
+        0.0111352
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.0,
+        0.00923279,
+        0.00865683,
+        0.0,
+        0.00989602,
+        0.01446878,
+        -0.00178024,
+        0.00855211,
+        0.01075123,
+        0.0,
+        -0.01286308,
+        0.0111352
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00865683,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00865683
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01075123,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01075123
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000045.parquet",
+        "episode_index": 45,
+        "resampled_frame_index_30hz": 14,
+        "episode_frames_30hz": 283
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.04964539007092199,
+        "movement_onset_frame_30hz": 22,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 268,
+        "future_motion_linf_rad": 1.653926333412528,
+        "terminal_distance_l2_rad": 1.8249150910567002,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22390823292886258,
+          "right": 0.2239744836319596
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-10-ep050",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.0,
+        0.00205949,
+        0.0,
+        0.00947714,
+        0.0,
+        0.02143264,
+        -0.00185005,
+        0.00837758,
+        0.0,
+        0.02335251,
+        -0.01281072,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.0,
+        0.00205949,
+        0.01291544,
+        0.00947714,
+        0.0,
+        0.02143264,
+        -0.00185005,
+        0.00837758,
+        0.01179843,
+        0.02335251,
+        -0.01281072,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01291544,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01291544
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01179843,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01179843
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000050.parquet",
+        "episode_index": 50,
+        "resampled_frame_index_30hz": 22,
+        "episode_frames_30hz": 209
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.10576923076923077,
+        "movement_onset_frame_30hz": 30,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 186,
+        "future_motion_linf_rad": 1.6091761300340295,
+        "terminal_distance_l2_rad": 0.5542076585578055,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22356945601542152,
+          "right": 0.22143653093573337
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-11-ep025",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        -0.00031416,
+        0.00214675,
+        0.0,
+        -0.00630064,
+        -0.01062906,
+        0.0,
+        0.00802851,
+        0.00764454,
+        0.0,
+        0.01574287,
+        0.0,
+        0.01003564
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.00031416,
+        0.00214675,
+        0.00816814,
+        -0.00630064,
+        -0.01062906,
+        0.0,
+        0.00802851,
+        0.00764454,
+        0.01343904,
+        0.01574287,
+        0.0,
+        0.01003564
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00816814,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00816814
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01343904,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01343904
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000025.parquet",
+        "episode_index": 25,
+        "resampled_frame_index_30hz": 15,
+        "episode_frames_30hz": 329
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.04573170731707317,
+        "movement_onset_frame_30hz": 23,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 313,
+        "future_motion_linf_rad": 1.2593598286621273,
+        "terminal_distance_l2_rad": 1.558226074285413,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22528498363578092,
+          "right": 0.2223411782505122
+        }
+      }
+    },
+    {
+      "pose_id": "put_down_the_pen-preaction-12-ep037",
+      "task_prompt": "Pick up one pen and place it in the pen holder.",
+      "arm_joint_position_rad": [
+        0.00033161,
+        0.00209439,
+        0.0,
+        0.01438151,
+        0.0,
+        0.021485,
+        0.00959931,
+        0.00856957,
+        0.0,
+        0.0,
+        -0.01261873,
+        0.01089085
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00033161,
+        0.00209439,
+        0.01303761,
+        0.01438151,
+        0.0,
+        0.021485,
+        0.00959931,
+        0.00856957,
+        0.01019272,
+        0.0,
+        -0.01261873,
+        0.01089085
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01303761,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01303761
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01019272,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01019272
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_down_the_pen/arm_data/chunk-000/file-000037.parquet",
+        "episode_index": 37,
+        "resampled_frame_index_30hz": 18,
+        "episode_frames_30hz": 370
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.04878048780487805,
+        "movement_onset_frame_30hz": 26,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 351,
+        "future_motion_linf_rad": 1.6945052463561296,
+        "terminal_distance_l2_rad": 1.6550477247923054,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.2230296948025955,
+          "right": 0.22397279165400133
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-01-ep018",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00794125,
+        0.00228638,
+        0.0,
+        0.0,
+        0.0,
+        0.02267183,
+        0.00823795,
+        0.00925025,
+        0.0,
+        0.02228785,
+        -0.00535816,
+        0.01500983
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00794125,
+        0.00228638,
+        0.00891863,
+        0.0,
+        0.0,
+        0.02267183,
+        0.00823795,
+        0.00925025,
+        0.01144936,
+        0.02228785,
+        -0.00535816,
+        0.01500983
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00891863,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00891863
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01144936,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01144936
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000018.parquet",
+        "episode_index": 18,
+        "resampled_frame_index_30hz": 36,
+        "episode_frames_30hz": 259
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.13953488372093023,
+        "movement_onset_frame_30hz": 44,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 222,
+        "future_motion_linf_rad": 1.4761121801566333,
+        "terminal_distance_l2_rad": 1.9030379314764454,
+        "initial_distance_l2_rad": 0.014678219333291054,
+        "local_speed_p75_rad_s": 0.053930666763335466,
+        "flange_height_m": {
+          "left": 0.22458339405724,
+          "right": 0.221468035306772
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-02-ep010",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.80719733,
+        0.66428977,
+        -0.26296875,
+        -0.38006291,
+        0.18802433,
+        -0.05370378,
+        0.0,
+        0.41470769,
+        -0.59672809,
+        0.43442991,
+        -0.26649433,
+        0.051941
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.80719733,
+        0.66428977,
+        -0.26296875,
+        -0.38006291,
+        0.18802433,
+        -0.05370378,
+        0.0,
+        0.41470769,
+        -0.59672809,
+        0.43442991,
+        -0.26649433,
+        0.051941
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000010.parquet",
+        "episode_index": 10,
+        "resampled_frame_index_30hz": 14,
+        "episode_frames_30hz": 209
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.0673076923076923,
+        "movement_onset_frame_30hz": 22,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 194,
+        "future_motion_linf_rad": 1.1132931411266327,
+        "terminal_distance_l2_rad": 1.1296580097488935,
+        "initial_distance_l2_rad": 0.10994467636754757,
+        "local_speed_p75_rad_s": 0.16179213300347328,
+        "flange_height_m": {
+          "left": 0.27931558510774923,
+          "right": 0.35602412669556327
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-03-ep084",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.40966368,
+        0.10327113,
+        0.0,
+        -0.11852531,
+        0.49644145,
+        -0.3156428,
+        0.00788889,
+        0.00851721,
+        0.0,
+        0.01401499,
+        0.01776745,
+        0.01190315
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.40966368,
+        0.10327113,
+        0.01415462,
+        -0.11852531,
+        0.49644145,
+        -0.3156428,
+        0.00788889,
+        0.00851721,
+        0.01178097,
+        0.01401499,
+        0.01776745,
+        0.01190315
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01415462,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01415462
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01178097,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01178097
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000084.parquet",
+        "episode_index": 84,
+        "resampled_frame_index_30hz": 16,
+        "episode_frames_30hz": 303
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.052980132450331126,
+        "movement_onset_frame_30hz": 24,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 286,
+        "future_motion_linf_rad": 1.4074335023760796,
+        "terminal_distance_l2_rad": 1.5086031413273888,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22688879492804334,
+          "right": 0.2224448181113458
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-04-ep012",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00863938,
+        0.0471588,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00951204,
+        0.00839503,
+        0.0,
+        0.02333505,
+        0.0,
+        0.01439897
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00863938,
+        0.0471588,
+        0.0105767,
+        0.0,
+        0.0,
+        0.0,
+        0.00951204,
+        0.00839503,
+        0.01216494,
+        0.02333505,
+        0.0,
+        0.01439897
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.0105767,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.0105767
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01216494,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01216494
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000012.parquet",
+        "episode_index": 12,
+        "resampled_frame_index_30hz": 46,
+        "episode_frames_30hz": 216
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.21395348837209302,
+        "movement_onset_frame_30hz": 54,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 169,
+        "future_motion_linf_rad": 1.5698887528851628,
+        "terminal_distance_l2_rad": 2.210563392397996,
+        "initial_distance_l2_rad": 0.051228024372780324,
+        "local_speed_p75_rad_s": 0.25577800814062357,
+        "flange_height_m": {
+          "left": 0.22014465764923308,
+          "right": 0.22143689745095246
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-05-ep080",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00780162,
+        0.0023911,
+        0.0,
+        0.01118756,
+        0.0,
+        0.0,
+        0.00788889,
+        0.00851721,
+        0.0,
+        0.00832522,
+        0.01776745,
+        0.01834341
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00780162,
+        0.0023911,
+        0.01425934,
+        0.01118756,
+        0.0,
+        0.0,
+        0.00788889,
+        0.00851721,
+        0.01043707,
+        0.00832522,
+        0.01776745,
+        0.01834341
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01425934,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01425934
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01043707,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01043707
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000080.parquet",
+        "episode_index": 80,
+        "resampled_frame_index_30hz": 28,
+        "episode_frames_30hz": 217
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.12962962962962962,
+        "movement_onset_frame_30hz": 36,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 188,
+        "future_motion_linf_rad": 1.476670740870759,
+        "terminal_distance_l2_rad": 2.003130812629409,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22335026635888908,
+          "right": 0.22306730962898857
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-06-ep068",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00780162,
+        0.00228638,
+        0.0,
+        -0.00651008,
+        0.0,
+        0.0,
+        0.00888373,
+        0.00879646,
+        0.0,
+        0.02335251,
+        0.01096067,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00780162,
+        0.00228638,
+        0.00904081,
+        -0.00651008,
+        0.0,
+        0.0,
+        0.00888373,
+        0.00879646,
+        0.01122247,
+        0.02335251,
+        0.01096067,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00904081,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00904081
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01122247,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01122247
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000068.parquet",
+        "episode_index": 68,
+        "resampled_frame_index_30hz": 21,
+        "episode_frames_30hz": 259
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.08139534883720931,
+        "movement_onset_frame_30hz": 29,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 237,
+        "future_motion_linf_rad": 1.5987565461546183,
+        "terminal_distance_l2_rad": 2.42767238381385,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.2252945217260224,
+          "right": 0.22139568723557332
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-07-ep000",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        -0.00270526,
+        0.00225147,
+        0.0,
+        0.00945968,
+        0.01450369,
+        0.02181662,
+        -0.00185005,
+        8.727e-05,
+        0.0,
+        0.01282817,
+        -0.01118756,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.00270526,
+        0.00225147,
+        0.01555088,
+        0.00945968,
+        0.01450369,
+        0.02181662,
+        -0.00185005,
+        8.727e-05,
+        0.01261873,
+        0.01282817,
+        -0.01118756,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01555088,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01555088
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01261873,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01261873
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000000.parquet",
+        "episode_index": 0,
+        "resampled_frame_index_30hz": 32,
+        "episode_frames_30hz": 239
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.13445378151260504,
+        "movement_onset_frame_30hz": 40,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 206,
+        "future_motion_linf_rad": 1.6693026966895559,
+        "terminal_distance_l2_rad": 2.5813349344852994,
+        "initial_distance_l2_rad": 0.001745329238474369,
+        "local_speed_p75_rad_s": 0.03612833563238382,
+        "flange_height_m": {
+          "left": 0.22355247934711325,
+          "right": 0.22339383272450625
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-08-ep021",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        -0.00109956,
+        0.00260054,
+        0.0,
+        0.01682497,
+        0.0,
+        0.0,
+        0.00823795,
+        0.00925025,
+        0.0,
+        0.02228785,
+        -0.00535816,
+        0.01356121
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.00109956,
+        0.00260054,
+        0.01239184,
+        0.01682497,
+        0.0,
+        0.0,
+        0.00823795,
+        0.00925025,
+        0.01144936,
+        0.02228785,
+        -0.00535816,
+        0.01356121
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01239184,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01239184
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01144936,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01144936
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000021.parquet",
+        "episode_index": 21,
+        "resampled_frame_index_30hz": 24,
+        "episode_frames_30hz": 223
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.10810810810810811,
+        "movement_onset_frame_30hz": 32,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 198,
+        "future_motion_linf_rad": 1.22289980459027,
+        "terminal_distance_l2_rad": 2.017987585087051,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22271329442654914,
+          "right": 0.221468035306772
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-09-ep001",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00858702,
+        0.00244346,
+        0.0,
+        -0.00563741,
+        0.00923279,
+        0.0,
+        0.00856957,
+        0.00839503,
+        0.0,
+        0.01314233,
+        -0.01314233,
+        0.00984366
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00858702,
+        0.00244346,
+        0.00853466,
+        -0.00563741,
+        0.00923279,
+        0.0,
+        0.00856957,
+        0.00839503,
+        0.01000074,
+        0.01314233,
+        -0.01314233,
+        0.00984366
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00853466,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00853466
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01000074,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01000074
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000001.parquet",
+        "episode_index": 1,
+        "resampled_frame_index_30hz": 24,
+        "episode_frames_30hz": 218
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.11059907834101383,
+        "movement_onset_frame_30hz": 32,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 193,
+        "future_motion_linf_rad": 1.7122726859524846,
+        "terminal_distance_l2_rad": 2.5100347790162814,
+        "initial_distance_l2_rad": 0.009332617127971636,
+        "local_speed_p75_rad_s": 0.1657190127298236,
+        "flange_height_m": {
+          "left": 0.22518387956191704,
+          "right": 0.22255238646145775
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-10-ep003",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00870919,
+        0.00237365,
+        0.0,
+        -0.00637045,
+        0.0,
+        0.02202605,
+        0.00914553,
+        0.00830777,
+        0.0,
+        0.01289798,
+        0.02000147,
+        0.01082104
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00870919,
+        0.00237365,
+        0.00856957,
+        -0.00637045,
+        0.0,
+        0.02202605,
+        0.00914553,
+        0.00830777,
+        0.01047198,
+        0.01289798,
+        0.02000147,
+        0.01082104
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00856957,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00856957
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01047198,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01047198
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000003.parquet",
+        "episode_index": 3,
+        "resampled_frame_index_30hz": 21,
+        "episode_frames_30hz": 185
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.11413043478260869,
+        "movement_onset_frame_30hz": 29,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 163,
+        "future_motion_linf_rad": 1.7234602449461818,
+        "terminal_distance_l2_rad": 2.539635873782573,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22527082704874352,
+          "right": 0.22258737111034857
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-11-ep039",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.00774926,
+        0.00232129,
+        0.0,
+        0.01649336,
+        0.0,
+        0.02621485,
+        0.00689405,
+        0.00675442,
+        0.0,
+        0.01478294,
+        -0.01317724,
+        0.01206023
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00774926,
+        0.00232129,
+        0.01741839,
+        0.01649336,
+        0.0,
+        0.02621485,
+        0.00689405,
+        0.00675442,
+        0.01235693,
+        0.01478294,
+        -0.01317724,
+        0.01206023
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01741839,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01741839
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01235693,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01235693
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000039.parquet",
+        "episode_index": 39,
+        "resampled_frame_index_30hz": 24,
+        "episode_frames_30hz": 194
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.12435233160621761,
+        "movement_onset_frame_30hz": 32,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 169,
+        "future_motion_linf_rad": 1.5652635842561722,
+        "terminal_distance_l2_rad": 1.850470912187569,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.07618361385539174,
+        "flange_height_m": {
+          "left": 0.22277666474988747,
+          "right": 0.2225327510748262
+        }
+      }
+    },
+    {
+      "pose_id": "put_the_mouse-preaction-12-ep077",
+      "task_prompt": "Pick up one mouse and place it on the mouse pad.",
+      "arm_joint_position_rad": [
+        0.0082205,
+        0.00237365,
+        0.0,
+        0.00949459,
+        0.0,
+        0.02223549,
+        0.00928515,
+        0.00881391,
+        0.0,
+        0.02363176,
+        0.01802925,
+        0.01427679
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.0082205,
+        0.00237365,
+        0.01342158,
+        0.00949459,
+        0.0,
+        0.02223549,
+        0.00928515,
+        0.00881391,
+        0.01171116,
+        0.02363176,
+        0.01802925,
+        0.01427679
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01342158,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01342158
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01171116,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01171116
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/Put_the_mouse/arm_data/chunk-000/file-000077.parquet",
+        "episode_index": 77,
+        "resampled_frame_index_30hz": 24,
+        "episode_frames_30hz": 245
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.09836065573770492,
+        "movement_onset_frame_30hz": 32,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 220,
+        "future_motion_linf_rad": 2.2182785915210843,
+        "terminal_distance_l2_rad": 2.3435269110041808,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22353709631597696,
+          "right": 0.22136321099111822
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-01-ep010",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00909317,
+        0.00336849,
+        0.0,
+        -0.00741765,
+        0.0,
+        0.02199115,
+        0.00938987,
+        0.00820305,
+        0.0,
+        0.0,
+        0.01787217,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00909317,
+        0.00336849,
+        0.00851721,
+        -0.00741765,
+        0.0,
+        0.02199115,
+        0.00938987,
+        0.00820305,
+        0.0105767,
+        0.0,
+        0.01787217,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00851721,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00851721
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.0105767,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.0105767
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000010.parquet",
+        "episode_index": 10,
+        "resampled_frame_index_30hz": 36,
+        "episode_frames_30hz": 178
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.2033898305084746,
+        "movement_onset_frame_30hz": 44,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 141,
+        "future_motion_linf_rad": 1.3413203777745366,
+        "terminal_distance_l2_rad": 0.49609206041470627,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22528884558342516,
+          "right": 0.224008276535947
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-02-ep094",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.01083849,
+        0.01724385,
+        0.0,
+        0.0466352,
+        0.0,
+        0.127985,
+        0.00938987,
+        0.00872665,
+        0.0,
+        -0.01324705,
+        0.01762783,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.01083849,
+        0.01724385,
+        0.01530654,
+        0.0466352,
+        0.0,
+        0.127985,
+        0.00938987,
+        0.00872665,
+        0.01050688,
+        -0.01324705,
+        0.01762783,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01530654,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01530654
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01050688,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01050688
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000094.parquet",
+        "episode_index": 94,
+        "resampled_frame_index_30hz": 13,
+        "episode_frames_30hz": 195
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.06701030927835051,
+        "movement_onset_frame_30hz": 21,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 181,
+        "future_motion_linf_rad": 1.8559656841680408,
+        "terminal_distance_l2_rad": 2.1432684033709433,
+        "initial_distance_l2_rad": 0.0018151551485061646,
+        "local_speed_p75_rad_s": 0.003141537308692932,
+        "flange_height_m": {
+          "left": 0.21801629725084057,
+          "right": 0.22540462367328415
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-03-ep011",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        -0.00179769,
+        0.00336849,
+        0.0,
+        -0.00631809,
+        0.0,
+        0.02199115,
+        -0.00118682,
+        0.00827286,
+        0.0,
+        0.00932006,
+        0.04639085,
+        -0.08417723
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.00179769,
+        0.00336849,
+        0.01324705,
+        -0.00631809,
+        0.0,
+        0.02199115,
+        -0.00118682,
+        0.00827286,
+        0.01097812,
+        0.00932006,
+        0.04639085,
+        -0.08417723
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01324705,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01324705
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01097812,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01097812
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000011.parquet",
+        "episode_index": 11,
+        "resampled_frame_index_30hz": 42,
+        "episode_frames_30hz": 357
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.11797752808988764,
+        "movement_onset_frame_30hz": 50,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 314,
+        "future_motion_linf_rad": 1.6357051394879818,
+        "terminal_distance_l2_rad": 1.4362426059028162,
+        "initial_distance_l2_rad": 0.10353511829022022,
+        "local_speed_p75_rad_s": 0.09503323584794998,
+        "flange_height_m": {
+          "left": 0.22516876254074047,
+          "right": 0.22298007710761844
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-04-ep040",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.09292133,
+        0.00319395,
+        0.0,
+        -0.00656244,
+        0.0,
+        -0.00827286,
+        0.00935496,
+        0.00869174,
+        0.0,
+        0.00809833,
+        0.01769764,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.09292133,
+        0.00319395,
+        0.0137881,
+        -0.00656244,
+        0.0,
+        -0.00827286,
+        0.00935496,
+        0.00869174,
+        0.01183333,
+        0.00809833,
+        0.01769764,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.0137881,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.0137881
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01183333,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01183333
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000040.parquet",
+        "episode_index": 40,
+        "resampled_frame_index_30hz": 48,
+        "episode_frames_30hz": 257
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.1875,
+        "movement_onset_frame_30hz": 56,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 208,
+        "future_motion_linf_rad": 1.4059150703251362,
+        "terminal_distance_l2_rad": 1.4993931994283765,
+        "initial_distance_l2_rad": 0.0964468966703862,
+        "local_speed_p75_rad_s": 0.000261794775724411,
+        "flange_height_m": {
+          "left": 0.22521235789551555,
+          "right": 0.2230751135897099
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-05-ep030",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        -0.04900885,
+        0.00303687,
+        0.0,
+        -0.00712094,
+        -0.01837832,
+        0.02120575,
+        0.00563741,
+        0.00884882,
+        0.0,
+        0.0,
+        0.0098262,
+        0.0236143
+      ],
+      "recorded_arm_joint_position_rad": [
+        -0.04900885,
+        0.00303687,
+        0.01603958,
+        -0.00712094,
+        -0.01837832,
+        0.02120575,
+        0.00563741,
+        0.00884882,
+        0.01197296,
+        0.0,
+        0.0098262,
+        0.0236143
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01603958,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01603958
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01197296,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01197296
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000030.parquet",
+        "episode_index": 30,
+        "resampled_frame_index_30hz": 22,
+        "episode_frames_30hz": 235
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.09401709401709402,
+        "movement_onset_frame_30hz": 30,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 212,
+        "future_motion_linf_rad": 1.4774560602381825,
+        "terminal_distance_l2_rad": 1.9738466680986413,
+        "initial_distance_l2_rad": 0.02361430414021015,
+        "local_speed_p75_rad_s": 0.15498520340770483,
+        "flange_height_m": {
+          "left": 0.22528802840939144,
+          "right": 0.22394566467254234
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-06-ep093",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00891863,
+        0.01424189,
+        0.0,
+        0.0,
+        0.0,
+        0.07993608,
+        0.00923279,
+        0.00877901,
+        0.0,
+        0.00865683,
+        0.01761037,
+        0.00919789
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00891863,
+        0.01424189,
+        0.01530654,
+        0.0,
+        0.0,
+        0.07993608,
+        0.00923279,
+        0.00877901,
+        0.01064651,
+        0.00865683,
+        0.01761037,
+        0.00919789
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01530654,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01530654
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01064651,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01064651
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000093.parquet",
+        "episode_index": 93,
+        "resampled_frame_index_30hz": 21,
+        "episode_frames_30hz": 201
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.105,
+        "movement_onset_frame_30hz": 29,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 179,
+        "future_motion_linf_rad": 1.882110757753253,
+        "terminal_distance_l2_rad": 2.1210466728499893,
+        "initial_distance_l2_rad": 0.0019373157992959023,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22341881615933254,
+          "right": 0.22300551461761334
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-07-ep084",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00829031,
+        0.00397935,
+        0.0,
+        0.03869395,
+        0.0,
+        0.0,
+        0.00869174,
+        0.00842994,
+        0.0,
+        -0.01364847,
+        0.01040216,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00829031,
+        0.00397935,
+        0.01394518,
+        0.03869395,
+        0.0,
+        0.0,
+        0.00869174,
+        0.00842994,
+        0.00994838,
+        -0.01364847,
+        0.01040216,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01394518,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01394518
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.00994838,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00994838
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000084.parquet",
+        "episode_index": 84,
+        "resampled_frame_index_30hz": 25,
+        "episode_frames_30hz": 188
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.13368983957219252,
+        "movement_onset_frame_30hz": 33,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 162,
+        "future_motion_linf_rad": 1.6864418433979154,
+        "terminal_distance_l2_rad": 1.544761062613066,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.22018500137335364,
+          "right": 0.22547765442780288
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-08-ep031",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00842994,
+        0.00254818,
+        0.0,
+        -0.00675442,
+        0.0,
+        -0.00832522,
+        0.0,
+        0.00890118,
+        0.0,
+        0.01286308,
+        0.04256858,
+        -0.02429498
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00842994,
+        0.00254818,
+        0.00767945,
+        -0.00675442,
+        0.0,
+        -0.00832522,
+        0.0,
+        0.00890118,
+        0.00954695,
+        0.01286308,
+        0.04256858,
+        -0.02429498
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00767945,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00767945
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.00954695,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00954695
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000031.parquet",
+        "episode_index": 31,
+        "resampled_frame_index_30hz": 35,
+        "episode_frames_30hz": 279
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.12589928057553956,
+        "movement_onset_frame_30hz": 43,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 243,
+        "future_motion_linf_rad": 1.117918312549591,
+        "terminal_distance_l2_rad": 1.0656718190230847,
+        "initial_distance_l2_rad": 0.03590666600704525,
+        "local_speed_p75_rad_s": 0.053930701687932014,
+        "flange_height_m": {
+          "left": 0.22529586280450292,
+          "right": 0.22253169855025123
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-09-ep001",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00855211,
+        0.00263545,
+        0.0,
+        -0.00673697,
+        0.0,
+        0.0209614,
+        0.0,
+        0.00853466,
+        0.0,
+        -0.00591667,
+        0.02352704,
+        -0.04392994
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00855211,
+        0.00263545,
+        0.00865683,
+        -0.00673697,
+        0.0,
+        0.0209614,
+        0.0,
+        0.00853466,
+        0.01193805,
+        -0.00591667,
+        0.02352704,
+        -0.04392994
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00865683,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00865683
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01193805,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01193805
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000001.parquet",
+        "episode_index": 1,
+        "resampled_frame_index_30hz": 32,
+        "episode_frames_30hz": 253
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.12698412698412698,
+        "movement_onset_frame_30hz": 40,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 220,
+        "future_motion_linf_rad": 1.5447560651227832,
+        "terminal_distance_l2_rad": 0.8677574521386852,
+        "initial_distance_l2_rad": 0.045527673138569154,
+        "local_speed_p75_rad_s": 0.30054571107029915,
+        "flange_height_m": {
+          "left": 0.2252855080536768,
+          "right": 0.22462226044908687
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-10-ep083",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.0093026,
+        0.01628392,
+        0.0,
+        0.0,
+        0.0,
+        -0.01132719,
+        0.00942478,
+        0.00846485,
+        0.0,
+        0.00788889,
+        0.01736603,
+        0.01103048
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.0093026,
+        0.01628392,
+        0.00785398,
+        0.0,
+        0.0,
+        -0.01132719,
+        0.00942478,
+        0.00846485,
+        0.00741765,
+        0.00788889,
+        0.01736603,
+        0.01103048
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00785398,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00785398
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.00741765,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00741765
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000083.parquet",
+        "episode_index": 83,
+        "resampled_frame_index_30hz": 20,
+        "episode_frames_30hz": 246
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.08163265306122448,
+        "movement_onset_frame_30hz": 28,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 225,
+        "future_motion_linf_rad": 1.9750320576131344,
+        "terminal_distance_l2_rad": 2.7033010363960392,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.2232185773756127,
+          "right": 0.2231201586593829
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-11-ep062",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00916298,
+        0.00361283,
+        0.0,
+        0.0,
+        0.0,
+        0.0209614,
+        0.00919789,
+        0.00855211,
+        0.0,
+        -0.01312488,
+        -0.01289798,
+        0.01097812
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00916298,
+        0.00361283,
+        0.01443387,
+        0.0,
+        0.0,
+        0.0209614,
+        0.00919789,
+        0.00855211,
+        0.01164135,
+        -0.01312488,
+        -0.01289798,
+        0.01097812
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.01443387,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01443387
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01164135,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01164135
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000062.parquet",
+        "episode_index": 62,
+        "resampled_frame_index_30hz": 12,
+        "episode_frames_30hz": 204
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.059113300492610835,
+        "movement_onset_frame_30hz": 20,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 191,
+        "future_motion_linf_rad": 0.9376257862895727,
+        "terminal_distance_l2_rad": 1.4830525395221084,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.2244548420991991,
+          "right": 0.22540849914619598
+        }
+      }
+    },
+    {
+      "pose_id": "water_cannon-preaction-12-ep091",
+      "task_prompt": "Pick up one drink container and place it on the coaster.",
+      "arm_joint_position_rad": [
+        0.00815069,
+        0.00251327,
+        0.0,
+        0.00968658,
+        -0.02003638,
+        0.03951425,
+        0.00947714,
+        0.00846485,
+        0.0,
+        -0.01399754,
+        0.0174882,
+        0.0
+      ],
+      "recorded_arm_joint_position_rad": [
+        0.00815069,
+        0.00251327,
+        0.00853466,
+        0.00968658,
+        -0.02003638,
+        0.03951425,
+        0.00947714,
+        0.00846485,
+        0.01284562,
+        -0.01399754,
+        0.0174882,
+        0.0
+      ],
+      "gripper_policy": "preserve_measured",
+      "boundary_adjustments": [
+        {
+          "joint_index": 2,
+          "joint_name": "left_joint3",
+          "recorded_rad": 0.00853466,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.00853466
+        },
+        {
+          "joint_index": 8,
+          "joint_name": "right_joint3",
+          "recorded_rad": 0.01284562,
+          "target_rad": 0.0,
+          "absolute_adjustment_rad": 0.01284562
+        }
+      ],
+      "source": {
+        "uri": "oss://cocomatrix-robot/demo/20260830/piper/water_cannon/arm_data/chunk-000/file-000091.parquet",
+        "episode_index": 91,
+        "resampled_frame_index_30hz": 38,
+        "episode_frames_30hz": 187
+      },
+      "pre_action_evidence": {
+        "frame_fraction": 0.20430107526881722,
+        "movement_onset_frame_30hz": 46,
+        "pre_action_lead_frames_30hz": 8,
+        "future_frames": 148,
+        "future_motion_linf_rad": 1.6328776739537716,
+        "terminal_distance_l2_rad": 1.5803148703396797,
+        "initial_distance_l2_rad": 0.0,
+        "local_speed_p75_rad_s": 0.0,
+        "flange_height_m": {
+          "left": 0.2235020399058611,
+          "right": 0.22551205268334368
+        }
+      }
+    }
+  ]
+}

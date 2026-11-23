@@ -1,0 +1,18 @@
+{
+  "schema": "xpolicylab.piper-web-deployment-switch/v1",
+  "scope": "Personal Junqi qualified deployment packages only",
+  "deployments": [
+    {
+      "name": "junqi-lingbot-real400-top1grip-raw10000-instance01",
+      "label": "Top1 夹爪版 · LingBot RAW10000"
+    },
+    {
+      "name": "junqi-lingbot-bat2-redirect-raw10000-instance01",
+      "label": "改放杯垫版 · LingBot RAW10000"
+    },
+    {
+      "name": "junqi-bat23-mixed2500-native-rtc5-instance01",
+      "label": "混训 EMA+2500"
+    }
+  ]
+}

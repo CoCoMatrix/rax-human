@@ -1,0 +1,72 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-clear-desk-fastwam-step59166
+label: FastWAM Piper clear-desk periodic raw step 59166
+release:
+  status: hardware_free_candidate
+  limitation: Publisher contract omits explicit joint and gripper unit fields.
+model:
+  backend: fastwam
+bundle:
+  kind: fastwam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/fastwam/piper-songling-lerobot-v3-clear-desk-v1/step-59166
+  required: [checkpoint/step_059166.pt, contract.json, infer.py]
+  verifier: policy/FastWAM/verify_piper_clear_desk_step59166_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/FastWAM/serve_piper_clear_desk_step59166.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: Close the laptop.
+  inline:
+    - Close the laptop.
+    - Pick up one drink container and place it on the coaster.
+    - Pick up one mouse and place it on the mouse pad.
+    - Pick up one pen and place it in the pen holder.
+  catalog_path: "{repo_root}/policy/FastWAM/piper_clear_desk_task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/FastWAM/setup_piper_clear_desk_step59166.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: jxfang/real_songling_ckpt/clear_desk_songling_step_059166/deployment_bundle
+  expected_bytes: 13458471742
+  threads: 16
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: fastwam
+    robot: dual_piper
+    dataset: clear_desk_songling
+    task: clear_desk
+    step: 59166
+    params_semantics: raw
+qualification:
+  supported: true
+  verifier: policy/FastWAM/verify_piper_clear_desk_step59166_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+  smoke_script: null

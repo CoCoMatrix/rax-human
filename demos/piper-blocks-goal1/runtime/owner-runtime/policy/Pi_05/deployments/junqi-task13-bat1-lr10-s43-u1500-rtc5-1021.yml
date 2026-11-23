@@ -1,0 +1,62 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-task13-bat1-lr10-s43-u1500-rtc5-1021
+label: BAT1 · 1e-5 / 43 / 1500 · RTC5 + 速度衔接
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_01.yml
+release:
+  status: contract_complete
+  evidence: policy/Pi05Task13Bat1LR10S43U1500/contracts/native-release.json
+  evidence_sha256: e6a5d7e0fa3819e74822253f2ee5165a7644e3f8f8e5b79e593bf74ace7224b7
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/code_junqi/model-store/models/pi05/task13_bat1_rtc5_lr10_s43_u001500_ema
+  required:
+  - checkpoint/params
+  - checkpoint/assets
+  - contract.json
+  - deploy_input.json
+  - package_manifest.json
+  - infer.py
+  verifier: policy/Pi05Task13Bat1LR10S43U1500/verify_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 50
+  default_execute_chunk: 10
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi05Task13Bat1LR10S43U1500/serve.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  default: 用左臂将桌面前方的杯子逐个放到各自正后方的杯垫上，松开夹爪，全部完成后撤离。
+  inline:
+  - 用左臂将桌面前方的杯子逐个放到各自正后方的杯垫上，松开夹爪，全部完成后撤离。
+  catalog_path: '{repo_root}/policy/Pi05Task13Bat1LR10S43U1500/task_catalog.json'
+pigey:
+  supported: false
+setup:
+  script: policy/Pi05Task13Bat1LR10S43U1500/setup.sh
+qualification:
+  supported: true
+  verifier: policy/Pi05Task13Bat1LR10S43U1500/verify_bundle.py
+  verifier_args:
+  - --full-manifest
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+  - tests/test_task13_bat1_rtc5_lr10_s43_u001500.py
+  - tests/test_native_prefix_acceptance.py
+  - tests/test_native_ui_guard.py
+  - tests/test_web_execution_selection.py
+  - tests/test_piper_deployment_switch.py
+  - tests/test_tiered_velocity_seam.py
+  - tests/test_image_transport.py
+  - tests/test_piper_device_binding.py
+  - tests/test_image_transport_release_identity.py

@@ -1,0 +1,11 @@
+[Unit]
+Description=XPolicyLab Piper CAN setup for %I
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ip link set dev %i type can bitrate 1000000
+ExecStart=/usr/sbin/ip link set dev %i up
+ExecStop=-/usr/sbin/ip link set dev %i down
+RemainAfterExit=yes

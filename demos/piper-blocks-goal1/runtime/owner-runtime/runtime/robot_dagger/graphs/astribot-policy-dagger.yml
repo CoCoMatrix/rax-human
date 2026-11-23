@@ -1,0 +1,182 @@
+nodes:
+  # Exact GR3 serial owner: only this node opens /dev/qnbot.
+  - id: exo_driver_node
+    build: uv pip install --python ../.venv/bin/python -e ../../qnexo/source
+    path: ../.venv/bin/exo_driver_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [exo_data]
+
+  # Robot-independent shared QNexo buttons and footswitch. This deliberately
+  # does not load the GR3 model, IK, action schema, or retargeting code.
+  - id: qnexo_controls
+    path: ../.venv/bin/xpolicylab-qnexo-controls
+    inputs:
+      exo_data: exo_driver_node/exo_data
+      tick: dora/timer/millis/100
+    outputs: [button_command, takeover, review_input, status]
+    env:
+      PYTHONPATH: ""
+
+  # Read-only three-camera preview and review-input bridge for the collector UI.
+  # It owns no SDK object, recorder, policy transport, or robot command output.
+  - id: operator_ui
+    path: ../nodes/operator_ui.py
+    inputs:
+      camera_cam_head: astribot_owner/observation_image_cam_head
+      camera_cam_left_wrist: astribot_owner/observation_image_cam_left_wrist
+      camera_cam_right_wrist: astribot_owner/observation_image_cam_right_wrist
+      review_input: qnexo_controls/review_input
+    env:
+      OPERATOR_UI_URL: "${OPERATOR_UI_URL:-http://127.0.0.1:8090}"
+      OPERATOR_UI_CAMERA_MAX_WIDTH: "${OPERATOR_UI_CAMERA_MAX_WIDTH:-480}"
+      OPERATOR_UI_CAMERA_JPEG_QUALITY: "${OPERATOR_UI_CAMERA_JPEG_QUALITY:-65}"
+      OPERATOR_UI_CAMERA_FPS: "${OPERATOR_UI_CAMERA_FPS:-15}"
+
+  # Sole robot-specific boundary: one Astribot SDK session owns all three
+  # cameras, state reads, 25D policy routing, exact selected-action dispatch
+  # and no-send evidence.
+  - id: astribot_owner
+    path: /usr/bin/env
+    args: ../../../.runtime/astribot-owner/bin/python -m XPolicyLab.real_world.robots.astribot_s1.dora_owner_node
+    inputs:
+      tick: dora/timer/millis/4
+      exo_data: exo_driver_node/exo_data
+      button_command: qnexo_controls/button_command
+      takeover: qnexo_controls/takeover
+      model_action: astribot_policy/action_robot
+      model_info: astribot_policy/model_info
+      model_status: astribot_policy/status
+    outputs:
+      - status
+      - control_event
+      - takeover_event
+      - model_info
+      - model_control
+      - episode_index
+      - episode_result
+      - observation_state_robot
+      - observation_image_cam_head
+      - observation_image_cam_left_wrist
+      - observation_image_cam_right_wrist
+      - action_model_robot
+      - action_expert_proposed_robot
+      - action_expert_aligned_unclipped_robot
+      - action_expert_safe_robot
+      - action_executed_robot
+      - control_mode
+      - selected_action_source
+      - label_valid
+    env:
+      TASK: "${TASK:-pick the tomato}"
+      ROBOT_ID: "${ROBOT_ID:-astribot-s1}"
+      ACTIVATE_CAMERAS: "${ACTIVATE_CAMERAS:-1}"
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      ASTRIBOT_SDK_CONNECT_ACKNOWLEDGED: "${ASTRIBOT_SDK_CONNECT_ACKNOWLEDGED:-0}"
+      ASTRIBOT_HIGH_CONTROL_RIGHTS: "${ASTRIBOT_HIGH_CONTROL_RIGHTS:-0}"
+      ASTRIBOT_COMMON_ROOT: "${ASTRIBOT_COMMON_ROOT}"
+      ASTRIBOT_PROFILE: "${ASTRIBOT_PROFILE:-../../../real_world/robots/astribot_s1/profile.yml}"
+      ROLLOUT_REPORT_DIR: "${ROLLOUT_REPORT_DIR:-../../../Log/astribot_s1_rollout_reports}"
+      ROLLOUT_ID: "${ROLLOUT_ID:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT}:${XPOLICYLAB_ROOT}/runtime/qnexo/source/src:${ASTRIBOT_SDK_ROOT}/third_party/third_pkg/pinocchio/lib/python3.10/site-packages:${ASTRIBOT_SDK_ROOT}/third_party/third_pkg/hpp-fcl/lib/python3.10/site-packages:${ASTRIBOT_SDK_ROOT}/astribot_msgs/local/lib/python3.10/dist-packages:${ASTRIBOT_SDK_ROOT}/third_party/software/astribot_ros_middleware/lib/python3.10/site-packages:${ASTRIBOT_SDK_ROOT}:${ASTRIBOT_ROS_ROOT}/lib/python3.10/site-packages:${ASTRIBOT_ROS_ROOT}/local/lib/python3.10/dist-packages"
+      LD_LIBRARY_PATH: "${ASTRIBOT_SDK_ROOT}/third_party/third_pkg/pinocchio/lib:${ASTRIBOT_SDK_ROOT}/third_party/third_pkg/hpp-fcl/lib:${ASTRIBOT_SDK_ROOT}/astribot_msgs/lib:${ASTRIBOT_SDK_ROOT}/third_party/software/ruckig/lib:${ASTRIBOT_ROS_ROOT}/opt/rviz_ogre_vendor/lib:${ASTRIBOT_ROS_ROOT}/lib/x86_64-linux-gnu:${ASTRIBOT_ROS_ROOT}/lib:${ASTRIBOT_SDK_ROOT}/astribot_sdk/core/common/robotics_library_py:${ASTRIBOT_SDK_ROOT}/astribot_sdk/core/common/whole_body_control/third_party:${ASTRIBOT_SDK_ROOT}/third_party/drake/lib"
+      AMENT_PREFIX_PATH: "${ASTRIBOT_SDK_ROOT}/third_party/third_pkg/pinocchio:${ASTRIBOT_SDK_ROOT}/third_party/third_pkg/hpp-fcl:${ASTRIBOT_SDK_ROOT}/astribot_msgs:${ASTRIBOT_SDK_ROOT}/third_party/software/astribot_ros_middleware:${ASTRIBOT_ROS_ROOT}"
+      ROS_DOMAIN_ID: "${ROS_DOMAIN_ID:-25}"
+      ROS_LOCALHOST_ONLY: "${ROS_LOCALHOST_ONLY:-0}"
+      RMW_IMPLEMENTATION: "${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}"
+      ROBOT_TYPE: S1
+
+  # Robot-independent model transport and ActionChunk scheduler. It owns no
+  # Astribot SDK object and can never write robot commands.
+  - id: astribot_policy
+    path: /usr/bin/env
+    args: ../.venv/bin/python -m XPolicyLab.real_world.robots.astribot_s1.policy_node
+    inputs:
+      tick: dora/timer/millis/33
+      control: astribot_owner/model_control
+      state_robot: astribot_owner/observation_state_robot
+      image_cam_head: astribot_owner/observation_image_cam_head
+      image_cam_left_wrist: astribot_owner/observation_image_cam_left_wrist
+      image_cam_right_wrist: astribot_owner/observation_image_cam_right_wrist
+    outputs: [action_robot, model_info, status]
+    env:
+      POLICY_URL: "${POLICY_URL:-ws://127.0.0.1:19001}"
+      TASK: "${TASK:-pick the tomato}"
+      ROBOT_ID: "${ROBOT_ID:-astribot-s1}"
+      ASTRIBOT_PROFILE: "${ASTRIBOT_PROFILE:-../../../real_world/robots/astribot_s1/profile.yml}"
+      MODEL_RETRY_SECONDS: "${MODEL_RETRY_SECONDS:-0.5}"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT}"
+
+  # Shared GR3-format recorder. Astribot only supplies a different robot
+  # schema and three camera streams; the Parquet container and common stream
+  # names are identical across robots.
+  - id: fourier_record
+    build: cargo build -p fourier-record --release
+    path: ../target/release/fourier-record
+    inputs:
+      tick: dora/timer/millis/100
+      episode_index: astribot_owner/episode_index
+      observation.images.cam_head: astribot_owner/observation_image_cam_head
+      observation.images.cam_left_wrist: astribot_owner/observation_image_cam_left_wrist
+      observation.images.cam_right_wrist: astribot_owner/observation_image_cam_right_wrist
+      observation.state: astribot_owner/observation_state_robot
+      observation.state_robot: astribot_owner/observation_state_robot
+      action.model: astribot_owner/action_model_robot
+      action.model_raw: astribot_owner/action_model_robot
+      action.model_robot: astribot_owner/action_model_robot
+      action.expert: astribot_owner/action_expert_safe_robot
+      action.expert_proposed_robot: astribot_owner/action_expert_proposed_robot
+      action.expert_aligned_unclipped_robot: astribot_owner/action_expert_aligned_unclipped_robot
+      action.expert_robot: astribot_owner/action_expert_safe_robot
+      action.expert_safe_robot: astribot_owner/action_expert_safe_robot
+      action.executed: astribot_owner/action_executed_robot
+      action.executed_robot: astribot_owner/action_executed_robot
+      control.mode: astribot_owner/control_mode
+      control.selected_action_source: astribot_owner/selected_action_source
+      control.takeover_event: astribot_owner/takeover_event
+      control.event: astribot_owner/control_event
+      label.valid: astribot_owner/label_valid
+      model.policy_info: astribot_policy/model_info
+      model.status: astribot_owner/status
+      episode_result: astribot_owner/episode_result
+    env:
+      OUTPUT_DIR: "${DAGGER_RECORD_DIR:-../../../Log/dagger/astribot_s1}"
+      ENABLE_DAGGER_RECORDING: "${ENABLE_DAGGER_RECORDING:-1}"
+      EVIDENCE_RETENTION_POLICY: "${EVIDENCE_RETENTION_POLICY:-AUTO_RETAIN_ALL_EVAL}"
+      XPOLICY_EVAL_RUN_ID: "${XPOLICY_EVAL_RUN_ID:-}"
+      XPOLICY_EVAL_SUITE_ID: "${XPOLICY_EVAL_SUITE_ID:-adhoc}"
+      XPOLICY_EVAL_SUITE_REVISION: "${XPOLICY_EVAL_SUITE_REVISION:-v1}"
+      XPOLICY_EVAL_TASK_REVISION: "${XPOLICY_EVAL_TASK_REVISION:-v1}"
+      XPOLICY_EVAL_CASE_IDS: "${XPOLICY_EVAL_CASE_IDS:-}"
+      MODEL_BACKEND: "${MODEL_BACKEND:-pi05}"
+      MODEL_CHECKPOINT: "${MODEL_CHECKPOINT:-unknown}"
+      MODEL_CHECKPOINT_SHA256: "${MODEL_CHECKPOINT_SHA256:-}"
+      MODEL_TRAINING_DATASET_ID: "${MODEL_TRAINING_DATASET_ID:-}"
+      DAGGER_ITERATION: "${DAGGER_ITERATION:-0}"
+      RECAP_ITERATION: "${RECAP_ITERATION:-}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      RECAP_PARENT_DATASET_ID: "${RECAP_PARENT_DATASET_ID:-}"
+      RECAP_POLICY_CONDITION: "${RECAP_POLICY_CONDITION:-UNCONDITIONED}"
+      COLLECTION_BATCH_ID: "${COLLECTION_BATCH_ID:-}"
+      XPOLICYLAB_SOURCE_REPO: "${XPOLICYLAB_SOURCE_REPO:-CoCoMatrix/xpolicylabdagger}"
+      XPOLICYLAB_SOURCE_COMMIT: "${XPOLICYLAB_SOURCE_COMMIT:-unknown}"
+      TASK_INSTRUCTION: "${TASK:-pick the tomato}"
+      DAQ_TASK_ID: "${DAQ_TASK_ID:-prototype}"
+      ROBOT_ID: "${ROBOT_ID:-astribot-s1}"
+      ROBOT_TYPE: astribot_s1
+      ROBOT_PROFILE_ID: astribot_s1_full_body_v1
+      RETARGET_MAPPING_VERSION: astribot_s1_qnexo_full25_v1
+      CONTROLLER_VERSION: astribot_s1_dagger_owner_v1
+      DAGGER_STORAGE_FORMAT: xpolicylab_dagger_parquet_v1
+      DAGGER_SCHEMA_VERSION: astribot_s1_dagger_v1
+      DAGGER_SCHEMA_PATH: ../schemas/astribot_s1_dagger_v1.json

@@ -1,0 +1,38 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-gap-reviewed-canary-01
+label: 'Junqi GPT-reviewed Pi0.5 prefix: one bounded canary'
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/migration/ffs-live-20260918/reviewed-canary-bundle-01/release-evidence.json
+  evidence_sha256: 1744ca7d62c8d67202e3a50624424937f70e33695a118125cbb7fda74f26e758
+bundle:
+  kind: immutable_reviewed_pi05_prefix
+  default_path: /home/ubuntu/code_junqi/migration/ffs-live-20260918/reviewed-canary-bundle-01
+  required:
+  - manifest.json
+  - dataset-info.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_reviewed_prefix.py
+policy:
+  backend: gpt_reviewed_pi05_prefix
+  action_frequency_hz: 30
+  action_horizon: 16
+  default_execute_chunk: 16
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/migration/ffs-live-20260918/reviewed-canary-bundle-01/task_catalog.json
+  default: Pick up one drink container and place it on the coaster.
+  inline:
+  - Pick up one drink container and place it on the coaster.
+pigey:
+  supported: false
+qualification:
+  supported: false

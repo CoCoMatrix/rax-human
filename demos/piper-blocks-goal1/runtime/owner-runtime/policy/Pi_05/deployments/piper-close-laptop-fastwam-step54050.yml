@@ -1,0 +1,69 @@
+schema: xpolicylab.piper-deployment/v1
+name: piper-close-laptop-fastwam-step54050
+label: FastWAM Piper close-laptop raw step 54050
+release:
+  status: contract_complete
+  evidence: policy/FastWAM/contracts/piper_close_laptop_step54050.json
+  evidence_sha256: 00b693f17b872762501551bcdcaf562b092c09c151786c849390358566db4e72
+model:
+  backend: fastwam
+bundle:
+  kind: fastwam_pytorch
+  default_path: /home/ubuntu/michael_dev/model-store/models/fastwam/piper-close-laptop-v1/step-54050
+  required: [checkpoint/step_054050.pt, contract.json, infer.py]
+  verifier: policy/FastWAM/verify_piper_close_laptop_step54050_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 32
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/FastWAM/serve_piper_close_laptop_step54050.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: null
+  ui_enabled: true
+tasks:
+  default: Close the laptop.
+  inline: [Close the laptop.]
+  catalog_path: "{repo_root}/policy/FastWAM/piper_close_laptop_task_catalog.json"
+pigey:
+  supported: false
+setup:
+  script: policy/FastWAM/setup_piper_close_laptop_step54050.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: jxfang/real_songling_bushu/only_Close_the_laptop_step_054050
+  expected_bytes: 13468910229
+  threads: 16
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: fastwam
+    robot: dual_piper
+    dataset: only_close_laptop
+    task: close_laptop
+    step: 54050
+    params_semantics: raw
+qualification:
+  supported: true
+  verifier: policy/FastWAM/verify_piper_close_laptop_step54050_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_fastwam_piper.py
+  smoke_script: null

@@ -1,0 +1,24 @@
+[project]
+name = "gr00t-rtc"
+version = "0.1.0"
+description = "Minimal GR00T chunk client with Real-Time Chunking for GR3"
+requires-python = ">=3.10"
+dependencies = [
+  "dora-rs==0.5.0",
+  "farther-core",
+  "msgpack>=1.1.0",
+  "msgpack-numpy>=0.4.8",
+  "numpy<2.3",
+  "pyarrow>=14",
+  "pyzmq>=24",
+]
+
+[project.scripts]
+gr00t-rtc = "gr00t_rtc.node:main"
+
+[tool.uv.sources]
+farther-core = { path = "../../libraries/farther-core", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

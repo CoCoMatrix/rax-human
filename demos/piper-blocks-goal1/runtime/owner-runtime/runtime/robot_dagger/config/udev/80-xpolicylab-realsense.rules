@@ -1,0 +1,4 @@
+# Intel RealSense D435 USB control and V4L2 nodes.
+# plugdev is the project operator group and works for desktop, SSH, and services.
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="8086", ATTR{idProduct}=="0b07", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="8086", ATTRS{idProduct}=="0b07", MODE="0660", GROUP="plugdev", TAG+="uaccess"

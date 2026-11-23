@@ -1,0 +1,20 @@
+policy_name: Pi_05
+protocol: ws
+eval_batch: false
+
+host: 127.0.0.1
+port: 19003
+runtime_profile: piper_x_dual_build_blocks_ema_h15_v1
+source_commit: abcb0a93d010aaf4c4c4b02fc772b741b23ec2e5
+params_semantics: ema
+
+# serve_piper_build_blocks_ema12k.sh supplies both generated paths.
+bundle_root: null
+runtime_source_root: null
+action_frequency_hz: 15
+action_horizon: 15
+horizon: 15
+num_denoise_steps: 10
+
+rtc_enabled: false
+allow_dummy_policy: false

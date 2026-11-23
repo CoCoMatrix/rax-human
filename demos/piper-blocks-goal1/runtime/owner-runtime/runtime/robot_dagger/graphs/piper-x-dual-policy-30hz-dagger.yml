@@ -1,0 +1,260 @@
+nodes:
+  # H32/v3 observation contract: one process owns the three configured cameras.
+  - id: realsense_multi
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.cameras.realsense_dora_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [image_left, image_head, image_right, status]
+    env:
+      REALSENSE_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      REALSENSE_CAMERA_PROFILE: "${PIPER_CAMERA_PROFILE:-}"
+      REALSENSE_DEVICE_INSTANCE: "${PIPER_DEVICE_INSTANCE:-../config/robot_instances/piper_x_dual_01.yml}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: exo_driver_node
+    path: ../.venv/bin/exo_driver_node
+    inputs:
+      tick: dora/timer/millis/10
+    outputs: [exo_data]
+    env:
+      PORT: "${QNEXO_PORT:-/dev/qnbot}"
+      EXO_RETRY_SECONDS: "2.0"
+
+  - id: qnexo_fk
+    path: ../.venv/bin/qnexo-fk
+    inputs:
+      exo_data: exo_driver_node/exo_data
+    outputs: [ee_pose, status]
+    env:
+      EXO_TIMEOUT_SECONDS: "${EXO_TIMEOUT_SECONDS:-0.2}"
+
+  - id: qnexo_controls
+    path: ../.venv/bin/xpolicylab-qnexo-controls
+    inputs:
+      exo_data: exo_driver_node/exo_data
+      tick: dora/timer/millis/100
+    outputs: [button_command, takeover, review_input, status]
+    env:
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      PYTHONPATH: ""
+
+  - id: piper_operator_ui
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.operator_ui_node
+    inputs:
+      tick: dora/timer/millis/50
+      robot_status: piper_x_dual_owner/status
+      policy_status: piper_x_dual_policy/status
+      model_info: piper_x_dual_policy/model_info
+      state_robot: piper_x_dual_owner/observation_state_robot
+      image_left: realsense_multi/image_left
+      image_head: realsense_multi/image_head
+      image_right: realsense_multi/image_right
+    outputs: [button_command, task, execution_config, rtc_config, expert_config, rollout_config, status]
+    env:
+      TASK: "${TASK:-Pick up one paper ball and place it in the trash bin.}"
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      PIPER_DAGGER_EXPERT_SOURCE: "${PIPER_DAGGER_EXPERT_SOURCE:-qnexo}"
+      PIPER_LF_LEADER_ROLE: "${PIPER_LF_LEADER_ROLE:-left_arm}"
+      PIPER_LF_FOLLOWER_ROLE: "${PIPER_LF_FOLLOWER_ROLE:-right_arm}"
+      PIPER_LF_FEEDBACK_ROLE: "${PIPER_LF_FEEDBACK_ROLE:-right_arm}"
+      PIPER_LF_MAX_AGE_MS: "${PIPER_LF_MAX_AGE_MS:-100}"
+      PIPER_CONTROL_SOURCE: "${PIPER_CONTROL_SOURCE:-both}"
+      PIPER_OPERATOR_UI_HOST: "127.0.0.1"
+      PIPER_OPERATOR_UI_PORT: "${PIPER_OPERATOR_UI_PORT:-8091}"
+      PIPER_OPERATOR_UI_AUTO_OPEN: "${PIPER_OPERATOR_UI_AUTO_OPEN:-1}"
+      PIPER_TASK_CATALOG_PATH: "${PIPER_TASK_CATALOG_PATH:-}"
+      PIPER_POLICY_ACTION_HORIZON: "${PIPER_POLICY_ACTION_HORIZON:-32}"
+      PIPER_POLICY_LABEL: "${PIPER_POLICY_LABEL:-Pi0.5 policy}"
+      POLICY_EXECUTE_CHUNK_SIZE: "${POLICY_EXECUTE_CHUNK_SIZE:-16}"
+      POLICY_EXECUTE_CHUNK_MODE: "${POLICY_EXECUTE_CHUNK_MODE:-auto}"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      ENABLE_DAGGER_RECORDING: "${ENABLE_DAGGER_RECORDING:-1}"
+      DAGGER_RECORD_DIR: "${DAGGER_RECORD_DIR:-../../../Log/dagger/piper_x_dual}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: piper_control_mux
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.control_mux_node
+    inputs:
+      tick: dora/timer/millis/50
+      qnexo_button_command: qnexo_controls/button_command
+      qnexo_takeover: qnexo_controls/takeover
+      keyboard_button_command: piper_operator_ui/button_command
+    outputs: [button_command, takeover]
+    env:
+      PIPER_CONTROL_SOURCE: "${PIPER_CONTROL_SOURCE:-both}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  - id: piper_x_dual_retarget
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.retarget_node
+    inputs:
+      tick: dora/timer/millis/10
+      ee_pose: qnexo_fk/ee_pose
+      robot_state: piper_x_dual_owner/observation_state_robot
+      takeover: piper_control_mux/takeover
+    outputs: [expert_action, status]
+    env:
+      PIPER_DAGGER_EXPERT_SOURCE: "${PIPER_DAGGER_EXPERT_SOURCE:-qnexo}"
+      PIPER_LF_LEADER_ROLE: "${PIPER_LF_LEADER_ROLE:-left_arm}"
+      PIPER_LF_FOLLOWER_ROLE: "${PIPER_LF_FOLLOWER_ROLE:-right_arm}"
+      PIPER_LF_FEEDBACK_ROLE: "${PIPER_LF_FEEDBACK_ROLE:-right_arm}"
+      PIPER_LF_MAX_AGE_MS: "${PIPER_LF_MAX_AGE_MS:-100}"
+      PIPER_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      EXO_TIMEOUT_SECONDS: "${EXO_TIMEOUT_SECONDS:-0.2}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  # In DATA_COLLECTION this node stays connected but never imports or opens a
+  # model client. MIXED preserves the current 30 Hz H32 scheduler and RTC path.
+  - id: piper_x_dual_policy
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.policy_node
+    inputs:
+      tick: dora/timer/millis/33
+      control: piper_x_dual_owner/model_control
+      task: piper_operator_ui/task
+      execution_config: piper_operator_ui/execution_config
+      rtc_config: piper_operator_ui/rtc_config
+      state_robot: piper_x_dual_owner/observation_state_robot
+      image_camera_head: realsense_multi/image_head
+      image_camera_left: realsense_multi/image_left
+      image_camera_right: realsense_multi/image_right
+    outputs: [action_robot, model_info, status]
+    env:
+      POLICY_URL: "${POLICY_URL:-ws://127.0.0.1:19003}"
+      TASK: "${TASK:-Pick up one paper ball and place it in the trash bin.}"
+      PIPER_TASK_CATALOG_PATH: "${PIPER_TASK_CATALOG_PATH:-}"
+      ROBOT_ID: "${ROBOT_ID:-piper_x_dual_01}"
+      MODEL_RETRY_SECONDS: "${MODEL_RETRY_SECONDS:-0.5}"
+      POLICY_ACTION_FREQUENCY_HZ: "${POLICY_ACTION_FREQUENCY_HZ:-30}"
+      POLICY_EXECUTE_CHUNK_SIZE: "${POLICY_EXECUTE_CHUNK_SIZE:-16}"
+      POLICY_EXECUTE_CHUNK_MODE: "${POLICY_EXECUTE_CHUNK_MODE:-auto}"
+      POLICY_PREFETCH_ENABLED: "0"
+      ACTION_RTC_MODE: "${ACTION_RTC_MODE:-}"
+      ACTION_RTC_LATENCY_QUANTILE: "${ACTION_RTC_LATENCY_QUANTILE:-}"
+      ACTION_RTC_LATENCY_MARGIN_STEPS: "${ACTION_RTC_LATENCY_MARGIN_STEPS:-}"
+      ACTION_RTC_LATENCY_WINDOW_SIZE: "${ACTION_RTC_LATENCY_WINDOW_SIZE:-}"
+      ACTION_RTC_REQUEST_REMAINING_STEPS: "${ACTION_RTC_REQUEST_REMAINING_STEPS:-}"
+      ACTION_RTC_PRESERVE_STEPS: "${ACTION_RTC_PRESERVE_STEPS:-}"
+      ACTION_RTC_TRANSITION_STEPS: "${ACTION_RTC_TRANSITION_STEPS:-}"
+      ACTION_RTC_TRANSITION_CURVE: "${ACTION_RTC_TRANSITION_CURVE:-}"
+      ACTION_RTC_NEW_WEIGHT_START: "${ACTION_RTC_NEW_WEIGHT_START:-}"
+      ACTION_RTC_NEW_WEIGHT_END: "${ACTION_RTC_NEW_WEIGHT_END:-}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}"
+
+  # Sole SDK/CAN owner for model and expert actions.
+  - id: piper_x_dual_owner
+    path: /usr/bin/env
+    args: ../../../.xpolicy/envs/piper_x_dual/bin/python -m XPolicyLab.real_world.robots.piper_x_dual.dora_owner_node
+    inputs:
+      tick: dora/timer/millis/10
+      exo_data: exo_driver_node/exo_data
+      button_command: piper_control_mux/button_command
+      takeover: piper_control_mux/takeover
+      camera_status: realsense_multi/status
+      expert_action: piper_x_dual_retarget/expert_action
+      # UI source/mapping changes are accepted only before an episode runs.
+      expert_config: piper_operator_ui/expert_config
+      rollout_config: piper_operator_ui/rollout_config
+      model_action: piper_x_dual_policy/action_robot
+      model_status: piper_x_dual_policy/status
+    outputs:
+      - status
+      - control_event
+      - takeover_event
+      - model_control
+      - episode_index
+      - episode_result
+      - episode_discard
+      - observation_state_robot
+      - observation_cartesian_robot
+      - action_expert_proposed_robot
+      - action_expert_safe_robot
+      - action_model_robot
+      - action_selected_candidate_robot
+      - action_applied_robot
+      - control_mode
+      - selected_action_source
+      - label_valid
+    env:
+      PIPER_DAGGER_EXPERT_SOURCE: "${PIPER_DAGGER_EXPERT_SOURCE:-qnexo}"
+      ENABLE_WRITE: "${ENABLE_WRITE:-0}"
+      PIPER_MODEL_FILTER_ENABLED: "${PIPER_MODEL_FILTER_ENABLED:-1}"
+      PIPER_MODEL_FILTER_ALPHA: "${PIPER_MODEL_FILTER_ALPHA:-0.6}"
+      ENABLE_DAGGER_RECORDING: "${ENABLE_DAGGER_RECORDING:-1}"
+      DAGGER_RECORD_DIR: "${DAGGER_RECORD_DIR:-../../../Log/dagger/piper_x_dual}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      PIPER_INITIALIZE_LEFT_GRIPPER_WIDTH_M: "${PIPER_INITIALIZE_LEFT_GRIPPER_WIDTH_M:-}"
+      PIPER_PROFILE: "${PIPER_PROFILE:-../../../real_world/robots/piper_x_dual/profile.yml}"
+      PIPER_DEVICE_INSTANCE: "${PIPER_DEVICE_INSTANCE:-../config/robot_instances/piper_x_dual_01.yml}"
+      PYTHONPATH: "${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}:${XPOLICYLAB_ROOT:-/home/ubuntu/xpolicylabdagger}/runtime/qnexo/source/src"
+
+  - id: fourier_record
+    path: ../target/release/fourier-record
+    inputs:
+      tick: dora/timer/millis/100
+      episode_index: piper_x_dual_owner/episode_index
+      task_instruction: piper_operator_ui/task
+      observation.images.camera_head: realsense_multi/image_head
+      observation.images.camera_left: realsense_multi/image_left
+      observation.images.camera_right: realsense_multi/image_right
+      observation.state: piper_x_dual_owner/observation_state_robot
+      observation.state_robot: piper_x_dual_owner/observation_state_robot
+      action.model: piper_x_dual_owner/action_model_robot
+      action.model_raw: piper_x_dual_owner/action_model_robot
+      action.model_robot: piper_x_dual_owner/action_model_robot
+      action.expert: piper_x_dual_owner/action_expert_safe_robot
+      action.expert_proposed_robot: piper_x_dual_owner/action_expert_proposed_robot
+      action.expert_robot: piper_x_dual_owner/action_expert_safe_robot
+      action.expert_safe_robot: piper_x_dual_owner/action_expert_safe_robot
+      action.executed: piper_x_dual_owner/action_applied_robot
+      action.executed_robot: piper_x_dual_owner/action_applied_robot
+      control.mode: piper_x_dual_owner/control_mode
+      control.selected_action_source: piper_x_dual_owner/selected_action_source
+      control.takeover_event: piper_x_dual_owner/takeover_event
+      control.event: piper_x_dual_owner/control_event
+      label.valid: piper_x_dual_owner/label_valid
+      model.policy_info: piper_x_dual_policy/model_info
+      model.status: piper_x_dual_policy/status
+      episode_result: piper_x_dual_owner/episode_result
+      episode_discard: piper_x_dual_owner/episode_discard
+    env:
+      OUTPUT_DIR: "${DAGGER_RECORD_DIR:-../../../Log/dagger/piper_x_dual}"
+      ENABLE_DAGGER_RECORDING: "${ENABLE_DAGGER_RECORDING:-1}"
+      DAGGER_TASK_FOLDERS: "1"
+      MODEL_BACKEND: "${MODEL_BACKEND:-pi05}"
+      MODEL_CHECKPOINT: "${MODEL_CHECKPOINT:-unknown}"
+      MODEL_CHECKPOINT_SHA256: "${MODEL_CHECKPOINT_SHA256:-}"
+      MODEL_TRAINING_DATASET_ID: "${MODEL_TRAINING_DATASET_ID:-}"
+      DAGGER_ITERATION: "${DAGGER_ITERATION:-0}"
+      RECAP_ITERATION: "${RECAP_ITERATION:-}"
+      RECAP_COLLECTION_MODE: "${RECAP_COLLECTION_MODE:-MIXED}"
+      RECAP_PARENT_DATASET_ID: "${RECAP_PARENT_DATASET_ID:-}"
+      RECAP_POLICY_CONDITION: "${RECAP_POLICY_CONDITION:-UNCONDITIONED}"
+      COLLECTION_BATCH_ID: "${COLLECTION_BATCH_ID:-}"
+      XPOLICYLAB_SOURCE_REPO: "${XPOLICYLAB_SOURCE_REPO:-Unieggy/pigey_piperinfra}"
+      XPOLICYLAB_SOURCE_COMMIT: "${XPOLICYLAB_SOURCE_COMMIT:-unknown}"
+      TASK_INSTRUCTION: "${TASK:-Pick up one paper ball and place it in the trash bin.}"
+      DAQ_TASK_ID: "${DAQ_TASK_ID:-desktop_cleanup}"
+      ROBOT_ID: "${ROBOT_ID:-piper_x_dual_01}"
+      ROBOT_TYPE: piper_x_dual
+      ROBOT_PROFILE_ID: piper_x_dual_14d_v1
+      RETARGET_MAPPING_VERSION: piper_x_dual_qnexo_mink_v1
+      CONTROLLER_VERSION: piper_x_dual_owner_v2
+      DAGGER_STORAGE_FORMAT: xpolicylab_dagger_parquet_v1
+      DAGGER_SCHEMA_VERSION: piper_x_dual_v1
+      DAGGER_SCHEMA_PATH: ../schemas/piper_x_dual_v1.json

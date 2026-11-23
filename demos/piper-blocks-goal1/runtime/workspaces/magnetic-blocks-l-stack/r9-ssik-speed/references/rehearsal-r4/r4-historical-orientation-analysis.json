@@ -1,0 +1,94 @@
+{
+  "T_base_flange": [
+    [
+      0.9999983003436104,
+      0.001780178375452899,
+      -0.00047986960860348343,
+      0.3121108318562075
+    ],
+    [
+      0.0017802983830158322,
+      -0.9999983840743398,
+      0.0002497726487294339,
+      -0.16245383763777294
+    ],
+    [
+      -0.00047942419330175855,
+      -0.00025062653529007924,
+      -0.9999998536693802,
+      0.2897098063411164
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "position": [
+    0.3121108318562075,
+    -0.16245383763777294,
+    0.2897098063411164
+  ],
+  "quaternion_xyzw": [
+    0.9999995672608227,
+    0.0008901195748067953,
+    -0.0002398235542573581,
+    -0.0001250998501404845
+  ],
+  "frame": "left_base_link",
+  "controlled_link": "left_link6",
+  "executed": false,
+  "effective_contact_tcp": {
+    "calibration_id": "left-tcp140-tip170-20261104",
+    "sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+    "status": "operator_measured_candidate",
+    "T_base_tcp": [
+      [
+        0.9999983003436104,
+        0.001780178375452899,
+        -0.00047986960860348343,
+        0.31204365011100305
+      ],
+      [
+        0.0017802983830158322,
+        -0.9999983840743398,
+        0.0002497726487294339,
+        -0.1624188694669508
+      ],
+      [
+        -0.00047942419330175855,
+        -0.00025062653529007924,
+        -0.9999998536693802,
+        0.1497098268274032
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "position": [
+      0.31204365011100305,
+      -0.1624188694669508,
+      0.1497098268274032
+    ],
+    "tip_axis_point_base_m": [
+      0.31202925402274495,
+      -0.16241137628748895,
+      0.11970983121732179
+    ],
+    "accuracy_m": null,
+    "independent_physical_validation": false,
+    "motion_permit": false
+  },
+  "wall_budget": {
+    "session_seconds": 2400,
+    "elapsed_seconds": 412.418,
+    "remaining_seconds": 1987.582,
+    "finish_reserve_seconds": 60,
+    "phase": "active",
+    "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+  }
+}

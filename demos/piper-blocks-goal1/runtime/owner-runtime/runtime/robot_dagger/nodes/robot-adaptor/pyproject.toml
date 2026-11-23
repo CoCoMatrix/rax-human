@@ -1,0 +1,49 @@
+[project]
+name = "robot-adaptor"
+version = "0.0.0"
+authors = [{ name = "Your Name", email = "email@email.com" }]
+description = "robot_adaptor"
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+  "dora-rs==0.5.0",
+  "farther-core",
+  "numpy<2.3",
+  "pyarrow>=14",
+  "PyYAML>=6",
+  "scipy>=1.11",
+  "transitions>=0.9.3",
+  "fourier-aurora-client==0.1.4.dev221",
+]
+
+
+[project.scripts]
+teleop-node = "robot_adaptor.teleop_node:main"
+
+[dependency-groups]
+dev = [
+  "ipykernel>=6.29.5",
+  "nbdime>=4.0.2",
+  "nbformat>=5.10.4",
+  "pre-commit>=4.2.0",
+  "pyright>=1.1.402",
+  "pytest>=8.4.1",
+  "pytest-benchmark>=5.1.0",
+  "ruff>=0.12.1",
+]
+
+[tool.uv]
+# default-groups = ["dev"]
+prerelease = "if-necessary-or-explicit"
+
+
+[tool.uv.sources]
+farther-core = { path = "../../libraries/farther-core", editable = true }
+fourier-aurora-client = { path = "../../../../third_party/robot_sdks/fourier_aurora/dist/fourier_aurora_client-0.1.4.dev221-py3-none-any.whl" }
+
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"

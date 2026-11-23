@@ -1,0 +1,12 @@
+{
+  "exact_match_required": true,
+  "schema": "xpolicylab.piper-task-catalog/v1",
+  "tasks": [
+    {"task": "Close the laptop.", "task_index": 0},
+    {"task": "Pick up one drink container and place it on the coaster.", "task_index": 1},
+    {"task": "Pick up one mouse and place it on the mouse pad.", "task_index": 2},
+    {"task": "Pick up one pen and place it in the pen holder.", "task_index": 3},
+    {"task": "Pick up one pen and place it in the trash bin.", "task_index": 4},
+    {"task": "Pick up all paper balls and place them in the trash bin.", "task_index": 5}
+  ]
+}

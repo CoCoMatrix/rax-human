@@ -1,0 +1,65 @@
+schema: xpolicylab.piper-deployment/v1
+name: build-blocks-ema12k
+label: Pi0.5 Piper build-blocks Jiaxin EMA step 12000
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/michael_dev/model-store/models/pi05/piper-build-blocks-jiaxin-v1-ema-v1/step-12000
+  required:
+    - checkpoint/params/manifest.ocdbt
+    - checkpoint/assets/piper_build_blocks_jiaxin_v1/norm_stats.json
+    - contract.json
+    - deploy_input.json
+    - runtime/source/uv.lock
+  verifier: policy/Pi_05/verify_piper_build_blocks_ema_bundle.py
+policy:
+  action_frequency_hz: 15
+  action_horizon: 15
+  default_execute_chunk: 15
+  default_execute_mode: auto
+server:
+  default_mode: managed
+  script: policy/Pi_05/serve_piper_build_blocks_ema12k.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-desktop-cleanup-policy-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Stack the second cube on top of the first cube, then place the cone on top of the second cube.
+  inline:
+    - Stack the second cube on top of the first cube, then place the cone on top of the second cube.
+  catalog_path: "{repo_root}/policy/Pi_05/piper_build_blocks_task_catalog.json"
+setup:
+  script: policy/Pi_05/setup_piper_build_blocks_ema12k.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: oss-pai-r9x4
+  endpoint: https://oss-cn-beijing.aliyuncs.com
+  prefix: PeterX/deploy/piper_build_blocks_jiaxin_v1_pi05_ema_step12000_ckpt
+  expected_bytes: 12447734009
+  threads: 8
+  request_timeout_seconds: 120
+  attempts: 5
+  metadata:
+    family: pi05
+    package_id: piper_build_blocks_jiaxin_v1_pi05_ema_step12000_ckpt
+    params_semantics: ema
+    robot: dual_piper
+    step: 12000
+    task: piper_build_blocks_jiaxin_v1
+qualification:
+  supported: true
+  verifier: policy/Pi_05/verify_piper_build_blocks_ema_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 224
+  image_height: 224
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_pi05_piper_build_blocks_ema.py
+  smoke_script: policy/Pi_05/smoke_piper_build_blocks_ema12k.py

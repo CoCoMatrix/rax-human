@@ -1,0 +1,49 @@
+controlled_joints:
+  left_manipulator:
+    - left_shoulder_pitch_joint
+    - left_shoulder_roll_joint
+    - left_shoulder_yaw_joint
+    - left_elbow_pitch_joint
+    - left_wrist_yaw_joint
+    - left_wrist_pitch_joint
+    - left_wrist_roll_joint
+  right_manipulator:
+    - right_shoulder_pitch_joint
+    - right_shoulder_roll_joint
+    - right_shoulder_yaw_joint
+    - right_elbow_pitch_joint
+    - right_wrist_yaw_joint
+    - right_wrist_pitch_joint
+    - right_wrist_roll_joint
+  head:
+    - head_yaw_joint
+    - head_pitch_joint
+  waist:
+    - waist_yaw_joint
+  left_hand:
+    - L_index_proximal_joint
+    - L_middle_proximal_joint
+    - L_ring_proximal_joint
+    - L_pinky_proximal_joint
+    - L_thumb_proximal_pitch_joint
+    - L_thumb_proximal_yaw_joint
+  right_hand:
+    - R_index_proximal_joint
+    - R_middle_proximal_joint
+    - R_ring_proximal_joint
+    - R_pinky_proximal_joint
+    - R_thumb_proximal_pitch_joint
+    - R_thumb_proximal_yaw_joint
+  
+
+
+
+idle_pose:
+  left_shoulder_pitch_joint: 0.2
+  left_elbow_pitch_joint: -1.17
+  right_shoulder_pitch_joint: 0.2
+  right_elbow_pitch_joint: -1.17
+  
+base_limits:
+  lower: [ -0.2, -0.3, -0.5 ]
+  upper: [ 0.025, 0.45, 0.5 ]

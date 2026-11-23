@@ -1,0 +1,171 @@
+profile_id: astribot_s1_full_body_v1
+robot_type: astribot_s1
+state_schema: astribot_s1.full25_joint_position.v1
+action_schema: astribot_s1.full_body_joint_position_chassis_velocity.v1
+# Common robot/policy boundary field. Model deploy configs may mirror it, but
+# robot runtimes must read this profile value as the execution cadence.
+action_frequency_hz: 30
+teleop_contract: xpolicylab.teleop.operator_eval.v2
+teleop_capabilities:
+  waist_pitch: true
+  waist_yaw: true
+  left_end_effector: true
+  right_end_effector: true
+
+# The SDK's reviewed upper-body-with-head kinematics is pinned in-repository.
+# Chassis planar motion and both grippers remain SDK-only parts of the 25D
+# state/action contract because the vendor URDF does not model them.
+geometry:
+  urdf: description/astribot_s1_control.urdf
+  root_frame: astribot_torso_base
+  end_effector_links:
+    left_arm: astribot_arm_left_end_effector
+    right_arm: astribot_arm_right_end_effector
+  source_id: astribot_sdk_ros2/astribot_s1/model/astribot_whole_body_with_head.urdf
+  source_sha256: da901b5af64b68280cbe67158a49ee2027bc2f1b0548bdbc71b64e8b77a56e23
+  asset_sha256: c3acb25201fc8acf0b591470c9e6f4a8abea63810784a95b8ffb356834a6268e
+  visual_collision_geometry: stripped
+  sdk_only_parts: [astribot_chassis, astribot_gripper_left, astribot_gripper_right]
+
+data_collection:
+  schema_version: xpolicy.robot_data_profile.v1
+  owner_contract_uri: runtime/robot_dagger/schemas/astribot_s1_dagger_v1.json
+  owner_contract_id: astribot_s1_dagger_v1
+  owner_contract_profile_id: astribot_s1_full_body_v1
+  recorder_contract: xpolicy.recap.causal_evidence.v1
+  primary_camera: cam_head
+  evidence_cameras: [cam_head, cam_left_wrist, cam_right_wrist]
+  supported_collection_modes: [DEMONSTRATION, AUTONOMOUS, INTERVENTION, MIXED]
+  supports:
+    intervention: true
+    automatic_recording: true
+
+# Reviewed fixed prepare pose. It was written from one explicit live SDK state
+# read on 2026-08-18 14:00:05 CST (timestamp_ns 1787032805760965930).
+# Runtime startup, white-button reset and episode transitions never overwrite it.
+prepare:
+  initial_pose:
+    torso: [0.28947570819091795, -0.5690045505981445, 0.28418614459228514, 0.00849501837158203]
+    arm_left: [0.15283012164306642, -0.021323819885253906, -1.4250306491699218, 1.6598531149902345, -0.34932610064697267, 0.11497060760498047, 0.1253808228149414]
+    gripper_left: -0.03202063972569896
+    arm_right: [-0.1642914107055664, -0.02157361199951172, 1.4172520679931642, 1.663054551147461, 0.34016288629150393, 0.11568452166748047, -0.12156167572021484]
+    gripper_right: 0.16902546280258057
+    head: [-0.01700856243896484, 0.1719327984008789]
+
+sdk:
+  # Vendor examples/105-set_joint_position_direct.py host control frequency.
+  # This is the single canonical Astribot host/driver/teleop loop frequency.
+  # The Dora graph's 4 ms owner timer is a static mirror guarded by tests.
+  frequency_hz: 250
+  control_way: filter
+  use_wbc: false
+
+runtime:
+  action_chunk_size: 50
+  trigger_steps: 0
+  # Learn the prefetch point from the rolling policy latency instead of copying
+  # a fixed delay from another robot/model. Manual trigger_steps remains a floor.
+  auto_prefetch: true
+  prefetch_quantile: 0.95
+  prefetch_margin_steps: 1
+  prefetch_window_size: 32
+
+full_body:
+  # Local chassis frame: forward m/s, lateral m/s, yaw rad/s.
+  # The owner rejects an out-of-range velocity; it never clips the candidate.
+  chassis_max_velocity: [0.5, 0.5, 0.5]
+
+owner:
+  observation_frequency_hz: 30
+  dummy_chunk_steps: 8
+
+rollout:
+  output_root: Log/astribot_s1_rollouts
+
+cameras:
+  streams:
+    cam_head: head_rgbd
+    cam_left_wrist: left_wrist_rgbd
+    cam_right_wrist: right_wrist_rgbd
+  history_size: 16
+  max_frame_age_ms: 250
+  max_camera_skew_ms: 50
+  max_state_skew_ms: 100
+  # Activation is explicit because the current vendor SDK activates all cameras.
+  activate_on_start: false
+
+teleop:
+  # The continuous teleop loop inherits sdk.frequency_hz.
+  source_timeout_ms: 200
+  # Shared GR3/Astribot takeover semantics: click once to enter, click again
+  # to leave. Red stop/finish always clears the latched state.
+  footswitch_toggle_on_press: true
+  translation_scale: 1.0
+  axis_map:
+    - [1.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+  hand_open_value: 0.0
+  hand_closed_value: -2.0
+  reset_timeout_seconds: 10.0
+  reset_position_tolerance_m: 0.005
+  reset_rotation_tolerance_rad: 0.03
+  reset_gripper_tolerance_percent: 2.0
+
+joint_teleop:
+  reset_joint_tolerance_rad: 0.03
+  # Prepare readiness uses this tolerance for the four torso joints. The head
+  # still receives its profile target but is best-effort and cannot block blue.
+  reset_auxiliary_tolerance_rad: 0.05
+  reset_timeout_seconds: 10.0
+  joint_scales:
+    left: [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0]
+    right: [1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0]
+
+torso_teleop:
+  # Match GR3 controls: physical left joystick X is yaw; physical right
+  # joystick Y is pitch. Pitch directly moves only the uppermost pitch joint
+  # (SDK torso joint 3 / action index 2); yaw directly moves action index 3.
+  # Both axes are three-state switches: -fixed speed / stop / +fixed speed.
+  # Stick magnitude above the threshold does not change commanded speed.
+  # Both directions use the same semantic speed. The adapter captures the
+  # measured waist once at takeover, then integrates joystick deltas from it.
+  yaw_left_speed_rad_s: 0.1
+  yaw_right_speed_rad_s: 0.1
+  yaw_direction: 1.0
+  pitch_speed_rad_s: 0.1
+  pitch_direction: -1.0
+  joystick_switch_threshold: 0.25
+  max_dt_seconds: 0.02
+  # The SDK applies control_way to the whole call, so torso and arms are kept
+  # in independent, alternating command groups.
+  arm_control_way: filter
+  torso_control_way: direct
+
+gripper_teleop:
+  enabled: true
+  frequency_hz: 100
+  state_limit_tolerance_percent: 1.0
+
+# Compatibility thresholds for offline/legacy guard utilities. The formal 25D
+# owner does not evaluate these fields before dispatch.
+safety:
+  max_state_age_ms: 100
+  max_command_age_ms: 200
+  # Legacy Cartesian canary only. Formal joint-delta teleop and the 25D owner
+  # do not consume these Cartesian adjustment thresholds or workspace boxes.
+  max_translation_step_m: 0.005
+  max_rotation_step_rad: 0.03
+  max_gripper_step_percent: 2.0
+  quaternion_norm_tolerance: 0.05
+  gripper_limits: [0.0, 100.0]
+  joint_state_limit_tolerance:
+    astribot_gripper_left: 1.0
+    astribot_gripper_right: 1.0
+  workspace:
+    left:
+      lower: [0.10, 0.00, 0.40]
+      upper: [0.90, 0.90, 1.70]
+    right:
+      lower: [0.10, -0.90, 0.40]
+      upper: [0.90, 0.00, 1.70]

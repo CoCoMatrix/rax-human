@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "skill": "learned-magnetic-block-grasp-and-stack",
+  "examples": [
+    {
+      "task": "magnetic-blocks-l-stack",
+      "date": "2026-11-11",
+      "confirmation": "observed",
+      "whole_task_confirmation": "supervised-with-onsite-fact-confirmation",
+      "frames": [
+        "runtime/frames/910ef64b39b1446badf42d8bfc00e15d/",
+        "runtime/frames/92d371d4e45047478d916717fdf5937a/",
+        "runtime/frames/5513f0b0eb9840a396f41df26c136f97/",
+        "runtime/frames/75abd4859eef4025a241fd8ac2ad0ae0/",
+        "runtime/frames/422fddd5a1814fada9d5aab526bab68c/",
+        "runtime/frames/274698d9681043bcb9fed67bd0ad398d/",
+        "runtime/frames/da4ec2d2be364967a6a6efac40a5052a/",
+        "runtime/frames/63d843b4c9bf4db7b3c16b1899f95a37/"
+      ],
+      "executed_action": {
+        "tool": "piper_gripper",
+        "arguments": {
+          "width_m": 0.05,
+          "observe_after": true
+        }
+      },
+      "pose_recipe": "Source flange .205; green support placement .265 in R3; remeasure scene and support height on new layouts.",
+      "point_reacquisition": "Fresh head-frame interior pixels -> piper_pixel_to_position radius3; remeasure red after joining. Wrist RGB retention evidence; no wrist-to-base transform.",
+      "observed_effect": "Orange retained after deeper engagement; base joined; green released over red; onsite user confirmed final success/clearance.",
+      "failed_trials": [
+        {
+          "flange_z_m": 0.22,
+          "command_gap_m": 0.056
+        },
+        {
+          "flange_z_m": 0.215,
+          "command_gap_m": 0.053
+        }
+      ],
+      "evidence_ledger": "evidence/tool-ledger.json",
+      "operator_reply": "evidence/operator-final-confirmation.json"
+    }
+  ]
+}

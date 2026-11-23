@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.recap.causal_transition.v1",
+  "title": "XPolicy post-save causal observation interval",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "transition_id",
+    "episode_id",
+    "frame_index",
+    "observation_timestamp_ns",
+    "next_observation_timestamp_ns",
+    "observation_refs",
+    "next_observation_refs",
+    "state_ref",
+    "next_state_ref",
+    "actions"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.recap.causal_transition.v1"},
+    "transition_id": {"type": "string", "minLength": 1},
+    "episode_id": {"type": "string", "minLength": 1},
+    "frame_index": {"type": "integer", "minimum": 0},
+    "observation_timestamp_ns": {"type": "integer", "minimum": 0},
+    "next_observation_timestamp_ns": {"type": "integer", "minimum": 0},
+    "observation_refs": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "next_observation_refs": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "state_ref": {"type": "string", "minLength": 1},
+    "next_state_ref": {"type": "string", "minLength": 1},
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "control_tick_id",
+          "execution_timestamp_ns",
+          "executed_action",
+          "action_source",
+          "policy_action",
+          "expert_action",
+          "expert_label_valid",
+          "intervention_id",
+          "alignment",
+          "source_rows"
+        ],
+        "properties": {
+          "control_tick_id": {"type": ["integer", "null"], "minimum": 0},
+          "execution_timestamp_ns": {"type": "integer", "minimum": 0},
+          "executed_action": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "number"}
+          },
+          "action_source": {
+            "enum": ["POLICY", "EXPERT", "HOLD", "SAFETY"]
+          },
+          "policy_action": {
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+          },
+          "expert_action": {
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+          },
+          "expert_label_valid": {"type": "boolean"},
+          "intervention_id": {"type": "integer", "minimum": 0},
+          "alignment": {"enum": ["control_tick_id", "timestamp_fallback"]},
+          "source_rows": {
+            "type": "object",
+            "additionalProperties": {"type": "integer", "minimum": 0}
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

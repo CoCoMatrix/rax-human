@@ -1,0 +1,31 @@
+schema: xpolicylab.piper-deployment/v1
+name: build-blocks
+label: Pi0.5 Piper build-blocks
+bundle:
+  kind: legacy_openpi
+  default_path: policy/Pi_05/checkpoints/piper-pi05-dj-tricam-b512-20k-0825-r3/2000
+  required: [params, assets]
+  verifier: null
+policy:
+  action_frequency_hz: 30
+  action_horizon: 15
+  default_execute_chunk: 15
+  default_execute_mode: auto
+server:
+  default_mode: external
+  script: null
+operator:
+  default_control_source: qnexo
+  keyboard_graph: null
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-dagger.yml
+  ui_enabled: false
+tasks:
+  default: Stack the second cube on top of the first cube, then place the cone on top of the second cube.
+  inline:
+    - Stack the second cube on top of the first cube, then place the cone on top of the second cube.
+  catalog_path: null
+setup:
+  script: null
+qualification:
+  supported: false
+  smoke_script: null

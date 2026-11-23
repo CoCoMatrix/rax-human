@@ -1,0 +1,2 @@
+# PCsensor footswitch keyboard event used for takeover and save confirmation.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{idVendor}=="3553", ATTRS{idProduct}=="b001", ENV{ID_INPUT_KEYBOARD}=="1", MODE="0660", GROUP="plugdev", TAG+="uaccess"

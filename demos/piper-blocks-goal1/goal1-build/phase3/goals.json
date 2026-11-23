@@ -1,0 +1,10 @@
+{
+ "g1_row_top_mid":   {"stacks":[{"col":0,"row":0,"blocks":["yellow"]},{"col":1,"row":0,"blocks":["orange","red"]},{"col":2,"row":0,"blocks":["green"]}],"spacing":"tight"},
+ "g2_L_corner_stack":{"stacks":[{"col":1,"row":0,"blocks":["orange"]},{"col":1,"row":1,"blocks":["green","red"]},{"col":0,"row":1,"blocks":["yellow"]}],"spacing":"tight"},
+ "g3_row_top_left":  {"stacks":[{"col":0,"row":0,"blocks":["green","yellow"]},{"col":1,"row":0,"blocks":["orange"]},{"col":2,"row":0,"blocks":["red"]}],"spacing":"tight"},
+ "g4_row_flat":      {"stacks":[{"col":0,"row":0,"blocks":["red"]},{"col":1,"row":0,"blocks":["orange"]},{"col":2,"row":0,"blocks":["green"]},{"col":3,"row":0,"blocks":["yellow"]}],"spacing":"tight"},
+ "g5_two_towers":    {"stacks":[{"col":0,"row":0,"blocks":["red","green"]},{"col":1,"row":0,"blocks":["orange","yellow"]}],"spacing":"tight"},
+ "g6_square_flat":   {"stacks":[{"col":0,"row":0,"blocks":["red"]},{"col":1,"row":0,"blocks":["orange"]},{"col":0,"row":1,"blocks":["green"]},{"col":1,"row":1,"blocks":["yellow"]}],"spacing":"tight"},
+ "g7_tower_recolor": {"stacks":[{"col":0,"row":0,"blocks":["green","red","orange"]},{"col":1,"row":0,"blocks":["yellow"]}],"spacing":"tight"},
+ "g8_row_flat_loose":{"stacks":[{"col":0,"row":0,"blocks":["yellow"]},{"col":1,"row":0,"blocks":["green"]},{"col":2,"row":0,"blocks":["orange"]},{"col":3,"row":0,"blocks":["red"]}],"spacing":"loose"}
+}

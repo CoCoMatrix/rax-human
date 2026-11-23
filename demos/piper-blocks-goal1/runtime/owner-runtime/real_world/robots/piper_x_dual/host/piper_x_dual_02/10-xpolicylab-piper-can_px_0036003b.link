@@ -1,0 +1,7 @@
+[Match]
+Driver=gs_usb
+Property=ID_SERIAL_SHORT=0036003B4648570B20303731
+
+[Link]
+NamePolicy=
+Name=can_px_0036003b

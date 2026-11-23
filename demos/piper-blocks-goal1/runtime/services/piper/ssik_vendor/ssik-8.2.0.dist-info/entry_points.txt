@@ -1,0 +1,2 @@
+[console_scripts]
+ssik = ssik.cli:main

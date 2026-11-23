@@ -1,0 +1,46 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-gap-continuous
+label: Junqi GPT-as-Policy PiPER continuous reviewed loop
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/migration/ffs-live-20260918/continuous-contract.json
+  evidence_sha256: 4cbd20e07e7f981bf4da79f00806fce3dcc092b2fc999d9b25618cbcefc16e8d
+bundle:
+  kind: pytorch_safetensors
+  default_path: /home/ubuntu/code_junqi/model-store/models/pi05/pen-trash-dual-piper-real-h32-v1-ema-v1/step-9999
+  required:
+  - checkpoint/model.safetensors
+  - contract.json
+  - deploy_input.json
+  - package_manifest.json
+  verifier: policy/Pi_05/verify_piper_pen_trash_h32_v1_ema9999_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 15
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Pick up one drink container and place it on the coaster.
+  inline:
+  - Close the laptop.
+  - Pick up one drink container and place it on the coaster.
+  - Pick up one mouse and place it on the mouse pad.
+  - Pick up one pen and place it in the pen holder.
+  - Pick up one pen and place it in the trash bin.
+  - Pick up all paper balls and place them in the trash bin.
+  catalog_path: '{repo_root}/policy/Pi_05/piper_pen_trash_task_catalog.json'
+pigey:
+  supported: false
+setup:
+  script: policy/Pi_05/setup_junqi_pi05_pen_trash_baseline.sh
+qualification:
+  supported: false

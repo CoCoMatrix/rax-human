@@ -1,0 +1,96 @@
+{
+  "status": "COMPOSED CANDIDATE",
+  "source_commit": "c8a3fc6643814ac8d22291a7a5e82137a6ce1875",
+  "source_identity": "references/composition-source/R8-SOURCE.json",
+  "baseline": "output/composition/BASELINE.json",
+  "preexisting_dirty_status": " M README.md\n M controller.py\n M stack_checks.py\n M verify_offline.py\n?? README-R8.md\n?? test_closeout_r8.py\n",
+  "optimization_analysis_only": false,
+  "supported_stage_ordering": [
+    "initial_state",
+    "open_empty_gripper",
+    "orange_entry (read-only)",
+    "empty_joint_waypoint x3",
+    "approach orange",
+    "close_grasp orange",
+    "trial_lift orange",
+    "transport orange raise",
+    "plan_base_placement (read-only)",
+    "transport orange transfer",
+    "lower_to_support intermediate",
+    "lower_to_support final",
+    "release orange",
+    "retreat orange",
+    "empty_inspection x2",
+    "green_pregrasp",
+    "refresh_stack_support (read-only)",
+    "approach green with new history root",
+    "close_grasp green",
+    "trial_lift green",
+    "transport green raise 1",
+    "transport green lateral 1",
+    "transport green raise 2",
+    "transport green lateral 3",
+    "green_stack_lower",
+    "green_stack_release",
+    "green_stack_retreat"
+  ],
+  "call_audit": {
+    "hardware_calls": 0,
+    "camera_calls": 0,
+    "gemini_calls": 0,
+    "main_runtime_primary_agent_calls": 0,
+    "note": "Offline verification; predecessor authoring usage is recorded in COMPOSITION-v0.2.json"
+  },
+  "outstanding_physical_qualifications": [
+    "No archived R8 green release/retreat motion receipt; positive automatic release and retreat remain physically unqualified.",
+    "No current composition hardware/model run, unattended pass or generalized-layout validation.",
+    "Fresh neutral entry/candidate selection and new-layout calculations need separately authorized physical checks.",
+    "Depth/TCP accuracy, collision/environment completeness and visual support interpretation remain provisional."
+  ],
+  "qualification": "offline_checked_not_physically_qualified",
+  "operator_reported_facts": [
+    {
+      "text": "绿色已稳定落在红块上，大体对齐，可以原位张爪",
+      "source": "references/composition-source/operator/ff43deacefc7.reply.json",
+      "scope": "historical pose only; not a future autonomous predicate"
+    },
+    {
+      "text": "目前这个流程已经演练成功打通了",
+      "source": "COMPOSE_REQUEST.md and current user request",
+      "scope": "operator-reported rehearsal success; no unattended test or missing receipt inferred"
+    }
+  ],
+  "source_closeout_commit": "bd9713baa7d67281ad62a2499e617324614cf4ff",
+  "validation": [
+    {
+      "check": "suite",
+      "exit_code": 0
+    },
+    {
+      "check": "compile",
+      "exit_code": 0
+    },
+    {
+      "check": "preview",
+      "exit_code": 0
+    },
+    {
+      "check": "diff",
+      "exit_code": 0
+    }
+  ],
+  "host_review": [
+    "Current behavior and limits: README.md; original metadata archived in COMPOSITION-v0.2.1.json."
+  ],
+  "candidate": "v0.2.8-hover-working",
+  "source_composed_commit": "f9031ff3365d464e737a98cf6822a86f1a6b2483",
+  "refinement": {
+    "numerical_hover_search": true,
+    "fresh_rebind_after_search": true,
+    "near_down_orientation_candidates": true,
+    "insertion_lookahead": true,
+    "no_live_test": true
+  },
+  "target_image_generalization": "analysis_only",
+  "development_validation_source": "COMPOSITION-v0.2.1.json"
+}

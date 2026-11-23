@@ -1,0 +1,411 @@
+{
+ "phase": 4,
+ "offline_only": true,
+ "hardware_dispatches": 0,
+ "strict_replay_of_recorded_runs": {
+  "runs": 19,
+  "identical": 19,
+  "tool_calls": 2752,
+  "recorded_successes": 12,
+  "baseline_start1_identical": 19,
+  "method": "assembly_controller.main re-run against each recorded real run of start1; every tool call must equal the recorded call (name and arguments) and receives the recorded result; clock follows the recording; recorded plan and execution cache restored."
+ },
+ "dry_execution_of_new_goals": {
+  "what_is_real": "recorded initial observation/localization, planner, FK/IK, collision checks, native no-send trajectory preview, all numeric execution checks",
+  "what_is_simulated": "arm reaches each commanded target exactly; jaw closes to 51.6 mm and opens to 72.4 mm; image-based evidence checks are stubbed as passing",
+  "results": {
+   "default": {
+    "goal": "列1排1：红→绿→黄；列2排1：橙（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 24,
+      "order": [
+       "orange",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": [
+       "green-to-yellow-empty-transition-15"
+      ]
+     }
+    }
+   },
+   "g1_row_top_mid": {
+    "goal": "列1排1：黄；列2排1：橙→红；列3排1：绿（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "yellow",
+       "green",
+       "orange",
+       "red"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "green",
+       "orange",
+       "yellow",
+       "red"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g2_L_corner_stack": {
+    "goal": "列2排1：橙；列1排2：黄；列2排2：绿→红（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "yellow",
+       "green",
+       "orange",
+       "red"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "orange",
+       "green",
+       "yellow",
+       "red"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g3_row_top_left": {
+    "goal": "列1排1：绿→黄；列2排1：橙；列3排1：红（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "green",
+       "red",
+       "orange",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238": {
+      "ok": true,
+      "steps": 33,
+      "order": [
+       "green",
+       "orange",
+       "red",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g4_row_flat": {
+    "goal": "列1排1：红；列2排1：橙；列3排1：绿；列4排1：黄（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "green",
+       "red",
+       "orange",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "green",
+       "orange",
+       "red",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g5_two_towers": {
+    "goal": "列1排1：红→绿；列2排1：橙→黄（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.32, -0.08], 'orange_side': 2, 'layout_resume': 6, 'order': ['red', 'orange', 'green', '"
+     },
+     "164238": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.13390736502578632, -0.28740593290590893], 'orange_side': 1, 'layout_resume': 1, 'order'"
+     },
+     "154128/lane0": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.3273284508015269, -0.07866965829515868], 'orange_side': 2, 'layout_resume': 8, 'order':"
+     },
+     "154128/lane1": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "red",
+       "orange",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "154128/lane2": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.32, -0.08], 'orange_side': 2, 'layout_resume': 8, 'order': ['red', 'orange', 'green', '"
+     },
+     "154128/lane3": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.28732845080152686, -0.07866965829515868], 'orange_side': 2, 'layout_resume': 3, 'order'"
+     },
+     "164238/lane0": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.13390736502578632, -0.3274059329059089], 'orange_side': 2, 'layout_resume': 0, 'order':"
+     },
+     "164238/lane1": {
+      "ok": true,
+      "steps": 33,
+      "order": [
+       "orange",
+       "red",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238/lane2": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.12, -0.2300000000000001], 'orange_side': 1, 'layout_resume': 4, 'order': ['orange', 're"
+     },
+     "164238/lane3": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "orange",
+       "red",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g6_square_flat": {
+    "goal": "列1排1：红；列2排1：橙；列1排2：绿；列2排2：黄（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'transfer', 'anchor': [0.3673284508015269, -0.11866965829515869], 'orange_side': 12, 'layout_resume': 6, 'ord"
+     },
+     "164238": {
+      "ok": false,
+      "steps": 12,
+      "failed_step": "green-hover-9",
+      "why": "Planning/geometry refusal: Single-leg fallback stopped: Planning/geometry refusal: Finger/green path conflict gap=-0.011288mm minimum=0.000000mm nominal=3.000mm"
+     },
+     "154128/lane0": {
+      "ok": true,
+      "steps": 26,
+      "order": [
+       "green",
+       "orange",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "154128/lane1": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'retreat', 'anchor': [0.3673284508015269, -0.11866965829515869], 'orange_side': 12, 'layout_resume': 8, 'orde"
+     },
+     "154128/lane2": {
+      "ok": true,
+      "steps": 25,
+      "order": [
+       "red",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "154128/lane3": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.28, 0.0], 'orange_side': -12, 'layout_resume': 2, 'order': ['green', 'red', 'orange', '"
+     },
+     "164238/lane0": {
+      "ok": true,
+      "steps": 25,
+      "order": [
+       "red",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238/lane1": {
+      "ok": true,
+      "steps": 25,
+      "order": [
+       "green",
+       "red",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238/lane2": {
+      "ok": false,
+      "steps": 12,
+      "failed_step": "green-hover-9",
+      "why": "Planning/geometry refusal: Single-leg fallback stopped: Planning/geometry refusal: Finger/green path conflict gap=-0.011288mm minimum=0.000000mm nominal=3.000mm"
+     },
+     "164238/lane3": {
+      "ok": true,
+      "steps": 25,
+      "order": [
+       "red",
+       "green",
+       "yellow"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g7_tower_recolor": {
+    "goal": "列1排1：绿→红→橙；列2排1：黄（紧挨）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "yellow",
+       "green",
+       "red",
+       "orange"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238": {
+      "ok": true,
+      "steps": 32,
+      "order": [
+       "green",
+       "yellow",
+       "red",
+       "orange"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     }
+    }
+   },
+   "g8_row_flat_loose": {
+    "goal": "列1排1：黄；列2排1：绿；列3排1：橙；列4排1：红（分开）",
+    "runs": {
+     "154128": {
+      "ok": true,
+      "steps": 33,
+      "order": [
+       "yellow",
+       "green",
+       "orange",
+       "red"
+      ],
+      "structure_matches_goal": true,
+      "max_position_error_mm": 0.0,
+      "handoff_steps": []
+     },
+     "164238": {
+      "ok": false,
+      "steps": 2,
+      "failed_step": "whole-task-preflight",
+      "why": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase': 'hover', 'anchor': [0.12, -0.39], 'orange_side': 1, 'layout_resume': 0, 'order': ['orange', 'green', 'yellow'"
+     }
+    }
+   }
+  }
+ },
+ "controller_tests": {
+  "summary": "190 failed, 375 passed, 1 warning, 16 errors, 36 subtests passed in 7.92s",
+  "same_failure_set_as_start1": true,
+  "new_tests": "test_goal_execution.py 3 passed, test_goal_structure.py 9 passed"
+ },
+ "findings": [
+  "One dry execution (2x2 goal, scene 164238, one lane) was refused before dispatch at green-hover: finger/block gap -0.011 mm. The plan was checked with the nominal 73 mm jaw opening but the jaw really opens to about 72.4 mm, the same margin problem as the real yellow-retreat refusal on 2026-11-19 15:47. This is a pre-existing weakness of plans with near-zero finger clearance, not specific to new goals.",
+  "The blended green-to-yellow empty move stays enabled only for the default goal; other goals run retreat and the next hover as separate checked steps."
+ ],
+ "not_validated_offline": [
+  "perception on new goal shapes (alignment before closing, placed-body visibility, displacement screening)",
+  "real contact: grasp stability, magnetic attraction between neighbouring blocks, placement accuracy"
+ ]
+}

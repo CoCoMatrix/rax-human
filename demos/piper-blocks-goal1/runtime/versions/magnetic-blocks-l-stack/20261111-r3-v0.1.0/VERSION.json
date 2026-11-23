@@ -1,0 +1,13 @@
+{
+  "version": "v0.1.0",
+  "task": "magnetic-blocks-l-stack",
+  "source_run": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/commissioning/magnetic-blocks-explore-20261111-r3",
+  "manual_strategy_status": "supervised_success_onsite_final_confirmation",
+  "controller_status": "executable_functions_offline_validated_not_hardware_rehearsed",
+  "autonomous_main_qualified": false,
+  "offline_tests": 10,
+  "work_copy": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/workspaces/magnetic-blocks-l-stack/v0.1-working",
+  "frozen_copy": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/versions/magnetic-blocks-l-stack/20261111-r3-v0.1.0",
+  "created_unix": 1794372087.2188435,
+  "no_hardware_actions_during_closeout": true
+}

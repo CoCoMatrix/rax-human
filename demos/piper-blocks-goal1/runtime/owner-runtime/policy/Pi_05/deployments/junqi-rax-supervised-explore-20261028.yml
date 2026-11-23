@@ -1,0 +1,39 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-rax-supervised-explore-20261028
+label: RAX supervised bounded exploration
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/general-motion-20261028/owner-runtime-tools/deploy/junqi-rax-general-motion-tools-20261028/contract.json
+  evidence_sha256: 4f8f6f97b1abc7267f1227d11bd758fa53daf9b52cc9a515ac1a25d5f1071ae1
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/general-motion-20261028/owner-runtime-tools/deploy/junqi-rax-supervised-explore-20261028
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_calibration.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/rax-piper-real-ffs-20261025/commissioning/general-motion-20261028/owner-runtime-tools/deploy/junqi-rax-supervised-explore-20261028/task_catalog.json
+  default: RAX supervised bounded exploration of placing the blue cup on the rack
+    with the left gripper.
+  inline:
+  - RAX supervised bounded exploration of placing the blue cup on the rack with the
+    left gripper.
+pigey:
+  supported: false
+qualification:
+  supported: false

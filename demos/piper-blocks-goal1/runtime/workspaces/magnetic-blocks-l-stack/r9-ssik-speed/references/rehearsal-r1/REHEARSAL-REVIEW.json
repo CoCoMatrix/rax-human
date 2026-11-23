@@ -1,0 +1,150 @@
+{
+  "elapsed_s": 909.4921181089012,
+  "main_requests": 48,
+  "main_completed": 47,
+  "main_request_sum_s": 837.9203943789471,
+  "auxiliary_visual_calls": 0,
+  "gripper_actions": [
+    {
+      "args": {
+        "width_m": 0.009399999999999999,
+        "observe_after": true
+      },
+      "seconds": 3.4983971118927,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0089
+    },
+    {
+      "args": {
+        "width_m": 0.0179,
+        "observe_after": true
+      },
+      "seconds": 3.491873025894165,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0177
+    },
+    {
+      "args": {
+        "width_m": 0.0267,
+        "observe_after": true
+      },
+      "seconds": 3.496032238006592,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0264
+    },
+    {
+      "args": {
+        "width_m": 0.0354,
+        "observe_after": true
+      },
+      "seconds": 3.5442702770233154,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0351
+    },
+    {
+      "args": {
+        "width_m": 0.0441,
+        "observe_after": true
+      },
+      "seconds": 3.545907497406006,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.043899999999999995
+    },
+    {
+      "args": {
+        "width_m": 0.052899999999999996,
+        "observe_after": true
+      },
+      "seconds": 3.4400110244750977,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0527
+    },
+    {
+      "args": {
+        "width_m": 0.0617,
+        "observe_after": true
+      },
+      "seconds": 3.540379285812378,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0613
+    },
+    {
+      "args": {
+        "width_m": 0.069,
+        "observe_after": true
+      },
+      "seconds": 3.494338274002075,
+      "executed": true,
+      "arrived": true,
+      "final_gap_m": 0.0687
+    }
+  ],
+  "motion_rpc_sum_s": 28.05120873451233,
+  "stopped_by_user": true,
+  "pose_moves": 0,
+  "function_reports": [
+    {
+      "file": "03-open-empty.json",
+      "wall_s": null,
+      "review_wait_s": 90,
+      "ok": null,
+      "why": null,
+      "executed": null
+    },
+    {
+      "file": "01-observe.json",
+      "wall_s": 0.12310284900013357,
+      "review_wait_s": 0,
+      "ok": null,
+      "why": null,
+      "executed": null
+    },
+    {
+      "file": "02-locate-blocks.json",
+      "wall_s": 0.010653642006218433,
+      "review_wait_s": 0,
+      "ok": null,
+      "why": null,
+      "executed": null
+    },
+    {
+      "file": "05-open-empty.json",
+      "wall_s": 141.0802185300272,
+      "review_wait_s": 112.4881098009646,
+      "ok": false,
+      "why": "RuntimeError: needs_review: no current assessment within 90s",
+      "executed": true
+    },
+    {
+      "file": "06-current-scene.json",
+      "wall_s": 0.7281659869477153,
+      "review_wait_s": 0,
+      "ok": null,
+      "why": null,
+      "executed": null
+    },
+    {
+      "file": "04-open-empty.json",
+      "wall_s": 90.15351919305976,
+      "review_wait_s": 90.04270399804227,
+      "ok": false,
+      "why": "RuntimeError: needs_review: no current assessment within 90s",
+      "executed": false
+    },
+    {
+      "file": "07-localize-centers.json",
+      "wall_s": 0.010470372973941267,
+      "review_wait_s": 0,
+      "ok": null,
+      "why": null,
+      "executed": null
+    }
+  ]
+}

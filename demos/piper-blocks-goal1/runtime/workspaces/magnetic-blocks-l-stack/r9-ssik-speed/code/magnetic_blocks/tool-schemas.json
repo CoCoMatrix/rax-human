@@ -1,0 +1,345 @@
+[
+  {
+    "name": "piper_status",
+    "description": "Current measured state and adapter limits; no motion.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_stream",
+    "description": "Read the continuous RGB recording as a contact sheet. Inspection only; use piper_observe for metric depth and action boundaries.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "camera": {
+          "type": "string",
+          "enum": [
+            "head",
+            "left",
+            "right"
+          ]
+        },
+        "since_ms": {
+          "type": "integer"
+        },
+        "until_ms": {
+          "type": "integer"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "camera",
+        "since_ms",
+        "until_ms"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_check_path",
+    "description": "Pure sampled collision and LEFT flange workspace preflight. workspace_check uses the same 41 FK samples and bounds as dispatch; require workspace_clear AND cad_clear. Installed 170mm LEFT finger envelopes; optional environment boxes in dual_base_link. No SDK or motion; empty environment is NOT scene clearance.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "start14": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 14,
+          "maxItems": 14
+        },
+        "target14": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 14,
+          "maxItems": 14
+        },
+        "obstacles": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "start14",
+        "target14"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_observe",
+    "description": "Current three cameras. Head FFS is the default depth; explicitly request depth_cameras=[left] for wrist optical depth without hand-eye. Full saved image coordinates in meta.json; preview downscaled.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "cameras": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "head",
+              "left",
+              "right"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "require_depth": {
+          "type": "boolean"
+        },
+        "depth_cameras": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "head",
+              "left"
+            ]
+          },
+          "maxItems": 2
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_pixel_to_position",
+    "description": "Saved full-resolution pixels to metres. Head defaults to provisional left_base_link; LEFT requires output_frame=camera_optical and cannot command a robot target. Does not expire historical analysis or grant motion.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "frame_id": {
+          "type": "string"
+        },
+        "camera": {
+          "type": "string",
+          "enum": [
+            "head",
+            "left",
+            "right"
+          ]
+        },
+        "pixels": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "radius": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "output_frame": {
+          "enum": [
+            "left_base_link",
+            "camera_optical"
+          ]
+        }
+      },
+      "required": [
+        "frame_id",
+        "camera",
+        "pixels"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_fk",
+    "description": "Pure CAD flange FK, six radians. Base frame is the selected arm base, not dual_base_link; no calibrated grasp TCP.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "joints": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "arm": {
+          "enum": [
+            "left",
+            "right"
+          ]
+        }
+      },
+      "required": [
+        "joints"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_solve_ik",
+    "description": "Pure MoveIt2 KDL full-pose LEFT flange IK; optional explicit seed for offline use. No approximate solution, no hardware motion, no scene path certification.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "quaternion_xyzw": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "seed": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        }
+      },
+      "required": [
+        "position",
+        "quaternion_xyzw"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_move_pose",
+    "description": "Move LEFT flange to a left_base_link pose using KDL and the existing checked joint trajectory. This is a joint-interpolated path, not a guaranteed straight TCP path. Max 400mm per call. Preserve orientation if omitted.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "quaternion_xyzw": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "duration_s": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 18,
+          "description": "Omit to let the owner choose a duration within its speed/acceleration limits."
+        },
+        "observe_after": {
+          "type": "boolean",
+          "default": false,
+          "description": "After confirmed arrival, save and return current camera images in this call. An observation_error preserves the successful motion receipt: observe again, never replay the motion to recover images."
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_move_joints",
+    "description": "Move six LEFT joints, preserving right arm and both jaws. Max60deg change; existing owner validates path, speed and measured arrival.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "joints": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "duration_s": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 18,
+          "description": "Omit to let the owner choose a duration within its speed/acceleration limits."
+        },
+        "observe_after": {
+          "type": "boolean",
+          "default": false,
+          "description": "After confirmed arrival, save and return current camera images in this call. An observation_error preserves the successful motion receipt: observe again, never replay the motion to recover images."
+        }
+      },
+      "required": [
+        "joints"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_gripper",
+    "description": "LEFT full jaw gap 0..75mm in metres; max10mm change per call. Arrival is not grasp/contact proof. Right gripper is unavailable.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "width_m": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.075
+        },
+        "duration_s": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 18,
+          "description": "Omit to let the owner choose a duration within its speed/acceleration limits."
+        },
+        "observe_after": {
+          "type": "boolean",
+          "default": false,
+          "description": "After confirmed arrival, save and return current camera images in this call. An observation_error preserves the successful motion receipt: observe again, never replay the motion to recover images."
+        }
+      },
+      "required": [
+        "width_m"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "piper_hold",
+    "description": "At tool-call boundaries verify rest or request owner cancellation. Serialized MCP cannot interrupt another running tool: use the independent operator stop or physical emergency stop.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+]

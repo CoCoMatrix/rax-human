@@ -1,0 +1,68 @@
+schema: xpolicylab.piper-deployment/v1
+name: desktop-cleanup-h32-v3-ema19999
+label: Pi0.5 Piper desktop-cleanup h32 v3 final EMA step 19999
+bundle:
+  kind: pytorch_safetensors
+  default_path: /home/ubuntu/michael_dev/model-store/models/pi05/desktop-cleanup-dual-piper-real-h32-v3-ema-v1/step-19999
+  required: [checkpoint/model.safetensors, contract.json]
+  verifier: policy/Pi_05/verify_piper_desktop_h32_v3_ema19999_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 32
+  default_execute_chunk: 16
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi_05/serve_piper_desktop_h32_v3_ema19999.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  dagger_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-dagger.yml
+  ui_enabled: true
+tasks:
+  default: Pick up one paper ball and place it in the trash bin.
+  inline:
+    - Close the laptop.
+    - Pick up one drink container and place it on the coaster.
+    - Pick up one mouse and place it on the mouse pad.
+    - Pick up one paper ball and place it in the trash bin.
+    - Pick up one pen and place it in the pen holder.
+  catalog_path: null
+setup:
+  script: policy/Pi_05/setup_piper_desktop_h32_v3_ema19999.sh
+intake:
+  provider: aliyun_oss
+  python: /home/ubuntu/miniconda3/envs/infra/bin/python
+  bucket: ali-pai-oss-ppu
+  endpoint: https://oss-cn-wulanchabu.aliyuncs.com
+  prefix: spy/deploy/dual_piper_desktop_cleanup_20260827_h32_v3_pi05_ema_step19999_ckpt
+  expected_bytes: 7245883019
+  threads: 8
+  request_timeout_seconds: 180
+  attempts: 20
+  metadata:
+    family: pi05
+    robot: dual_piper
+    task: desktop_cleanup_20260827_h32_v3
+    step: 19999
+    params_semantics: ema
+    train_config: pi05_dual_piper_real
+qualification:
+  supported: true
+  verifier: policy/Pi_05/verify_piper_desktop_h32_v3_ema19999_bundle.py
+  verifier_args: [--full-manifest]
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+    - tests/test_inference.py
+    - tests/test_piper_operator_controls.py
+    - tests/test_realsense_source.py
+    - tests/test_piper_deployment_registry.py
+    - tests/test_piper_qualification.py
+    - tests/test_pi05_piper_desktop_ema.py
+    - tests/test_pi05_piper_desktop_h32_v3.py
+  smoke_script: policy/Pi_05/smoke_piper_desktop_h32_v3_ema10k.py

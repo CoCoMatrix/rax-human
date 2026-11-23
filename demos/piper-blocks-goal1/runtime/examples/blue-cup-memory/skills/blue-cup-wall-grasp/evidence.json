@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "skill": "learned-blue-cup-wall-grasp",
+  "examples": [
+    {
+      "task": "blue-cup",
+      "date": "2026-11-04",
+      "confirmation": "observed",
+      "frames": [],
+      "source_kind": "operator_report_and_historical_notes",
+      "source_statement": "用户：当夹爪闭合到4mm的时候，杯子可以被抓起来不会掉下去",
+      "executed_action": {
+        "tool": "piper_gripper",
+        "arguments": {
+          "width_m": 0.004
+        }
+      },
+      "action_mapping": "current tool equivalent; historical execution, not this session",
+      "pose_recipe": "fresh wall localization, no inherited world coordinates",
+      "point_reacquisition": "head current visible wall and wrist pad alignment; provisional head RGB-D only",
+      "observed_effect": "Operator-reported historical retention without falling; not current task-confirmed",
+      "historical_sources": [
+        "references/history-lessons.md",
+        "old run20261103T103607Z-7b76e2 TIPS.md"
+      ]
+    }
+  ]
+}

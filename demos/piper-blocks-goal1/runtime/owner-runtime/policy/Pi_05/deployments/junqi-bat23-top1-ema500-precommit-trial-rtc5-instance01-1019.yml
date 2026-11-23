@@ -1,0 +1,63 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-bat23-top1-ema500-precommit-trial-rtc5-instance01-1019
+label: Top1 测试｜提交前软限位＋异常清前缀｜动作FP32 RTC5
+robot:
+  device_instance: runtime/robot_dagger/config/robot_instances/piper_x_dual_01.yml
+release:
+  status: contract_complete
+  evidence: policy/Pi05Bat23Top1PrecommitRTC5/contracts/native-release.json
+  evidence_sha256: 0b710907a66fb149ca2d5b66805f2f64981edc165388dd797bfcd830decb7ef2
+bundle:
+  kind: jax_orbax
+  default_path: /home/ubuntu/code_junqi/model-store/models/pi05/cup_bat23_top1_t1d0b1_u500_pi05_rtc_ema_step500_from_mixed2500_ckpt
+  required:
+  - checkpoint/params
+  - checkpoint/assets
+  - contract.json
+  - deploy_input.json
+  - package_manifest.json
+  - infer.py
+  verifier: policy/Pi05Bat23Top1PrecommitRTC5/verify_bundle.py
+policy:
+  action_frequency_hz: 30
+  action_horizon: 50
+  default_execute_chunk: 10
+  default_execute_mode: fixed
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: managed
+  script: policy/Pi05Bat23Top1PrecommitRTC5/serve.sh
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  default: 将桌上新杯子拿起移向杯架空位；途中杯垫进入桌面时改放杯垫。不要抓已放好的杯子。无新杯时等待，放好且人手撤离后继续。
+  inline:
+  - 将桌上新杯子拿起移向杯架空位；途中杯垫进入桌面时改放杯垫。不要抓已放好的杯子。无新杯时等待，放好且人手撤离后继续。
+  catalog_path: '{repo_root}/policy/Pi05Bat23Top1PrecommitRTC5/task_catalog.json'
+pigey:
+  supported: false
+setup:
+  script: policy/Pi05Bat23Top1PrecommitRTC5/setup.sh
+qualification:
+  supported: true
+  verifier: policy/Pi05Bat23Top1PrecommitRTC5/verify_bundle.py
+  verifier_args:
+  - --full-manifest
+  uv: /home/ubuntu/miniconda3/envs/infra/bin/uv
+  server_timeout_seconds: 600
+  image_width: 1280
+  image_height: 720
+  tests:
+  - tests/test_bat23_top1_t1d0b1_u500_native.py
+  - tests/test_native_prefix_acceptance.py
+  - tests/test_native_ui_guard.py
+  - tests/test_web_execution_selection.py
+  - tests/test_piper_deployment_switch.py
+  - tests/test_tiered_velocity_seam.py
+  - tests/test_image_transport.py
+  - tests/test_top1_action_fp32.py
+  - tests/test_precommit_limits.py
+  - tests/test_image_transport_release_identity.py

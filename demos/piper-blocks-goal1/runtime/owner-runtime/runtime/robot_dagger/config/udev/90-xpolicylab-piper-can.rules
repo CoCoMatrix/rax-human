@@ -1,0 +1,3 @@
+# Stable Piper CAN interfaces are named by per-device systemd .link files.
+# RUN commands are short netlink updates executed after udev applies the rename.
+SUBSYSTEM=="net", ACTION=="add", ENV{ID_NET_NAME}=="can_px_*", RUN+="/usr/sbin/ip link set dev $env{ID_NET_NAME} type can bitrate 1000000", RUN+="/usr/sbin/ip link set dev $env{ID_NET_NAME} up"

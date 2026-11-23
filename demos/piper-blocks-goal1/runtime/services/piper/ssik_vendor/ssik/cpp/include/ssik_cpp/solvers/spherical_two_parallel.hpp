@@ -1,0 +1,202 @@
+// Spherical-wrist two-parallel 6R analytical IK (#510), ported verbatim from
+// ssik.solvers.ikgeo.spherical_two_parallel.solve. Pieper 6R: a spherical wrist
+// (intersecting axes at joints 3,4,5) plus two parallel shoulder axes (1,2).
+// SP4 isolates q1, SP3/SP1 solve the shoulder, SP4/SP1/SP1 solve the wrist.
+//
+// The caller must pass CANONICAL constants (canonicalize_spherical_wrist applied
+// in the Python dispatch, cached per-arm) -- the p[3] wrist-collapse assumes the
+// canonical form. Canonicalization is FK-identical, so verification here is valid
+// with the canonical constants and the returned q are physical joint values.
+#pragma once
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <vector>
+
+#include <Eigen/Dense>
+
+#include "ssik_cpp/continuum.hpp"
+#include "ssik_cpp/dedup.hpp"
+#include "ssik_cpp/finalize.hpp"
+#include "ssik_cpp/fk.hpp"
+#include "ssik_cpp/newton.hpp"
+#include "ssik_cpp/rescue.hpp"
+#include "ssik_cpp/rotation.hpp"
+#include "ssik_cpp/sp6.hpp"  // detail::wrap_pi
+#include "ssik_cpp/subproblems.hpp"
+
+namespace ssik {
+
+inline constexpr double kSphericalTwoParallelFkAtol = 1e-7;
+
+// The core, with each solution's singular-continuum flag (continuum.hpp): a
+// wrist near a lock (axes[3] || Rot(axes[4], q5) axes[5]) fixes only q4 +- q6.
+// On the lock its candidates take q6 = q_free; `free_out` (when given)
+// receives 5 for them and kNotFlagged for the rest, one per solution.
+inline std::vector<Solution<6>> spherical_two_parallel_solve_flagged(
+    const JointConsts<6>& c, const Pose& T, const Tolerances& tol, bool allow_refinement,
+    int refinement_max_iters, double q_free, std::vector<int>* free_out) {
+  std::array<Eigen::Vector3d, 6> axes;
+  for (int i = 0; i < 6; ++i) axes[i] = c.axis[i];
+
+  // p[]: consolidated shoulder-to-wrist offset at p[3] (sum of T_left[3..5]);
+  // p[4],p[5] unused (wrist-collapse). p[6] = tool translation.
+  std::array<Eigen::Vector3d, 7> p;
+  for (int i = 0; i < 6; ++i) p[i] = c.t_left[i].block<3, 1>(0, 3);
+  p[3] = c.t_left[3].block<3, 1>(0, 3) + c.t_left[4].block<3, 1>(0, 3) +
+         c.t_left[5].block<3, 1>(0, 3);
+  p[4].setZero();
+  p[5].setZero();
+  p[6] = c.t_right[5].block<3, 1>(0, 3);
+
+  const Eigen::Matrix3d r_home = c.t_right[5].block<3, 3>(0, 0);
+  const Eigen::Matrix3d r_06 = T.block<3, 3>(0, 0) * r_home.transpose();
+  const Eigen::Vector3d p_0t = T.block<3, 1>(0, 3);
+
+  // SP4 isolates q1: axes[1] . Rot(-axes[0], q1) (p_0t - r_06 p[6] - p[0]) =
+  // axes[1] . (p[1]+p[2]+p[3]).
+  const auto [t1_solutions, ls1] =
+      sp4(axes[1], -axes[0], p_0t - r_06 * p[6] - p[0], axes[1].dot(p[1] + p[2] + p[3]), tol);
+  (void)ls1;
+
+  std::vector<std::array<double, 6>> candidates;
+  std::vector<int> cand_free;
+  for (double q1 : t1_solutions) {
+    const Eigen::Vector3d shoulder =
+        rotation_matrix(-axes[0], q1) * (-p_0t + r_06 * p[6] + p[0]) + p[1];
+
+    const auto [t3_solutions, ls3] = sp3(axes[2], -p[3], p[2], shoulder.norm(), tol);
+    (void)ls3;
+
+    for (double q3 : t3_solutions) {
+      const auto [q2, ls2] =
+          sp1(axes[1], -p[2] - rotation_matrix(axes[2], q3) * p[3], shoulder, tol);
+      (void)ls2;
+
+      const Eigen::Matrix3d r_36 = rotation_matrix(-axes[2], q3) * rotation_matrix(-axes[1], q2) *
+                                   rotation_matrix(-axes[0], q1) * r_06;
+
+      const auto [t5_solutions, ls5] =
+          sp4(axes[3], axes[4], axes[5], axes[3].dot(r_36 * axes[5]), tol);
+      (void)ls5;
+
+      for (double q5 : t5_solutions) {
+        // A wrist within kRankTol of locked is flagged for the slide (#662).
+        // Where the SP1s below divide zero by zero (kLockTol) or their angles
+        // miss the wrist rotation, the lock is split: the wrist's limits from
+        // either side of it.
+        const Eigen::Vector3d a5_mid = rotation_matrix(axes[4], q5) * axes[5];
+        const double sine = lock_sine(axes[3], a5_mid);
+        const double q4r = sp1(axes[3], a5_mid, r_36 * axes[5], tol).first;
+        const double q6r = sp1(-axes[5], rotation_matrix(-axes[4], q5) * axes[3],
+                               r_36.transpose() * axes[3], tol)
+                               .first;
+        std::array<WristPair, 2> wrists = {WristPair{q4r, q6r}, WristPair{0.0, 0.0}};
+        int n_wrists = 1;
+        if (sine <= kRankTol &&
+            (sine <= kLockTol || spherical_wrist_error(axes, r_36, q4r, q5, q6r) > kRankTol)) {
+          const WristSplit split = spherical_wrist_lock(axes, r_36, q5, q_free);
+          wrists = split.pairs;
+          n_wrists = split.count;
+        }
+        for (int w = 0; w < n_wrists; ++w) {
+          const auto [q4, q6] = wrists[w];
+          candidates.push_back({q1, q2, q3, q4, q5, q6});
+          if (sine <= kRankTol) {
+          cand_free.resize(candidates.size() - 1, kNotFlagged);
+          cand_free.push_back(5);
+        }
+        }
+      }
+    }
+  }
+
+  // verify_candidates tail: FK-closure gate (+ optional Newton polish), then
+  // dedup_same_root (merge only the same root, #600).
+  // Flags only once one is set: the common, unflagged solve allocates nothing
+  // more (an empty flag vector means none flagged).
+  cand_free.resize(cand_free.empty() ? 0 : candidates.size(), kNotFlagged);
+  std::vector<Solution<6>> verified;
+  std::vector<int> verified_free;
+  for (std::size_t n = 0; n < candidates.size(); ++n) {
+    const auto& q = candidates[n];
+    const Pose fk_q = fk<6>(c, q);
+    const double resid = (fk_q - T).norm();
+    if (resid <= kSphericalTwoParallelFkAtol) {
+      verified.push_back(Solution<6>{q, resid, Refinement::None});
+      if (!cand_free.empty()) verified_free.push_back(cand_free[n]);
+    } else if (allow_refinement) {
+      const auto refined = lm_refine<6>(c, q, T, kSphericalTwoParallelFkAtol, refinement_max_iters);
+      if (refined) {
+        verified.push_back(Solution<6>{refined->first, refined->second, Refinement::Lm});
+        if (!cand_free.empty()) verified_free.push_back(cand_free[n]);
+      }
+    }
+  }
+
+  if (free_out == nullptr || verified_free.empty()) {
+    if (free_out != nullptr) free_out->clear();
+    return dedup_same_root<6>(verified, c, T, tol.dedup);
+  }
+  dedup_same_root_flagged<6>(verified, verified_free, c, T, tol.dedup);
+  *free_out = std::move(verified_free);
+  return verified;
+}
+
+// Core analytical solve. Returns FK-verified, deduped joint solutions. With
+// allow_refinement, near-misses are Newton-polished (the artifact's force_refine
+// path). `tol` mirrors the Python policy.
+inline std::vector<Solution<6>> spherical_two_parallel_solve(const JointConsts<6>& c, const Pose& T,
+                                                             const Tolerances& tol = {},
+                                                             bool allow_refinement = false,
+                                                             int refinement_max_iters = 15) {
+  return spherical_two_parallel_solve_flagged(c, T, tol, allow_refinement, refinement_max_iters,
+                                              0.0, nullptr);
+}
+
+// Full artifact-contract solve (#513): core solve (force-refined, as the artifact
+// always polishes) -> rescue gate (#319) -> finalize (limits -> seed ->
+// truncate). `c` must be the CANONICAL constants (canonicalize_spherical_wrist
+// applied at emit time and baked). The rescue recovers solutions at reachable
+// rank-deficient (singular) poses where the analytical returns empty, so the
+// standalone artifact matches Python's solve() there; dormant otherwise.
+inline std::vector<Solution<6>> spherical_two_parallel_artifact_solve(
+    const JointConsts<6>& c, const JointLimits<6>& lim, const Pose& T, const ArtifactParams<6>& p,
+    const Tolerances& tol = {}) {
+  // The core with the singular-continuum slide (continuum.hpp) applied to its
+  // flagged solutions, seeded or not: the artifact's analytic solve. The
+  // rescue re-solves unseeded and raw, as the Python artifact's rescue does.
+  const auto core = [&](const Pose& Tp, const std::array<double, 6>* seed, bool limits) {
+    std::vector<int> free;
+    auto sols = spherical_two_parallel_solve_flagged(c, Tp, tol, /*allow_refinement=*/true,
+                                                     p.refinement_max_iters,
+                                                     seed != nullptr ? (*seed)[5] : 0.0, &free);
+    return slide_continua(std::move(sols), free, c, lim, Tp, seed, limits, tol.dedup);
+  };
+  // Limit pass only, then rescue on LIMIT-empty (#524): the gate is "no in-limits
+  // solution", so it must not depend on the seed-tolerance / max_solutions
+  // filters. Seed/truncate is applied afterwards over the in-limits set.
+  ArtifactParams<6> p_limits;
+  // Intermediate pass: never lift here, or the lifts would be produced
+  // twice (see ArtifactParams::enumerate_windings).
+  p_limits.enumerate_windings = false;
+  p_limits.respect_limits = p.respect_limits;
+  p_limits.wrap_only = p.wrap_only;
+  p_limits.refinement_max_iters = p.refinement_max_iters;
+  std::vector<Solution<6>> in_limits = finalize_solutions<6>(
+      core(T, p.has_seed ? &p.q_seed : nullptr, p.respect_limits && !p.wrap_only), c, lim, T,
+      p_limits);
+  if (in_limits.empty() && p.allow_rescue && T.block<3, 1>(0, 3).norm() <= reach_radius(c)) {
+    const auto raw = [&](const Pose& Tp) { return core(Tp, nullptr, false); };
+    in_limits = finalize_solutions<6>(rescue_via_T_perturbation<6>(raw, c, T), c, lim, T, p_limits);
+  }
+  ArtifactParams<6> p_seed = p;
+  p_seed.respect_limits = false;
+  // The single lifting stage (#562): this is the call that yields the returned
+  // set. Skipped when the caller wanted the raw geometric set.
+  p_seed.enumerate_windings = p.enumerate_windings && p.respect_limits;
+  return finalize_solutions<6>(std::move(in_limits), c, lim, T, p_seed);
+}
+
+}  // namespace ssik

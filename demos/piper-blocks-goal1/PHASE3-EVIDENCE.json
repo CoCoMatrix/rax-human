@@ -1,0 +1,418 @@
+{
+ "phase": 3,
+ "offline_only": true,
+ "hardware_dispatches": 0,
+ "default_goal_equivalence": {
+  "deterministic_inputs": {
+   "scenes": 23,
+   "static_equal": 23,
+   "both_planned": 0,
+   "plan_equal": 0,
+   "same_layout_order": 0,
+   "outcome_diff": 20
+  },
+  "first_run_low_load": {
+   "scenes": 23,
+   "static_equal": 23,
+   "both_planned": 20,
+   "plan_equal": 19,
+   "same_layout_order": 20,
+   "outcome_diff": 0
+  },
+  "same_conditions": {
+   "scenes": 12,
+   "static_equal": 12,
+   "both_planned": 12,
+   "plan_equal": 12,
+   "same_layout_order": 12,
+   "outcome_diff": 0
+  },
+  "start1_self_consistency": {
+   "scenes": 23,
+   "static_equal": 23,
+   "both_planned": 20,
+   "plan_equal": 17,
+   "same_layout_order": 19,
+   "outcome_diff": 0
+  },
+  "note": "Planning uses time slices and 5 ms IK budgets; start1 itself differs between runs under different machine load. Same-conditions comparison is start1 vs final goal1 code run back to back."
+ },
+ "controller_tests": {
+  "summary": "190 failed, 372 passed, 1 warning, 16 errors, 36 subtests passed in 7.23s",
+  "same_failure_set_as_start1": true,
+  "new_tests": "test_goal_structure.py 9 passed"
+ },
+ "new_goals_four_lane_preflight": {
+  "g1_row_top_mid": {
+   "goal": "列1排1：黄；列2排1：橙→红；列3排1：绿（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 13.0,
+     "order": [
+      "green",
+      "orange",
+      "yellow",
+      "red"
+     ],
+     "side": -2
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 11.5,
+     "order": [
+      "yellow",
+      "green",
+      "orange",
+      "red"
+     ],
+     "side": -1
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 14.5,
+     "order": [
+      "orange",
+      "yellow",
+      "green",
+      "red"
+     ],
+     "side": 1
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 14.5,
+     "order": [
+      "green",
+      "yellow",
+      "red"
+     ],
+     "side": 2
+    }
+   }
+  },
+  "g2_L_corner_stack": {
+   "goal": "列2排1：橙；列1排2：黄；列2排2：绿→红（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 11.0,
+     "order": [
+      "yellow",
+      "green",
+      "orange",
+      "red"
+     ],
+     "side": -1
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 11.0,
+     "order": [
+      "green",
+      "orange",
+      "red"
+     ],
+     "side": 2
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 26.5,
+     "order": [
+      "orange",
+      "green",
+      "yellow",
+      "red"
+     ],
+     "side": -1
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 20.0,
+     "order": [
+      "green",
+      "yellow",
+      "red"
+     ],
+     "side": 2
+    }
+   }
+  },
+  "g3_row_top_left": {
+   "goal": "列1排1：绿→黄；列2排1：橙；列3排1：红（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 26.0,
+     "order": [
+      "green",
+      "red",
+      "yellow"
+     ],
+     "side": -1
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 13.0,
+     "order": [
+      "red",
+      "orange",
+      "green",
+      "yellow"
+     ],
+     "side": 2
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 18.0,
+     "order": [
+      "red",
+      "orange",
+      "green",
+      "yellow"
+     ],
+     "side": 1
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 14.5,
+     "order": [
+      "green",
+      "red",
+      "yellow"
+     ],
+     "side": 2
+    }
+   }
+  },
+  "g4_row_flat": {
+   "goal": "列1排1：红；列2排1：橙；列3排1：绿；列4排1：黄（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 16.5,
+     "order": [
+      "green",
+      "red",
+      "orange",
+      "yellow"
+     ],
+     "side": 2
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 15.5,
+     "order": [
+      "green",
+      "red",
+      "orange",
+      "yellow"
+     ],
+     "side": -2
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 21.5,
+     "order": [
+      "red",
+      "orange",
+      "green",
+      "yellow"
+     ],
+     "side": -1
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 13.5,
+     "order": [
+      "red",
+      "green",
+      "yellow"
+     ],
+     "side": 2
+    }
+   }
+  },
+  "g6_square_flat": {
+   "goal": "列1排1：红；列2排1：橙；列1排2：绿；列2排2：黄（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 31.0,
+     "order": [
+      "red",
+      "green",
+      "yellow"
+     ],
+     "side": -21
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 31.5,
+     "order": [
+      "red",
+      "green",
+      "yellow"
+     ],
+     "side": 12
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 47.0,
+     "order": [
+      "red",
+      "green",
+      "yellow"
+     ],
+     "side": 12
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 16.0,
+     "order": [
+      "green",
+      "red",
+      "yellow"
+     ],
+     "side": 12
+    }
+   }
+  },
+  "g7_tower_recolor": {
+   "goal": "列1排1：绿→红→橙；列2排1：黄（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 13.5,
+     "order": [
+      "green",
+      "red",
+      "orange"
+     ],
+     "side": 2
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 14.0,
+     "order": [
+      "yellow",
+      "green",
+      "red",
+      "orange"
+     ],
+     "side": 1
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 34.5,
+     "order": [
+      "yellow",
+      "green",
+      "red",
+      "orange"
+     ],
+     "side": -1
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 21.0,
+     "order": [
+      "green",
+      "yellow",
+      "red",
+      "orange"
+     ],
+     "side": -1
+    }
+   }
+  },
+  "g8_row_flat_loose": {
+   "goal": "列1排1：黄；列2排1：绿；列3排1：橙；列4排1：红（分开）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 11.0,
+     "order": [
+      "yellow",
+      "orange",
+      "red"
+     ],
+     "side": -1
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 13.0,
+     "order": [
+      "yellow",
+      "orange",
+      "red"
+     ],
+     "side": 1
+    },
+    "160638": {
+     "ok": true,
+     "wall_s": 15.5,
+     "order": [
+      "orange",
+      "yellow",
+      "green",
+      "red"
+     ],
+     "side": 1
+    },
+    "164238": {
+     "ok": false,
+     "wall_s": 185.2,
+     "error": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase':"
+    }
+   }
+  },
+  "g5_two_towers": {
+   "goal": "列1排1：红→绿；列2排1：橙→黄（紧挨）",
+   "scenes": {
+    "100734": {
+     "ok": true,
+     "wall_s": 41.0,
+     "order": [
+      "red",
+      "green",
+      "yellow"
+     ],
+     "side": 1
+    },
+    "154128": {
+     "ok": true,
+     "wall_s": 36.0,
+     "order": [
+      "red",
+      "orange",
+      "green",
+      "yellow"
+     ],
+     "side": -2
+    },
+    "160638": {
+     "ok": false,
+     "wall_s": 186.2,
+     "error": "PlanningTimeout: Whole-task preflight exceeded180s before motion; last candidate={'phase':"
+    },
+    "164238": {
+     "ok": true,
+     "wall_s": 62.6,
+     "order": [
+      "orange",
+      "red",
+      "green",
+      "yellow"
+     ],
+     "side": 1
+    }
+   }
+  }
+ },
+ "known_limits": [
+  "A table-level block lying farther than about 0.5 m from the base may be unreachable with the normal grasp families (scene 181748).",
+  "Two adjacent two-block towers failed in 1 of 4 scenes; a loose four-block row failed in 1 of 4 scenes (layout does not fit).",
+  "Execution checks and the web hand-over of GOAL.json are phase 4/5; custom goals cannot run yet."
+ ]
+}

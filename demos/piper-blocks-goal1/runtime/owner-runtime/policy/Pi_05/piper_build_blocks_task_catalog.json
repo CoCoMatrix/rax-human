@@ -1,0 +1,10 @@
+{
+  "exact_match_required": true,
+  "schema": "xpolicylab.piper-task-catalog/v1",
+  "tasks": [
+    {
+      "task": "Stack the second cube on top of the first cube, then place the cone on top of the second cube.",
+      "task_index": 0
+    }
+  ]
+}

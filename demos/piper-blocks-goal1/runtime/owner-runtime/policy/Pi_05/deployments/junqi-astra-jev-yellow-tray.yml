@@ -1,0 +1,38 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-astra-jev-yellow-tray
+label: Astra/current chat + SAM3 + Jev · yellow block into tray
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-astra-jev-yellow-tray/contract.json
+  evidence_sha256: e151c37a806c14a664acfecac8b33533889e62b0af23127114986c076acd6c84
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-astra-jev-yellow-tray
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_astra_jev_yellow_tray.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-astra-jev-yellow-tray/task_catalog.json
+  default: Move the yellow object on the table into the tray, then release it and
+    withdraw.
+  inline:
+  - Move the yellow object on the table into the tray, then release it and withdraw.
+pigey:
+  supported: false
+qualification:
+  supported: false

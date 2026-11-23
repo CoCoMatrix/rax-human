@@ -1,0 +1,15 @@
+policy_name: Pi_05
+protocol: ws
+eval_batch: false
+
+host: 127.0.0.1
+port: 19003
+runtime_profile: piper_x_dual_dagger50_ema_h32_v1
+
+bundle_root: null
+action_frequency_hz: 30
+action_horizon: 32
+pytorch_device: cuda
+
+rtc_enabled: false
+allow_dummy_policy: false

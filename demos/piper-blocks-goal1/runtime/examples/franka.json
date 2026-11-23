@@ -1,0 +1,12 @@
+{
+  "cameras": [
+    {"name": "left", "serial": 11111111, "mount": "fixed", "extrinsics": "left_T_cam_base.yaml"},
+    {"name": "right", "serial": 22222222, "mount": "fixed", "extrinsics": "right_T_cam_base.yaml"},
+    {"name": "wrist", "serial": 33333333, "mount": "tcp", "depth_min_m": 0.1,
+     "extrinsics": "wrist_T_cam_gripper.yaml"}
+  ],
+  "camera_cpus": "0-15",
+  "workspace_min": [0.25, -0.45, 0.10],
+  "workspace_max": [0.80, 0.45, 0.70],
+  "protected_paths": []
+}

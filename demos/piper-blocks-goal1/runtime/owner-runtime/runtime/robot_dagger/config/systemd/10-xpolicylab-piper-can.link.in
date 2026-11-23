@@ -1,0 +1,7 @@
+[Match]
+Driver=gs_usb
+Property=ID_SERIAL_SHORT=@CAN_SERIAL@
+
+[Link]
+NamePolicy=
+Name=@CAN_NAME@

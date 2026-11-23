@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "skill": "learned-magnetic-block-placement-boundary",
+  "examples": [
+    {
+      "task": "magnetic-blocks-l-stack",
+      "date": "2026-11-11",
+      "confirmation": "observed",
+      "unattended": false,
+      "whole_task_success": false,
+      "frames": [
+        "runtime/frames/07d0a1bd4a6a44f28a5c927d84ff64d0/head.jpg",
+        "runtime/frames/07d0a1bd4a6a44f28a5c927d84ff64d0/left.jpg",
+        "runtime/frames/6be6431d81254c6e90e51fe2ba1ac856/head.jpg"
+      ],
+      "executed_action": {
+        "tool": "piper_gripper",
+        "arguments": {
+          "width_m": 0.069,
+          "observe_after": true
+        }
+      },
+      "pose_recipe": "Orange bottom at same-run table height using measured grasp offset; red-relative lateral placement; exact inputs below are historical only.",
+      "point_reacquisition": "Fresh head RGB with associated native depth; retained stationary red only with source/control continuity; moved orange updated. Wrist is appearance evidence, never base XYZ.",
+      "observed_effect": "Red/orange base pair released and gripper withdrawn; green not stacked.",
+      "onsite_assistance": false,
+      "auxiliary_gemini_calls": 3,
+      "reports": [
+        {
+          "report": "output/rehearsal/r7-lower-01.json",
+          "sha256": "82bef52d5864e4638a2643eed89e624d4482cfb19ae19d91ad9d2d456c9efe3a",
+          "function": "lower_to_support",
+          "ok": true,
+          "executed": true,
+          "receipts": 1,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-transfer-01.json",
+            "quaternion": [
+              0.9996687304622323,
+              -0.025714574621994404,
+              0.0010598905134762606,
+              0.0002581087714487768
+            ],
+            "descent": [
+              [
+                0.3076753989748207,
+                -0.08336293863386475,
+                0.24906313844065775
+              ]
+            ],
+            "retreat": [
+              [
+                0.3076753989748207,
+                -0.08336293863386475,
+                0.29906313844065774
+              ]
+            ],
+            "support_required": false
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-lower-02.json",
+          "sha256": "50dbfc8957e2cb52930df9e2d3360e8129c03820cf7b7dd53f7dc6c616f6e7d5",
+          "function": "lower_to_support",
+          "ok": false,
+          "executed": false,
+          "receipts": 0,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-lower-01.json",
+            "quaternion": [
+              0.9996672764015587,
+              -0.025714537194139415,
+              0.0019671265696496205,
+              0.0004790426283398698
+            ],
+            "descent": [
+              [
+                0.3076203998600083,
+                -0.08334803828379253,
+                0.20535425419470038
+              ]
+            ],
+            "retreat": [
+              [
+                0.3076203998600083,
+                -0.08334803828379253,
+                0.299
+              ]
+            ],
+            "support_required": true
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-raise-recovery.json",
+          "sha256": "17cc798f2f7b0c90284dc0e5c383b1412bf871fe70a53c27d236f24465fbb421",
+          "function": "transport",
+          "ok": false,
+          "executed": false,
+          "receipts": 0,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-lower-01.json",
+            "waypoints": [
+              [
+                0.3076753989748207,
+                -0.08336293863386475,
+                0.29906313844065774
+              ]
+            ],
+            "quaternion": [
+              0.9996687304622323,
+              -0.025714574621994404,
+              0.0010598905134762606,
+              0.0002581087714487768
+            ]
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-raise-recovery-02.json",
+          "sha256": "d021653452c7b2401d33e1698760261178e3b253e133d94a1c4a240e090c570b",
+          "function": "transport",
+          "ok": true,
+          "executed": true,
+          "receipts": 1,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-lower-01.json",
+            "waypoints": [
+              [
+                0.3076753989748207,
+                -0.08336293863386475,
+                0.29906313844065774
+              ]
+            ],
+            "quaternion": [
+              0.9996687304622323,
+              -0.025714574621994404,
+              0.0010598905134762606,
+              0.0002581087714487768
+            ]
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-transfer-02.json",
+          "sha256": "22cf6cf81a1b8d5c6cb203d7bb4fdf3b31e210568d65067fcc70d0a2ea51fe4d",
+          "function": "transport",
+          "ok": true,
+          "executed": true,
+          "receipts": 1,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-raise-recovery-02.json",
+            "quaternion": [
+              0.999669087674096,
+              -0.025714583821299625,
+              0.000669863467499279,
+              0.0001631277805885122
+            ],
+            "waypoints": [
+              [
+                0.3078671175765461,
+                -0.08820529618267517,
+                0.2985644886352356
+              ]
+            ]
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-lower-03.json",
+          "sha256": "8f888d23a1517812de22294ae57888af823072cd94b861ed8a67dff222d62733",
+          "function": "lower_to_support",
+          "ok": true,
+          "executed": true,
+          "receipts": 1,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-transfer-02.json",
+            "quaternion": [
+              0.9996633977697712,
+              -0.0259152165505496,
+              0.0011829612985476403,
+              0.00030547193060384076
+            ],
+            "descent": [
+              [
+                0.30781784668856566,
+                -0.08805606763555635,
+                0.24867956498809834
+              ]
+            ],
+            "retreat": [
+              [
+                0.30781784668856566,
+                -0.08805606763555635,
+                0.29867956498809833
+              ]
+            ],
+            "support_required": false
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-lower-04.json",
+          "sha256": "3b3101d3670074f721e785a55deacf6c63c895d388f619ecd273761ee110ce46",
+          "function": "lower_to_support",
+          "ok": false,
+          "executed": true,
+          "receipts": 1,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-lower-03.json",
+            "quaternion": [
+              0.9996619145989799,
+              -0.025915178077166253,
+              0.00204480726313675,
+              0.0005280234720448968
+            ],
+            "descent": [
+              [
+                0.30774462815285364,
+                -0.08803512370087783,
+                0.20536480813379704
+              ]
+            ],
+            "retreat": [
+              [
+                0.30774462815285364,
+                -0.08803512370087783,
+                0.298
+              ]
+            ],
+            "support_required": true
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-support-verify.json",
+          "sha256": "0f9409b9a6fa0ae8d6a2795331c9b14e420830c245ccd884a1e986bb224c0800",
+          "function": "verify_completed_action",
+          "ok": true,
+          "executed": false,
+          "receipts": 0,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-lower-04.json"
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-release-01.json",
+          "sha256": "18c8ba42a38088dbf30812203cda66dea201ee1092d96dd264ffb47088128549",
+          "function": "release",
+          "ok": true,
+          "executed": true,
+          "receipts": 3,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-support-verify.json"
+          }
+        },
+        {
+          "report": "output/rehearsal/r7-retreat-01.json",
+          "sha256": "829698edd09ac0d1d40fd680c3ab4e5c8eb9b3b89c9b46f6d4248769047727e6",
+          "function": "retreat",
+          "ok": true,
+          "executed": true,
+          "receipts": 1,
+          "inputs": {
+            "previous_report": "output/rehearsal/r7-release-01.json",
+            "quaternion": [
+              0.9996602215871293,
+              -0.025915134169230566,
+              0.002712314334124596,
+              0.0007003915443860275
+            ],
+            "waypoints": [
+              [
+                0.3078312319946228,
+                -0.08805989927164178,
+                0.2959158113400784
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

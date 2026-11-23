@@ -1,0 +1,227 @@
+// jointlock.seven_r native artifact solve (#491): universal 7R IK by locking one
+// redundant joint and sweeping it over a fixed sample schedule, solving the
+// resulting 6R sub-chain per sample. Two inner-solver variants:
+//   - RR-covered arms (rizon4, rizon10): every locked sub-chain is a general_6r
+//     (Raghavan-Roth) problem -> jointlock_artifact_solve reuses general_6r_core.
+//   - HP-covered arms (kassow, #491): the locked sub-chains are symmetric-DH
+//     cases where RR is incomplete -> jointlock_hp_artifact_solve runs the
+//     Husty-Pfurner Study-quaternion kernel (hp_core) per sample.
+//
+// Everything per-sample is baked at emit time: the lock similarity transform
+// depends only on the (fixed) sample angle, so each of the N samples has a fixed
+// 6R sub-chain whose DH bridge + inner-solver constants are emitted like any 6R
+// arm. The runtime is a thin sweep: solve each sample's sub-chain for T, pad the
+// 6-vec with the locked angle, re-verify against the 7R target, dedup, finalize.
+// Both paths take the empty-gated T-perturbation rescue, as Python does: the
+// fixed sample schedule can straddle a narrow self-motion arc, so some reachable
+// poses have no solution at any sample (#617 on rizon4 / rizon10; kassow too).
+#pragma once
+
+#include <array>
+#include <vector>
+
+#include "ssik_cpp/finalize.hpp"
+#include "ssik_cpp/parallel.hpp"
+#include "ssik_cpp/solvers/general_6r.hpp"
+#include "ssik_cpp/solvers/husty_pfurner.hpp"
+
+namespace ssik {
+
+// Baked sweep geometry: which joint is locked and the sample schedule.
+template <int NSamples>
+struct JointlockConsts {
+  int lock_idx = 0;
+  std::array<double, NSamples> q_lock{};
+};
+
+namespace jointlock_detail {
+
+// Wrap-to-pi max-joint dedup for 7-DOF (mirrors general_6r's 6-DOF version),
+// keeping the lower-residual duplicate.
+inline std::vector<Solution<7>> dedup7(const std::vector<Solution<7>>& cands, double atol) {
+  constexpr double kPi = 3.14159265358979323846;
+  std::vector<Solution<7>> out;
+  for (const auto& cand : cands) {
+    int dup = -1;
+    for (std::size_t j = 0; j < out.size() && dup < 0; ++j) {
+      double worst = 0.0;
+      for (int i = 0; i < 7; ++i) {
+        double d = std::fmod(cand.q[i] - out[j].q[i] + kPi, 2.0 * kPi);
+        if (d < 0) d += 2.0 * kPi;
+        worst = std::max(worst, std::abs(d - kPi));
+      }
+      if (worst < atol) dup = static_cast<int>(j);
+    }
+    if (dup < 0)
+      out.push_back(cand);
+    else if (cand.fk_residual < out[dup].fk_residual)
+      out[dup] = cand;
+  }
+  return out;
+}
+
+}  // namespace jointlock_detail
+
+// Full artifact-contract solve for an RR-covered jointlock.seven_r arm. All
+// geometry baked: JointConsts<7> (POE FK for finalize/rescue) + JointlockConsts
+// + per-sample RrConsts + coeff fns + JointLimits<7>. No Python, no HP kernel.
+template <int NSamples, class CoeffFns>
+std::vector<Solution<7>> jointlock_artifact_solve(const JointConsts<7>& c,
+                                                  const JointlockConsts<NSamples>& jl,
+                                                  const std::array<RrConsts, NSamples>& rr,
+                                                  const CoeffFns& coeffs, const JointLimits<7>& lim,
+                                                  const Pose& T, const ArtifactParams<7>& p) {
+  // core: sweep the locked joint, RR-solve each 6R sub-chain, pad to 7-DOF. The
+  // NSamples RR solves are independent; fan out with each sample writing its own
+  // slot -> no race, merged in sample order (identical dedup to the serial path).
+  const auto core = [&](const Pose& tp) {
+    // Sub-chain JointConsts (POE) is only touched by the 6R refiner, which is off
+    // here (the locked sub-chains solve cleanly for the RR-covered arms); a
+    // default suffices. If a degenerate sub-chain ever needs the 6R polish, the
+    // emitter bakes the 16 sub-chain JointConsts and this passes them.
+    static const JointConsts<6> kNoRefineConsts{};
+    // The free joints' limits, which the sub-chain polish must not cross.
+    JointLimits<6> sub_lim;
+    for (int k = 0, j = 0; k < 7; ++k) {
+      if (k == jl.lock_idx) continue;
+      sub_lim.lo[j] = lim.lo[k];
+      sub_lim.hi[j] = lim.hi[k];
+      sub_lim.present[j] = lim.present[k];
+      ++j;
+    }
+    std::array<std::vector<Solution<7>>, NSamples> per;
+    parallel_for(NSamples, [&](std::size_t i) {
+      // Accepted sub-chain candidates are polished on the DH chain, which needs
+      // no POE consts (Python's solve_all_ik polishes the same chain).
+      const auto sub = general_6r_core(kNoRefineConsts, rr[i], coeffs[i], tp, kGeneral6rFkAtol,
+                                       kGeneral6rDedupAtol, /*allow_refinement=*/false, 15,
+                                       RrPolish::Dh, sub_lim);
+      for (const auto& s6 : sub) {
+        Solution<7> s7;
+        int j = 0;
+        for (int k = 0; k < 7; ++k) s7.q[k] = (k == jl.lock_idx) ? jl.q_lock[i] : s6.q[j++];
+        // Re-verify against the 7R target (not the sub-chain's DH residual): at
+        // a degenerate lock sample (q_lock making adjacent axes parallel, e.g.
+        // the identity-rotation sample) poe_to_dh of the sub-chain is slightly
+        // inconsistent, so the sub-chain DH-FK closes but the padded 7R FK does
+        // not. Python's jointlock drops these via the same re-verify (#491).
+        s7.fk_residual = (fk<7>(c, s7.q) - tp).norm();
+        if (s7.fk_residual > kGeneral6rFkAtol) continue;
+        s7.refinement = s6.refinement;
+        per[i].push_back(s7);
+      }
+    });
+    std::vector<Solution<7>> all;
+    for (auto& v : per)
+      for (auto& s : v) all.push_back(std::move(s));
+    return jointlock_detail::dedup7(all, kGeneral6rDedupAtol);
+  };
+
+  // Empty-gated rescue, as in Python's jointlock artifact and the HP path below.
+  // #535 left it out on the grounds that an RR-covered arm's 16-sample sweep
+  // provably covers the oracle (the emitter's onboarding probe,
+  // scripts/cpp_emit.py _jointlock_rr_complete). That holds for the probe's
+  // random poses, not for every pose: a pose whose self-motion reaches the lock
+  // joint only over an arc narrower than the sample spacing lies between two
+  // samples, so the sweep is empty on both backends (#617: rizon4 reaches it
+  // only over [-2.046, -1.965] between samples 0.38 rad apart; ~5e-5 of random
+  // poses on rizon4 / rizon10). The rescue's perturbed sweep hits a sample and
+  // the polish pulls the lock joint back off-grid, which is how Python recovers
+  // them. The rescue fires only on an empty sweep, so it cannot hide a sweep
+  // that drops some branches while returning others; the parity gate
+  // (tests/test_native_parity.py) still sees those.
+  ArtifactParams<7> p_limits;
+  // Intermediate pass: never lift here, or the lifts would be produced
+  // twice (see ArtifactParams::enumerate_windings).
+  p_limits.enumerate_windings = false;
+  p_limits.respect_limits = p.respect_limits;
+  p_limits.wrap_only = p.wrap_only;
+  p_limits.refinement_max_iters = p.refinement_max_iters;
+  std::vector<Solution<7>> in_limits = finalize_solutions<7>(core(T), c, lim, T, p_limits);
+  if (in_limits.empty() && p.allow_rescue && T.block<3, 1>(0, 3).norm() <= reach_radius(c)) {
+    // Re-dedup in the Linf metric of the sweep, as the HP path does.
+    in_limits = finalize_solutions<7>(
+        jointlock_detail::dedup7(rescue_via_T_perturbation<7>(core, c, T), kGeneral6rDedupAtol),
+        c, lim, T, p_limits);
+  }
+  ArtifactParams<7> p_seed = p;
+  p_seed.respect_limits = false;
+  // The single lifting stage (#562): this is the call that yields the returned
+  // set. Skipped when the caller wanted the raw geometric set.
+  p_seed.enumerate_windings = p.enumerate_windings && p.respect_limits;
+  return finalize_solutions<7>(std::move(in_limits), c, lim, T, p_seed);
+}
+
+// Full artifact-contract solve for an HP-covered jointlock.seven_r arm (kassow,
+// #491). Same sweep skeleton as jointlock_artifact_solve, but each locked 6R
+// sub-chain is solved by the Husty-Pfurner Study-quaternion kernel (hp_core)
+// instead of Raghavan-Roth -- these sub-chains are symmetric-DH cases where RR is
+// incomplete. Per sample the emitter bakes the sub-chain HpConsts AND its
+// JointConsts<6> (hp_core needs the POE FK for its FK-verify + lm_refine, unlike
+// the RR path which runs refinement-off).
+//
+// Like the RR jointlock, this path takes the T-perturbation rescue (empty-gated,
+// as in hp_artifact_solve / general_6r_artifact_solve): kassow has poses
+// reachable only at a lock value BETWEEN samples (the redundant manifold is
+// sampled, not continuous), which no fixed-sample sweep can hit. Python's shipping
+// solve rescues exactly these (rescue jitters T, the sweep hits a nearby sample,
+// then lm_refine<7> pulls the full config -- lock joint included -- back to T, so
+// the recovered lock value lands off-grid). This is legitimate sampling coverage
+// that Python also relies on, not masking an incomplete kernel.
+template <int NSamples>
+std::vector<Solution<7>> jointlock_hp_artifact_solve(
+    const JointConsts<7>& c, const JointlockConsts<NSamples>& jl,
+    const std::array<HpConsts, NSamples>& hp, const std::array<JointConsts<6>, NSamples>& sub,
+    const JointLimits<7>& lim, const Pose& T, const ArtifactParams<7>& p) {
+  const auto core = [&](const Pose& tp) {
+    // The NSamples sub-chain solves are independent (hp_core is pure, reads only
+    // baked consts); fan out with each sample writing its own slot -> no race.
+    // Merge in sample order so dedup7 sees the same order as the serial path.
+    std::array<std::vector<Solution<7>>, NSamples> per;
+    parallel_for(NSamples, [&](std::size_t i) {
+      for (const auto& s6 : hp_core(sub[i], hp[i], tp, p.refinement_max_iters)) {
+        Solution<7> s7;
+        int j = 0;
+        for (int k = 0; k < 7; ++k) s7.q[k] = (k == jl.lock_idx) ? jl.q_lock[i] : s6.q[j++];
+        // Re-verify against the 7R target (not the sub-chain residual): a
+        // degenerate lock sample makes the sub-chain poe_to_dh slightly
+        // inconsistent, so its DH-FK closes but the padded 7R FK does not.
+        s7.fk_residual = (fk<7>(c, s7.q) - tp).norm();
+        if (s7.fk_residual > kGeneral6rFkAtol) continue;
+        s7.refinement = s6.refinement;
+        per[i].push_back(s7);
+      }
+    });
+    std::vector<Solution<7>> all;
+    for (auto& v : per)
+      for (auto& s : v) all.push_back(std::move(s));
+    return jointlock_detail::dedup7(all, kGeneral6rDedupAtol);
+  };
+
+  ArtifactParams<7> p_limits;
+  // Intermediate pass: never lift here, or the lifts would be produced
+  // twice (see ArtifactParams::enumerate_windings).
+  p_limits.enumerate_windings = false;
+  p_limits.respect_limits = p.respect_limits;
+  p_limits.wrap_only = p.wrap_only;
+  p_limits.refinement_max_iters = p.refinement_max_iters;
+  std::vector<Solution<7>> in_limits = finalize_solutions<7>(core(T), c, lim, T, p_limits);
+  if (in_limits.empty() && p.allow_rescue && T.block<3, 1>(0, 3).norm() <= reach_radius(c)) {
+    // The shared rescue definition (#622), so its default parameters. It dedups in
+    // L2 wrap-distance; re-dedup in the Linf max-joint metric the sweep (dedup7)
+    // and the artifact gate use, so two rescue branches that are L2-apart but
+    // Linf-close (< kGeneral6rDedupAtol on every joint) collapse to one instead
+    // of surfacing as a duplicate.
+    in_limits = finalize_solutions<7>(
+        jointlock_detail::dedup7(rescue_via_T_perturbation<7>(core, c, T), kGeneral6rDedupAtol),
+        c, lim, T, p_limits);
+  }
+  ArtifactParams<7> p_seed = p;
+  p_seed.respect_limits = false;
+  // The single lifting stage (#562): this is the call that yields the returned
+  // set. Skipped when the caller wanted the raw geometric set.
+  p_seed.enumerate_windings = p.enumerate_windings && p.respect_limits;
+  return finalize_solutions<7>(std::move(in_limits), c, lim, T, p_seed);
+}
+
+}  // namespace ssik

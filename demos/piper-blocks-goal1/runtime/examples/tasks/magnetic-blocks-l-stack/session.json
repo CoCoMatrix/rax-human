@@ -1,0 +1,16 @@
+{
+  "id": "magnetic-blocks-l-stack",
+  "title": "Four magnetic blocks",
+  "agent_auto_compact_token_limit": 65536,
+  "description": "TASK.md",
+  "backend_options": "workspace-bounds.json",
+  "seed_memory": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/experiments/blocks-r9-ssik-speed-20261117/runtime/workspaces/magnetic-blocks-l-stack/r9-ssik-speed/memory",
+  "history_lessons": null,
+  "prompts": {
+    "fresh": "fresh.md",
+    "common": "common.md",
+    "continuation": "unused.md",
+    "rehearsal": "unused.md",
+    "working_rehearsal": "unused.md"
+  }
+}

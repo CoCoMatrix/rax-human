@@ -1,0 +1,15 @@
+{
+  "schema": "junqi.piper.no_action_transport.v1",
+  "deployment": "junqi-cloud-noop",
+  "robot_type": "piper_x_dual",
+  "state_schema_id": "xpolicy.piper_x_dual.state.v1",
+  "action_schema_id": "xpolicy.piper_x_dual.joint_position.v1",
+  "state_dim": 14,
+  "camera_roles": ["camera_head", "camera_left", "camera_right"],
+  "action_frequency_hz": 30,
+  "result_kind": "no_action",
+  "returned_action_shape": [0, 14],
+  "hardware_write_allowed": false,
+  "inference_executed": false,
+  "checkpoint": null
+}

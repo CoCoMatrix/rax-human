@@ -1,0 +1,2582 @@
+[
+  {
+    "label": "M01 empty transition midpoint",
+    "value": {
+      "anchor_validation": {
+        "jaw_tolerance_m": 0.0005,
+        "joint_tolerance_rad": 0.01,
+        "max_jaw_delta_m": 0,
+        "max_joint_delta_rad": 0,
+        "measured14": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0003000000142492354,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0020000000949949026
+        ],
+        "planned_anchor14": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0003000000142492354,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0020000000949949026
+        ],
+        "zero_filter_applied": false
+      },
+      "executed": true,
+      "final14": [
+        -0.23917992069330293,
+        0.8552287867697413,
+        -0.7767587836000764,
+        0.7490604083709264,
+        0,
+        -1.0263408666352656,
+        0.0003,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "joint_error_max_rad": 0.0015746900407139774,
+      "joint_tolerance_rad": 0.01,
+      "left_jaw_error_m": 1.4249235417897882e-11,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "object_success": null,
+      "owner_generation": 1,
+      "sdk_completed_steps": 396,
+      "settling": {
+        "clock": "monotonic",
+        "jaw_range_limit_m": 0.0003,
+        "joint_range_limit_rad": 0.01,
+        "max_jaw_range_m": 0,
+        "max_joint_range_rad": 0,
+        "max_range": 0,
+        "physical_rest_independently_verified": false,
+        "samples": 7,
+        "source_timestamp_ns": 1794369954639855400,
+        "window_s": 0.317329
+      },
+      "target14": [
+        -0.24071741104125977,
+        0.8568034768104553,
+        -0.7777280211448669,
+        0.7498686909675598,
+        8.107146898250761e-11,
+        -1.0261155366897583,
+        0.0003000000142492354,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.0020000000949949026
+      ],
+      "owner_request_id": "a0e0144cec9649a59448ef6306efa49e",
+      "handoff_timing": [
+        {
+          "monotonic_ns": 697380849301560,
+          "stage": "request_dequeued",
+          "wall_ns": 1794369939281378000
+        },
+        {
+          "monotonic_ns": 697380849318882,
+          "stage": "prepare_begin",
+          "wall_ns": 1794369939281395000
+        },
+        {
+          "monotonic_ns": 697380849879087,
+          "stage": "owner_initial_state_checked",
+          "wall_ns": 1794369939281955000
+        },
+        {
+          "monotonic_ns": 697380849880229,
+          "stage": "owner_previous_action_acknowledged",
+          "wall_ns": 1794369939281956000
+        },
+        {
+          "monotonic_ns": 697380849881512,
+          "stage": "path_preview_begin",
+          "wall_ns": 1794369939281957400
+        },
+        {
+          "monotonic_ns": 697382704431785,
+          "stage": "path_preview_end",
+          "wall_ns": 1794369941136508700
+        },
+        {
+          "monotonic_ns": 697382707416451,
+          "stage": "plan_written_wait_fresh_observation",
+          "wall_ns": 1794369941139492600
+        },
+        {
+          "monotonic_ns": 697382718474685,
+          "stage": "fresh_observation_ready",
+          "wall_ns": 1794369941150550800
+        },
+        {
+          "monotonic_ns": 697382721000175,
+          "stage": "staged_wait_policy_poll",
+          "wall_ns": 1794369941153076200
+        }
+      ],
+      "observation": {
+        "frame_id": "54e5c2919219492e804ca5538bf8029b",
+        "cameras": {
+          "head": {
+            "binding": "same immutable stereo/RGB packet",
+            "source_timestamp_ns": 1794369955230516000,
+            "source": {
+              "schema": "rax.piper.ffs.v1",
+              "mode": "live",
+              "source": "fast_foundation_stereo",
+              "inference_kind": "real_model",
+              "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+              "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+              "serial": "262522073779",
+              "sample_id": "792899764c7a4ca5ac9ce3ea00d97e19",
+              "owner_generation": "696a506bd9eb41afa9e6d4fdcd45dab8",
+              "frames": {
+                "ir_left": {
+                  "device_timestamp_ns": 1794369955197487600,
+                  "frame_number": 3986,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.infrared",
+                    "stream_index": 1,
+                    "format": "format.y8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                },
+                "ir_right": {
+                  "device_timestamp_ns": 1794369955197487600,
+                  "frame_number": 3986,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.infrared",
+                    "stream_index": 2,
+                    "format": "format.y8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                },
+                "color": {
+                  "device_timestamp_ns": 1794369955197511700,
+                  "frame_number": 3989,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.color",
+                    "stream_index": 0,
+                    "format": "format.bgr8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                }
+              },
+              "host_received_unix_ns": 1794369955230516000,
+              "expires_unix_ns": 1794369956230516000,
+              "frame": "global_d435_color_optical_frame",
+              "depth_unit": "m",
+              "depth_semantics": "RGB optical z",
+              "rgb_binding": "same immutable camera-owner packet as stereo",
+              "base_transform_applied": false,
+              "physical_calibration_validated": false,
+              "confidence_available": false,
+              "alignment": "LR-checked direct nearest samples; no hole filling for motion",
+              "valid_fraction": 0.49217881944444447,
+              "native_geometry": {
+                "schema": "rax.native_geometry.v1",
+                "shape_hw": [
+                  720,
+                  1280
+                ],
+                "coordinate_frame": "left_rectified_optical",
+                "rgb_coordinate_frame": "global_d435_color_optical_frame",
+                "intrinsics_fx_fy_cx_cy": [
+                  644.646240234375,
+                  644.646240234375,
+                  648.8756103515625,
+                  360.1839599609375
+                ],
+                "T_rgb_from_leftrect": [
+                  [
+                    0.9999946355819702,
+                    -0.003279363736510277,
+                    0.00011673579865600914,
+                    0.015085439197719097
+                  ],
+                  [
+                    0.003280044300481677,
+                    0.9999740719795227,
+                    -0.006407002918422222,
+                    0.00011077497765654698
+                  ],
+                  [
+                    -0.00009572187991579995,
+                    0.006407351233065128,
+                    0.9999794960021973,
+                    -0.00023504384444095194
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "visibility": "same_frame_footprint_zbuffer_1mm",
+                "source_index": "row_major_original_stereo_grid",
+                "rgb_surface_semantics": "resampled_source_coverage_not_new_measurements"
+              },
+              "quality_extension": {
+                "version": "ffs-quality-v3",
+                "left_right_threshold_px": 1,
+                "source_geometric_fraction": 0.9481488715277778,
+                "source_lr_consistent_fraction": 0.8904351128472222,
+                "surface_diagnostics_computed": true,
+                "surface_used_for_motion": false,
+                "surface_valid_fraction": 0.9576605902777777,
+                "surface_resampled_fraction": 0.7104893663194445,
+                "max_local_span_m": 0.005,
+                "max_footprint_px": 4,
+                "registration_s": 0.08565829007420689,
+                "registration_source_sha256": "5443585f72102ecc8888db0102f815e9ad3a1cabb8e854cb79e85d87edab680c",
+                "right_forward_ms": 39.39935902599245,
+                "implementation_sha256": "1d08bd796e562fec4076f9389851a7587b10acec7e5e5a35308825cb08b4b6b9"
+              },
+              "model": {
+                "source_shape_hw": [
+                  720,
+                  1280
+                ],
+                "inference_shape_hw": [
+                  720,
+                  1280
+                ],
+                "scale_xy": [
+                  1,
+                  1
+                ],
+                "input_scale_requested": 1,
+                "input_order": "RGB",
+                "input_range": [
+                  0,
+                  255
+                ],
+                "normalization": "inside upstream PyTorch forward; not pre-normalized",
+                "rectification": "required_from_caller",
+                "gray_conversion": "repeat_channel_three_times",
+                "schema": "junqi.piper.ffs_model_manifest.v1",
+                "model_id": "20-30-48",
+                "upstream_url": "https://github.com/NVlabs/Fast-FoundationStereo",
+                "upstream_commit": "476f4249561f7c79ca707326954f9255643412a6",
+                "source_model_folder_url": "https://drive.google.com/drive/folders/1WWT0I8VB1k7cA2LqnjhUHOux8Sz-BZMw",
+                "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+                "config_sha256": "d45afe99b176454d5aff416edf16c8da6a99579f8f374b927f37907442a7d6bc",
+                "hashes_verified": true,
+                "torch_version": "2.13.0+cu130",
+                "torch_cuda_version": "13.0",
+                "device_name": "NVIDIA GeForce RTX 5090",
+                "device_capability": [
+                  12,
+                  0
+                ],
+                "backend": "pytorch",
+                "amp_dtype": "float16",
+                "valid_iters": 4,
+                "max_disp": 192,
+                "max_disp_unit": "inference_resolution_pixels",
+                "optimize_build_volume": "pytorch1",
+                "serialized_config_compatibility": [
+                  {
+                    "key": "slow_fast_gru",
+                    "config_value": false,
+                    "serialized_status": "absent",
+                    "reason": "known official pickle omission; unused in pinned upstream",
+                    "model_args_modified": false
+                  }
+                ],
+                "forward_and_copy_ms": 38.81686308886856,
+                "padded_shape_hw": [
+                  736,
+                  1280
+                ],
+                "disparity_reference": "left_rectified_optical",
+                "disparity_definition": "x_left - x_right",
+                "disparity_unit": "original_input_pixels",
+                "finite_positive_fraction": 1,
+                "confidence_available": false,
+                "hardware_access": false,
+                "hardware_dispatch_authorized": false
+              },
+              "capture_timing": {
+                "mode": "live",
+                "age_ms": 7.409469,
+                "ir_skew_ms": 0,
+                "rgb_skew_ms": 0.024064,
+                "freshness_status": "host_receive_age_checked",
+                "timing_limits_status": "initial_configuration_requires_live_validation"
+              },
+              "elapsed_s": 0.2336652890080586,
+              "arrays_sha256": "4c87e394fd710a847aef0a031192043d39bc5ad5f74cfedddfc0a60cee7c7dfa",
+              "hardware_writes": 0
+            },
+            "metric_depth": true,
+            "K": [
+              [
+                906.5042114257812,
+                0,
+                643.140380859375
+              ],
+              [
+                0,
+                905.1109619140625,
+                379.1578063964844
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ],
+            "camera_frame": "head_d435_color_optical_frame",
+            "calibration_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+            "base_transform_available": true,
+            "T_base_camera": [
+              [
+                -0.016676558474787693,
+                -0.9997870619278373,
+                -0.012154143291059086,
+                0.2523087795091613
+              ],
+              [
+                -0.9994345921512982,
+                0.017023163241802336,
+                -0.02899496378012975,
+                -0.2721762188313748
+              ],
+              [
+                0.02919569161374791,
+                0.01166373503409468,
+                -0.9995056622532204,
+                0.7256526566607587
+              ],
+              [
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "inspection_image": "runtime/frames/54e5c2919219492e804ca5538bf8029b/head.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          },
+          "left": {
+            "binding": "HTTP metadata bracket, not exact frame binding",
+            "source_timestamp_ns": 1794369955507526000,
+            "source": {
+              "camera": "left",
+              "serial": "262422071560",
+              "retrieved_unix_ns": 1794369955572792600,
+              "before": {
+                "age_seconds": 0.052,
+                "available": true,
+                "camera_role": "camera_left",
+                "camera_serial": "262422071560",
+                "device_frame_index": 4028,
+                "device_time_ns": 1794369955474338300,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 205268,
+                "source_timestamp_ns": 1794369955507526000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369955507526000,
+                "width": 1280
+              },
+              "after": {
+                "age_seconds": 0.053,
+                "available": true,
+                "camera_role": "camera_left",
+                "camera_serial": "262422071560",
+                "device_frame_index": 4028,
+                "device_time_ns": 1794369955474338300,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 205268,
+                "source_timestamp_ns": 1794369955507526000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369955507526000,
+                "width": 1280
+              },
+              "binding": "HTTP metadata bracket, not exact frame binding",
+              "display_shape_hw": [
+                720,
+                1280
+              ],
+              "native_shape_hw": [
+                720,
+                1280
+              ],
+              "display_to_native_scale_xy": [
+                1,
+                1
+              ],
+              "depth_aligned": false,
+              "pixel_to_robot_allowed": false
+            },
+            "metric_depth": false,
+            "inspection_image": "runtime/frames/54e5c2919219492e804ca5538bf8029b/left.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          },
+          "right": {
+            "binding": "HTTP metadata bracket, not exact frame binding",
+            "source_timestamp_ns": 1794369955485629400,
+            "source": {
+              "camera": "right",
+              "serial": "262522070284",
+              "retrieved_unix_ns": 1794369955576480800,
+              "before": {
+                "age_seconds": 0.076,
+                "available": true,
+                "camera_role": "camera_right",
+                "camera_serial": "262522070284",
+                "device_frame_index": 3966,
+                "device_time_ns": 1794369955452636700,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 198242,
+                "source_timestamp_ns": 1794369955485629400,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369955485629400,
+                "width": 1280
+              },
+              "after": {
+                "age_seconds": 0.077,
+                "available": true,
+                "camera_role": "camera_right",
+                "camera_serial": "262522070284",
+                "device_frame_index": 3966,
+                "device_time_ns": 1794369955452636700,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 198242,
+                "source_timestamp_ns": 1794369955485629400,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369955485629400,
+                "width": 1280
+              },
+              "binding": "HTTP metadata bracket, not exact frame binding",
+              "display_shape_hw": [
+                720,
+                1280
+              ],
+              "native_shape_hw": [
+                720,
+                1280
+              ],
+              "display_to_native_scale_xy": [
+                1,
+                1
+              ],
+              "depth_aligned": false,
+              "pixel_to_robot_allowed": false
+            },
+            "metric_depth": false,
+            "inspection_image": "runtime/frames/54e5c2919219492e804ca5538bf8029b/right.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          }
+        },
+        "calibration_sha256": "c4a393c074890ff8f0d28532e8916dd7c6bdedc7ee8f4e91b7a6f6c07155fae6",
+        "calibration_provisional": true,
+        "after_ns": 1794369955031068200,
+        "captured_at_ns": 1794369955635820300,
+        "measured14": [
+          -0.23917992069330293,
+          0.8552287867697413,
+          -0.7767587836000764,
+          0.7490604083709264,
+          0,
+          -1.0263408666352656,
+          0.0003,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.002
+        ],
+        "state_binding": {
+          "kind": "state bracket; cameras are not hardware synchronized",
+          "before14": [
+            -0.23917992069330293,
+            0.8552287867697413,
+            -0.7767587836000764,
+            0.7490604083709264,
+            0,
+            -1.0263408666352656,
+            0.0003,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.002
+          ],
+          "after14": [
+            -0.23917992069330293,
+            0.8552287867697413,
+            -0.7767587836000764,
+            0.7490604083709264,
+            0,
+            -1.0263408666352656,
+            0.0003,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.002
+          ],
+          "owner_generation": 1,
+          "owner_unchanged": true,
+          "max_drift": 0,
+          "max_joint_drift_rad": 0,
+          "max_jaw_drift_m": 0,
+          "joint_tolerance_rad": 0.01,
+          "jaw_tolerance_m": 0.0005,
+          "rest_consistent": true
+        },
+        "finger_geometry": {
+          "status": "operator_measured_axial_extent_CAD_transverse_envelope",
+          "physical_clearance_authority": false,
+          "installed_tcp_validated": false,
+          "wrist_handeye_available": false,
+          "measured_full_gap_m": 0.0003,
+          "head_calibration_provisional": true,
+          "geometry_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+          "geometry_identity": {
+            "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+            "cad_bounds_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+            "tool_calibration_sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+            "representation": "link6_axis_aligned_finger_envelopes_v1"
+          },
+          "fingers": [
+            {
+              "finger": 1,
+              "cad_corners_base_m": [
+                [
+                  0.2543073458067489,
+                  -0.03743893727178479,
+                  0.27814073525649113
+                ],
+                [
+                  0.3288918807874541,
+                  -0.05562620230993922,
+                  0.20798112982885558
+                ],
+                [
+                  0.22394855302401104,
+                  -0.07934257905149197,
+                  0.256729785265986
+                ],
+                [
+                  0.29853308800471623,
+                  -0.0975298440896464,
+                  0.18657017983835048
+                ],
+                [
+                  0.2659126376249044,
+                  -0.0543967851289163,
+                  0.2948738990174782
+                ],
+                [
+                  0.34049717260560963,
+                  -0.07258405016707073,
+                  0.22471429358984268
+                ],
+                [
+                  0.23555384484216657,
+                  -0.09630042690862349,
+                  0.27346294902697305
+                ],
+                [
+                  0.3101383798228718,
+                  -0.11448769194677791,
+                  0.20330334359933755
+                ]
+              ],
+              "head_pixels_native": [
+                [
+                  133.34610774369807,
+                  372.53719978155914
+                ],
+                [
+                  229.48204371405743,
+                  239.15568079207034
+                ],
+                [
+                  240.31450331833958,
+                  430.2630163517919
+                ],
+                [
+                  318.3139268222491,
+                  295.08018270678576
+                ],
+                [
+                  150.52089853239886,
+                  347.31853870557694
+                ],
+                [
+                  247.4188053684716,
+                  213.07614310370172
+                ],
+                [
+                  260.52411020899876,
+                  408.4551197182442
+                ],
+                [
+                  338.2674426332001,
+                  271.9323321951219
+                ]
+              ],
+              "nominal_min_z_m": 0.18657017983835048
+            },
+            {
+              "finger": 2,
+              "cad_corners_base_m": [
+                [
+                  0.24257067399967974,
+                  -0.020289114762194835,
+                  0.2612181404235538
+                ],
+                [
+                  0.31715520898038496,
+                  -0.038476379800349264,
+                  0.1910585349959183
+                ],
+                [
+                  0.21221188121694187,
+                  -0.06219275654190204,
+                  0.23980719043304866
+                ],
+                [
+                  0.28679641619764706,
+                  -0.08038002158005647,
+                  0.16964758500541316
+                ],
+                [
+                  0.2541759658178353,
+                  -0.037246962619326356,
+                  0.2779513041845409
+                ],
+                [
+                  0.32876050079854047,
+                  -0.05543422765748079,
+                  0.2077916987569054
+                ],
+                [
+                  0.2238171730350974,
+                  -0.07915060439903357,
+                  0.25654035419403576
+                ],
+                [
+                  0.2984017080158026,
+                  -0.09733786943718799,
+                  0.18638074876640023
+                ]
+              ],
+              "head_pixels_native": [
+                [
+                  117.22855134010203,
+                  396.20346723808746
+                ],
+                [
+                  212.47634366885265,
+                  263.88148156876
+                ],
+                [
+                  221.2784212469713,
+                  450.8045792018843
+                ],
+                [
+                  299.3434109605673,
+                  317.0876659721837
+                ],
+                [
+                  133.15898391823816,
+                  372.8119636719359
+                ],
+                [
+                  229.28557523745928,
+                  239.44134032965812
+                ],
+                [
+                  240.0938881413754,
+                  430.5010790217419
+                ],
+                [
+                  318.0950522168736,
+                  295.3340966883633
+                ]
+              ],
+              "nominal_min_z_m": 0.16964758500541316
+            }
+          ],
+          "effective_contact_tcp": {
+            "calibration_id": "left-tcp140-tip170-20261104",
+            "sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+            "status": "operator_measured_candidate",
+            "T_base_tcp": [
+              [
+                0.43793548680692274,
+                -0.5421212760843072,
+                0.7171590000912678,
+                0.2921320242042408
+              ],
+              [
+                -0.6399187088852479,
+                -0.7482792849098877,
+                -0.17487755085597742,
+                -0.07123570961655518
+              ],
+              [
+                0.6314400647835243,
+                -0.3823383760381245,
+                -0.6746115999556404,
+                0.21741928715901793
+              ],
+              [
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "position": [
+              0.2921320242042408,
+              -0.07123570961655518,
+              0.21741928715901793
+            ],
+            "tip_axis_point_base_m": [
+              0.31364679420697883,
+              -0.0764820361422345,
+              0.19718093916034868
+            ],
+            "accuracy_m": null,
+            "independent_physical_validation": false,
+            "motion_permit": false
+          },
+          "tip_axial_m": 0.17,
+          "limitations": [
+            "Axial dimensions and alignment are operator-reported; accuracy unmeasured.",
+            "Prior CAD transverse bounds retained; conservative axial envelope extended to170mm.",
+            "No full environment collision proof; head calibration remains provisional."
+          ]
+        },
+        "observation_settling": {
+          "window_s": 0.307497674,
+          "samples": 7,
+          "max_range": 0,
+          "max_joint_range_rad": 0,
+          "max_jaw_range_m": 0,
+          "joint_range_limit_rad": 0.01,
+          "jaw_range_limit_m": 0.0003,
+          "source_timestamp_ns": 1794369955025144300,
+          "clock": "monotonic",
+          "physical_rest_independently_verified": false
+        },
+        "discarded_frame_ids": [],
+        "wall_budget": {
+          "session_seconds": 1800,
+          "elapsed_seconds": 131.143,
+          "remaining_seconds": 1668.857,
+          "finish_reserve_seconds": 60,
+          "phase": "active",
+          "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+        }
+      },
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 131.143,
+        "remaining_seconds": 1668.857,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    }
+  },
+  {
+    "label": "M02 downward orange hover",
+    "value": {
+      "anchor_validation": {
+        "jaw_tolerance_m": 0.0005,
+        "joint_tolerance_rad": 0.01,
+        "max_jaw_delta_m": 0,
+        "max_joint_delta_rad": 0,
+        "measured14": [
+          -0.23917992413043976,
+          0.8552287817001343,
+          -0.7767587900161743,
+          0.7490603923797607,
+          0,
+          -1.0263408422470093,
+          0.0003000000142492354,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0020000000949949026
+        ],
+        "planned_anchor14": [
+          -0.23917992413043976,
+          0.8552287817001343,
+          -0.7767587900161743,
+          0.7490603923797607,
+          0,
+          -1.0263408422470093,
+          0.0003000000142492354,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0020000000949949026
+        ],
+        "zero_filter_applied": false
+      },
+      "executed": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0,
+        -2.0524897470528116,
+        0.0003,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "joint_error_max_rad": 0.001521637661638764,
+      "joint_tolerance_rad": 0.01,
+      "left_jaw_error_m": 1.4249235417897882e-11,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "object_success": null,
+      "owner_generation": 1,
+      "sdk_completed_steps": 395,
+      "settling": {
+        "clock": "monotonic",
+        "jaw_range_limit_m": 0.0003,
+        "joint_range_limit_rad": 0.01,
+        "max_jaw_range_m": 0,
+        "max_joint_range_rad": 0,
+        "max_range": 0,
+        "physical_rest_independently_verified": false,
+        "samples": 7,
+        "source_timestamp_ns": 1794369980860065500,
+        "window_s": 0.318692467
+      },
+      "target14": [
+        -0.48143482208251953,
+        1.7136069536209106,
+        -1.5554560422897339,
+        1.4997373819351196,
+        1.6214293796501522e-10,
+        -2.0522310733795166,
+        0.0003000000142492354,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.0020000000949949026
+      ],
+      "owner_request_id": "74d2610280714fc9ae2d79ec6e075ed0",
+      "handoff_timing": [
+        {
+          "monotonic_ns": 697407158470941,
+          "stage": "request_dequeued",
+          "wall_ns": 1794369965590547000
+        },
+        {
+          "monotonic_ns": 697407158492411,
+          "stage": "prepare_begin",
+          "wall_ns": 1794369965590568400
+        },
+        {
+          "monotonic_ns": 697407159411266,
+          "stage": "owner_initial_state_checked",
+          "wall_ns": 1794369965591487200
+        },
+        {
+          "monotonic_ns": 697407159412759,
+          "stage": "owner_previous_action_acknowledged",
+          "wall_ns": 1794369965591488800
+        },
+        {
+          "monotonic_ns": 697407159414452,
+          "stage": "path_preview_begin",
+          "wall_ns": 1794369965591490300
+        },
+        {
+          "monotonic_ns": 697408949769603,
+          "stage": "path_preview_end",
+          "wall_ns": 1794369967381846000
+        },
+        {
+          "monotonic_ns": 697408953544756,
+          "stage": "plan_written_wait_fresh_observation",
+          "wall_ns": 1794369967385620700
+        },
+        {
+          "monotonic_ns": 697408975076009,
+          "stage": "fresh_observation_ready",
+          "wall_ns": 1794369967407152000
+        },
+        {
+          "monotonic_ns": 697408978268305,
+          "stage": "staged_wait_policy_poll",
+          "wall_ns": 1794369967410344200
+        }
+      ],
+      "observation": {
+        "frame_id": "e869cca3ad8e4e478f39c9e4516f575d",
+        "cameras": {
+          "head": {
+            "binding": "same immutable stereo/RGB packet",
+            "source_timestamp_ns": 1794369981749805600,
+            "source": {
+              "schema": "rax.piper.ffs.v1",
+              "mode": "live",
+              "source": "fast_foundation_stereo",
+              "inference_kind": "real_model",
+              "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+              "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+              "serial": "262522073779",
+              "sample_id": "23c4f7a771b1496792a3fe451a6dca41",
+              "owner_generation": "696a506bd9eb41afa9e6d4fdcd45dab8",
+              "frames": {
+                "ir_left": {
+                  "device_timestamp_ns": 1794369981716525800,
+                  "frame_number": 4781,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.infrared",
+                    "stream_index": 1,
+                    "format": "format.y8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                },
+                "ir_right": {
+                  "device_timestamp_ns": 1794369981716525800,
+                  "frame_number": 4781,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.infrared",
+                    "stream_index": 2,
+                    "format": "format.y8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                },
+                "color": {
+                  "device_timestamp_ns": 1794369981716550100,
+                  "frame_number": 4784,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.color",
+                    "stream_index": 0,
+                    "format": "format.bgr8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                }
+              },
+              "host_received_unix_ns": 1794369981749805600,
+              "expires_unix_ns": 1794369982749805600,
+              "frame": "global_d435_color_optical_frame",
+              "depth_unit": "m",
+              "depth_semantics": "RGB optical z",
+              "rgb_binding": "same immutable camera-owner packet as stereo",
+              "base_transform_applied": false,
+              "physical_calibration_validated": false,
+              "confidence_available": false,
+              "alignment": "LR-checked direct nearest samples; no hole filling for motion",
+              "valid_fraction": 0.4647439236111111,
+              "native_geometry": {
+                "schema": "rax.native_geometry.v1",
+                "shape_hw": [
+                  720,
+                  1280
+                ],
+                "coordinate_frame": "left_rectified_optical",
+                "rgb_coordinate_frame": "global_d435_color_optical_frame",
+                "intrinsics_fx_fy_cx_cy": [
+                  644.646240234375,
+                  644.646240234375,
+                  648.8756103515625,
+                  360.1839599609375
+                ],
+                "T_rgb_from_leftrect": [
+                  [
+                    0.9999946355819702,
+                    -0.003279363736510277,
+                    0.00011673579865600914,
+                    0.015085439197719097
+                  ],
+                  [
+                    0.003280044300481677,
+                    0.9999740719795227,
+                    -0.006407002918422222,
+                    0.00011077497765654698
+                  ],
+                  [
+                    -0.00009572187991579995,
+                    0.006407351233065128,
+                    0.9999794960021973,
+                    -0.00023504384444095194
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "visibility": "same_frame_footprint_zbuffer_1mm",
+                "source_index": "row_major_original_stereo_grid",
+                "rgb_surface_semantics": "resampled_source_coverage_not_new_measurements"
+              },
+              "quality_extension": {
+                "version": "ffs-quality-v3",
+                "left_right_threshold_px": 1,
+                "source_geometric_fraction": 0.9602897135416667,
+                "source_lr_consistent_fraction": 0.8709006076388889,
+                "surface_diagnostics_computed": true,
+                "surface_used_for_motion": false,
+                "surface_valid_fraction": 0.8974815538194445,
+                "surface_resampled_fraction": 0.6632660590277778,
+                "max_local_span_m": 0.005,
+                "max_footprint_px": 4,
+                "registration_s": 0.08349294797517359,
+                "registration_source_sha256": "5443585f72102ecc8888db0102f815e9ad3a1cabb8e854cb79e85d87edab680c",
+                "right_forward_ms": 38.443265948444605,
+                "implementation_sha256": "1d08bd796e562fec4076f9389851a7587b10acec7e5e5a35308825cb08b4b6b9"
+              },
+              "model": {
+                "source_shape_hw": [
+                  720,
+                  1280
+                ],
+                "inference_shape_hw": [
+                  720,
+                  1280
+                ],
+                "scale_xy": [
+                  1,
+                  1
+                ],
+                "input_scale_requested": 1,
+                "input_order": "RGB",
+                "input_range": [
+                  0,
+                  255
+                ],
+                "normalization": "inside upstream PyTorch forward; not pre-normalized",
+                "rectification": "required_from_caller",
+                "gray_conversion": "repeat_channel_three_times",
+                "schema": "junqi.piper.ffs_model_manifest.v1",
+                "model_id": "20-30-48",
+                "upstream_url": "https://github.com/NVlabs/Fast-FoundationStereo",
+                "upstream_commit": "476f4249561f7c79ca707326954f9255643412a6",
+                "source_model_folder_url": "https://drive.google.com/drive/folders/1WWT0I8VB1k7cA2LqnjhUHOux8Sz-BZMw",
+                "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+                "config_sha256": "d45afe99b176454d5aff416edf16c8da6a99579f8f374b927f37907442a7d6bc",
+                "hashes_verified": true,
+                "torch_version": "2.13.0+cu130",
+                "torch_cuda_version": "13.0",
+                "device_name": "NVIDIA GeForce RTX 5090",
+                "device_capability": [
+                  12,
+                  0
+                ],
+                "backend": "pytorch",
+                "amp_dtype": "float16",
+                "valid_iters": 4,
+                "max_disp": 192,
+                "max_disp_unit": "inference_resolution_pixels",
+                "optimize_build_volume": "pytorch1",
+                "serialized_config_compatibility": [
+                  {
+                    "key": "slow_fast_gru",
+                    "config_value": false,
+                    "serialized_status": "absent",
+                    "reason": "known official pickle omission; unused in pinned upstream",
+                    "model_args_modified": false
+                  }
+                ],
+                "forward_and_copy_ms": 39.783546002581716,
+                "padded_shape_hw": [
+                  736,
+                  1280
+                ],
+                "disparity_reference": "left_rectified_optical",
+                "disparity_definition": "x_left - x_right",
+                "disparity_unit": "original_input_pixels",
+                "finite_positive_fraction": 1,
+                "confidence_available": false,
+                "hardware_access": false,
+                "hardware_dispatch_authorized": false
+              },
+              "capture_timing": {
+                "mode": "live",
+                "age_ms": 19.203078,
+                "ir_skew_ms": 0,
+                "rgb_skew_ms": 0.02432,
+                "freshness_status": "host_receive_age_checked",
+                "timing_limits_status": "initial_configuration_requires_live_validation"
+              },
+              "elapsed_s": 0.2304898810107261,
+              "arrays_sha256": "e1dc3e7b7cd66abd42c3a19bcc150d4adefe76a958787a6dfab71ed1205ef491",
+              "hardware_writes": 0
+            },
+            "metric_depth": true,
+            "K": [
+              [
+                906.5042114257812,
+                0,
+                643.140380859375
+              ],
+              [
+                0,
+                905.1109619140625,
+                379.1578063964844
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ],
+            "camera_frame": "head_d435_color_optical_frame",
+            "calibration_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+            "base_transform_available": true,
+            "T_base_camera": [
+              [
+                -0.016676558474787693,
+                -0.9997870619278373,
+                -0.012154143291059086,
+                0.2523087795091613
+              ],
+              [
+                -0.9994345921512982,
+                0.017023163241802336,
+                -0.02899496378012975,
+                -0.2721762188313748
+              ],
+              [
+                0.02919569161374791,
+                0.01166373503409468,
+                -0.9995056622532204,
+                0.7256526566607587
+              ],
+              [
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "inspection_image": "runtime/frames/e869cca3ad8e4e478f39c9e4516f575d/head.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          },
+          "left": {
+            "binding": "HTTP metadata bracket, not exact frame binding",
+            "source_timestamp_ns": 1794369982026516200,
+            "source": {
+              "camera": "left",
+              "serial": "262422071560",
+              "retrieved_unix_ns": 1794369982104534800,
+              "before": {
+                "age_seconds": 0.063,
+                "available": true,
+                "camera_role": "camera_left",
+                "camera_serial": "262422071560",
+                "device_frame_index": 4823,
+                "device_time_ns": 1794369981993492200,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 212278,
+                "source_timestamp_ns": 1794369982026516200,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369982026516200,
+                "width": 1280
+              },
+              "after": {
+                "age_seconds": 0.065,
+                "available": true,
+                "camera_role": "camera_left",
+                "camera_serial": "262422071560",
+                "device_frame_index": 4823,
+                "device_time_ns": 1794369981993492200,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 212278,
+                "source_timestamp_ns": 1794369982026516200,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369982026516200,
+                "width": 1280
+              },
+              "binding": "HTTP metadata bracket, not exact frame binding",
+              "display_shape_hw": [
+                720,
+                1280
+              ],
+              "native_shape_hw": [
+                720,
+                1280
+              ],
+              "display_to_native_scale_xy": [
+                1,
+                1
+              ],
+              "depth_aligned": false,
+              "pixel_to_robot_allowed": false
+            },
+            "metric_depth": false,
+            "inspection_image": "runtime/frames/e869cca3ad8e4e478f39c9e4516f575d/left.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          },
+          "right": {
+            "binding": "HTTP metadata bracket, not exact frame binding",
+            "source_timestamp_ns": 1794369982037881000,
+            "source": {
+              "camera": "right",
+              "serial": "262522070284",
+              "retrieved_unix_ns": 1794369982108460800,
+              "before": {
+                "age_seconds": 0.058,
+                "available": true,
+                "camera_role": "camera_right",
+                "camera_serial": "262522070284",
+                "device_frame_index": 4762,
+                "device_time_ns": 1794369982005038000,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 198509,
+                "source_timestamp_ns": 1794369982037881000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369982037881000,
+                "width": 1280
+              },
+              "after": {
+                "age_seconds": 0.059,
+                "available": true,
+                "camera_role": "camera_right",
+                "camera_serial": "262522070284",
+                "device_frame_index": 4762,
+                "device_time_ns": 1794369982005038000,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 198509,
+                "source_timestamp_ns": 1794369982037881000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369982037881000,
+                "width": 1280
+              },
+              "binding": "HTTP metadata bracket, not exact frame binding",
+              "display_shape_hw": [
+                720,
+                1280
+              ],
+              "native_shape_hw": [
+                720,
+                1280
+              ],
+              "display_to_native_scale_xy": [
+                1,
+                1
+              ],
+              "depth_aligned": false,
+              "pixel_to_robot_allowed": false
+            },
+            "metric_depth": false,
+            "inspection_image": "runtime/frames/e869cca3ad8e4e478f39c9e4516f575d/right.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          }
+        },
+        "calibration_sha256": "c4a393c074890ff8f0d28532e8916dd7c6bdedc7ee8f4e91b7a6f6c07155fae6",
+        "calibration_provisional": true,
+        "after_ns": 1794369981258631400,
+        "captured_at_ns": 1794369982167352000,
+        "measured14": [
+          -0.47991318442088077,
+          1.7132501003426739,
+          -1.5539364462206315,
+          1.4991156544154896,
+          0,
+          -2.0524897470528116,
+          0.0003,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.002
+        ],
+        "state_binding": {
+          "kind": "state bracket; cameras are not hardware synchronized",
+          "before14": [
+            -0.47991318442088077,
+            1.7132501003426739,
+            -1.5539364462206315,
+            1.4991156544154896,
+            0,
+            -2.0524897470528116,
+            0.0003,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.002
+          ],
+          "after14": [
+            -0.47991318442088077,
+            1.7132501003426739,
+            -1.5539364462206315,
+            1.4991156544154896,
+            0,
+            -2.0524897470528116,
+            0.0003,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.002
+          ],
+          "owner_generation": 1,
+          "owner_unchanged": true,
+          "max_drift": 0,
+          "max_joint_drift_rad": 0,
+          "max_jaw_drift_m": 0,
+          "joint_tolerance_rad": 0.01,
+          "jaw_tolerance_m": 0.0005,
+          "rest_consistent": true
+        },
+        "finger_geometry": {
+          "status": "operator_measured_axial_extent_CAD_transverse_envelope",
+          "physical_clearance_authority": false,
+          "installed_tcp_validated": false,
+          "wrist_handeye_available": false,
+          "measured_full_gap_m": 0.0003,
+          "head_calibration_provisional": true,
+          "geometry_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+          "geometry_identity": {
+            "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+            "cad_bounds_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+            "tool_calibration_sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+            "representation": "link6_axis_aligned_finger_envelopes_v1"
+          },
+          "fingers": [
+            {
+              "finger": 1,
+              "cad_corners_base_m": [
+                [
+                  0.3121793144588246,
+                  -0.13443712926674636,
+                  0.2237167601945212
+                ],
+                [
+                  0.3121294080202182,
+                  -0.13441115291163683,
+                  0.11971677684743617
+                ],
+                [
+                  0.3122790044521911,
+                  -0.19043704121350494,
+                  0.22370272510793376
+                ],
+                [
+                  0.31222909801358467,
+                  -0.1904110648583954,
+                  0.11970274176084877
+                ],
+                [
+                  0.33867927265532416,
+                  -0.13438995135383291,
+                  0.22370405545184663
+                ],
+                [
+                  0.33862936621671774,
+                  -0.13436397499872338,
+                  0.11970407210476161
+                ],
+                [
+                  0.3387789626486906,
+                  -0.1903898633005915,
+                  0.2236900203652592
+                ],
+                [
+                  0.33872905621008426,
+                  -0.19036388694548192,
+                  0.11969003701817418
+                ]
+              ],
+              "head_pixels_native": [
+                [
+                  363.4840319001201,
+                  263.7483852274543
+                ],
+                [
+                  407.24163735774323,
+                  281.96105746256666
+                ],
+                [
+                  466.15339640512724,
+                  262.21544866855487
+                ],
+                [
+                  492.0802722923482,
+                  280.6431079422199
+                ],
+                [
+                  362.41570007681423,
+                  215.3938186403422
+                ],
+                [
+                  406.38084535317626,
+                  241.9847908765423
+                ],
+                [
+                  465.1526017688461,
+                  214.0187361204893
+                ],
+                [
+                  491.2655958092351,
+                  240.77479303358555
+                ]
+              ],
+              "nominal_min_z_m": 0.11969003701817418
+            },
+            {
+              "finger": 2,
+              "cad_corners_base_m": [
+                [
+                  0.28537935827273364,
+                  -0.13448484126650337,
+                  0.22372960876373438
+                ],
+                [
+                  0.2853294518341272,
+                  -0.1344588649113938,
+                  0.11972962541664939
+                ],
+                [
+                  0.28547904826610015,
+                  -0.19048475321326194,
+                  0.22371557367714695
+                ],
+                [
+                  0.28542914182749374,
+                  -0.1904587768581524,
+                  0.11971559033006196
+                ],
+                [
+                  0.3118793164692332,
+                  -0.1344376633535899,
+                  0.22371690402105981
+                ],
+                [
+                  0.3118294100306268,
+                  -0.13441168699848036,
+                  0.1197169206739748
+                ],
+                [
+                  0.3119790064625997,
+                  -0.1904375753003485,
+                  0.2237028689344724
+                ],
+                [
+                  0.3119291000239933,
+                  -0.19041159894523893,
+                  0.11970288558738737
+                ]
+              ],
+              "head_pixels_native": [
+                [
+                  364.5631000107225,
+                  312.58889495287985
+                ],
+                [
+                  408.11126913527534,
+                  322.34785425651353
+                ],
+                [
+                  467.1642527810523,
+                  310.8967189428251
+                ],
+                [
+                  492.90331729714035,
+                  320.92095824868915
+                ],
+                [
+                  363.4961185125611,
+                  264.29544644321345
+                ],
+                [
+                  407.2513770265848,
+                  282.4133799702171
+                ],
+                [
+                  466.16471895656736,
+                  262.76072512916494
+                ],
+                [
+                  492.08949018748774,
+                  281.0942096418955
+                ]
+              ],
+              "nominal_min_z_m": 0.11970288558738737
+            }
+          ],
+          "effective_contact_tcp": {
+            "calibration_id": "left-tcp140-tip170-20261104",
+            "sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+            "status": "operator_measured_candidate",
+            "T_base_tcp": [
+              [
+                0.9999983003436104,
+                0.001780178375452899,
+                -0.00047986960860348343,
+                0.31204365011100305
+              ],
+              [
+                0.0017802983830158322,
+                -0.9999983840743398,
+                0.0002497726487294339,
+                -0.1624188694669508
+              ],
+              [
+                -0.00047942419330175855,
+                -0.00025062653529007924,
+                -0.9999998536693802,
+                0.1497098268274032
+              ],
+              [
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "position": [
+              0.31204365011100305,
+              -0.1624188694669508,
+              0.1497098268274032
+            ],
+            "tip_axis_point_base_m": [
+              0.31202925402274495,
+              -0.16241137628748895,
+              0.11970983121732179
+            ],
+            "accuracy_m": null,
+            "independent_physical_validation": false,
+            "motion_permit": false
+          },
+          "tip_axial_m": 0.17,
+          "limitations": [
+            "Axial dimensions and alignment are operator-reported; accuracy unmeasured.",
+            "Prior CAD transverse bounds retained; conservative axial envelope extended to170mm.",
+            "No full environment collision proof; head calibration remains provisional."
+          ]
+        },
+        "observation_settling": {
+          "window_s": 0.307622533,
+          "samples": 7,
+          "max_range": 0,
+          "max_joint_range_rad": 0,
+          "max_jaw_range_m": 0,
+          "joint_range_limit_rad": 0.01,
+          "jaw_range_limit_m": 0.0003,
+          "source_timestamp_ns": 1794369981255194000,
+          "clock": "monotonic",
+          "physical_rest_independently_verified": false
+        },
+        "discarded_frame_ids": [],
+        "wall_budget": {
+          "session_seconds": 1800,
+          "elapsed_seconds": 157.675,
+          "remaining_seconds": 1642.325,
+          "finish_reserve_seconds": 60,
+          "phase": "active",
+          "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+        }
+      },
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 157.675,
+        "remaining_seconds": 1642.325,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    }
+  },
+  {
+    "label": "M03 empty opening10mm",
+    "value": {
+      "anchor_validation": {
+        "jaw_tolerance_m": 0.0005,
+        "joint_tolerance_rad": 0.01,
+        "max_jaw_delta_m": 0,
+        "max_joint_delta_rad": 0,
+        "measured14": [
+          -0.4799131751060486,
+          1.7132500410079956,
+          -1.55393648147583,
+          1.4991157054901123,
+          0,
+          -2.052489757537842,
+          0.0003000000142492354,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0020000000949949026
+        ],
+        "planned_anchor14": [
+          -0.4799131751060486,
+          1.7132500410079956,
+          -1.55393648147583,
+          1.4991157054901123,
+          0,
+          -2.052489757537842,
+          0.0003000000142492354,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0020000000949949026
+        ],
+        "zero_filter_applied": false
+      },
+      "executed": true,
+      "final14": [
+        -0.47991318442088077,
+        1.7132501003426739,
+        -1.5539364462206315,
+        1.4991156544154896,
+        0,
+        -2.0524897470528116,
+        0.0095,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.002
+      ],
+      "joint_error_max_rad": 5.933467828178607e-8,
+      "joint_tolerance_rad": 0.01,
+      "left_jaw_error_m": 0.0004999997764825823,
+      "measured_arrival": true,
+      "measured_settled": true,
+      "object_success": null,
+      "owner_generation": 1,
+      "sdk_completed_steps": 61,
+      "settling": {
+        "clock": "monotonic",
+        "jaw_range_limit_m": 0.0003,
+        "joint_range_limit_rad": 0.01,
+        "max_jaw_range_m": 0,
+        "max_joint_range_rad": 0,
+        "max_range": 0,
+        "physical_rest_independently_verified": false,
+        "samples": 7,
+        "source_timestamp_ns": 1794369995460279300,
+        "window_s": 0.313585379
+      },
+      "target14": [
+        -0.4799131751060486,
+        1.7132500410079956,
+        -1.55393648147583,
+        1.4991157054901123,
+        0,
+        -2.052489757537842,
+        0.009999999776482582,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.0020000000949949026
+      ],
+      "owner_request_id": "6c4ac6acd9854d0aa56794f7c00fe6b7",
+      "handoff_timing": [
+        {
+          "monotonic_ns": 697434458465434,
+          "stage": "request_dequeued",
+          "wall_ns": 1794369992890541300
+        },
+        {
+          "monotonic_ns": 697434458494207,
+          "stage": "prepare_begin",
+          "wall_ns": 1794369992890570200
+        },
+        {
+          "monotonic_ns": 697434459740993,
+          "stage": "owner_initial_state_checked",
+          "wall_ns": 1794369992891817000
+        },
+        {
+          "monotonic_ns": 697434459741855,
+          "stage": "owner_previous_action_acknowledged",
+          "wall_ns": 1794369992891817700
+        },
+        {
+          "monotonic_ns": 697434459743057,
+          "stage": "path_preview_begin",
+          "wall_ns": 1794369992891819000
+        },
+        {
+          "monotonic_ns": 697434597974766,
+          "stage": "path_preview_end",
+          "wall_ns": 1794369993030050800
+        },
+        {
+          "monotonic_ns": 697434598568073,
+          "stage": "plan_written_wait_fresh_observation",
+          "wall_ns": 1794369993030644200
+        },
+        {
+          "monotonic_ns": 697434598570087,
+          "stage": "fresh_observation_ready",
+          "wall_ns": 1794369993030646000
+        },
+        {
+          "monotonic_ns": 697434599852560,
+          "stage": "staged_wait_policy_poll",
+          "wall_ns": 1794369993031928600
+        }
+      ],
+      "observation": {
+        "frame_id": "77461fffe3df41e8a92a6101de78ab29",
+        "cameras": {
+          "head": {
+            "binding": "same immutable stereo/RGB packet",
+            "source_timestamp_ns": 1794369996326639400,
+            "source": {
+              "schema": "rax.piper.ffs.v1",
+              "mode": "live",
+              "source": "fast_foundation_stereo",
+              "inference_kind": "real_model",
+              "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+              "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+              "serial": "262522073779",
+              "sample_id": "b8fb07e6fd254f529036011bf1233081",
+              "owner_generation": "696a506bd9eb41afa9e6d4fdcd45dab8",
+              "frames": {
+                "ir_left": {
+                  "device_timestamp_ns": 1794369996293664500,
+                  "frame_number": 5218,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.infrared",
+                    "stream_index": 1,
+                    "format": "format.y8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                },
+                "ir_right": {
+                  "device_timestamp_ns": 1794369996293664500,
+                  "frame_number": 5218,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.infrared",
+                    "stream_index": 2,
+                    "format": "format.y8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                },
+                "color": {
+                  "device_timestamp_ns": 1794369996293688600,
+                  "frame_number": 5221,
+                  "timestamp_domain": "timestamp_domain.global_time",
+                  "profile": {
+                    "stream": "stream.color",
+                    "stream_index": 0,
+                    "format": "format.bgr8",
+                    "width": 1280,
+                    "height": 720,
+                    "fps": 30
+                  }
+                }
+              },
+              "host_received_unix_ns": 1794369996326639400,
+              "expires_unix_ns": 1794369997326639400,
+              "frame": "global_d435_color_optical_frame",
+              "depth_unit": "m",
+              "depth_semantics": "RGB optical z",
+              "rgb_binding": "same immutable camera-owner packet as stereo",
+              "base_transform_applied": false,
+              "physical_calibration_validated": false,
+              "confidence_available": false,
+              "alignment": "LR-checked direct nearest samples; no hole filling for motion",
+              "valid_fraction": 0.46472330729166667,
+              "native_geometry": {
+                "schema": "rax.native_geometry.v1",
+                "shape_hw": [
+                  720,
+                  1280
+                ],
+                "coordinate_frame": "left_rectified_optical",
+                "rgb_coordinate_frame": "global_d435_color_optical_frame",
+                "intrinsics_fx_fy_cx_cy": [
+                  644.646240234375,
+                  644.646240234375,
+                  648.8756103515625,
+                  360.1839599609375
+                ],
+                "T_rgb_from_leftrect": [
+                  [
+                    0.9999946355819702,
+                    -0.003279363736510277,
+                    0.00011673579865600914,
+                    0.015085439197719097
+                  ],
+                  [
+                    0.003280044300481677,
+                    0.9999740719795227,
+                    -0.006407002918422222,
+                    0.00011077497765654698
+                  ],
+                  [
+                    -0.00009572187991579995,
+                    0.006407351233065128,
+                    0.9999794960021973,
+                    -0.00023504384444095194
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "visibility": "same_frame_footprint_zbuffer_1mm",
+                "source_index": "row_major_original_stereo_grid",
+                "rgb_surface_semantics": "resampled_source_coverage_not_new_measurements"
+              },
+              "quality_extension": {
+                "version": "ffs-quality-v3",
+                "left_right_threshold_px": 1,
+                "source_geometric_fraction": 0.9595930989583333,
+                "source_lr_consistent_fraction": 0.8710134548611111,
+                "surface_diagnostics_computed": true,
+                "surface_used_for_motion": false,
+                "surface_valid_fraction": 0.897529296875,
+                "surface_resampled_fraction": 0.6637315538194445,
+                "max_local_span_m": 0.005,
+                "max_footprint_px": 4,
+                "registration_s": 0.08733668003696948,
+                "registration_source_sha256": "5443585f72102ecc8888db0102f815e9ad3a1cabb8e854cb79e85d87edab680c",
+                "right_forward_ms": 38.41521393042058,
+                "implementation_sha256": "1d08bd796e562fec4076f9389851a7587b10acec7e5e5a35308825cb08b4b6b9"
+              },
+              "model": {
+                "source_shape_hw": [
+                  720,
+                  1280
+                ],
+                "inference_shape_hw": [
+                  720,
+                  1280
+                ],
+                "scale_xy": [
+                  1,
+                  1
+                ],
+                "input_scale_requested": 1,
+                "input_order": "RGB",
+                "input_range": [
+                  0,
+                  255
+                ],
+                "normalization": "inside upstream PyTorch forward; not pre-normalized",
+                "rectification": "required_from_caller",
+                "gray_conversion": "repeat_channel_three_times",
+                "schema": "junqi.piper.ffs_model_manifest.v1",
+                "model_id": "20-30-48",
+                "upstream_url": "https://github.com/NVlabs/Fast-FoundationStereo",
+                "upstream_commit": "476f4249561f7c79ca707326954f9255643412a6",
+                "source_model_folder_url": "https://drive.google.com/drive/folders/1WWT0I8VB1k7cA2LqnjhUHOux8Sz-BZMw",
+                "checkpoint_sha256": "98b5a9acf39fbfa795025de8cea95ce123daa40f6b6234d719167751024cf692",
+                "config_sha256": "d45afe99b176454d5aff416edf16c8da6a99579f8f374b927f37907442a7d6bc",
+                "hashes_verified": true,
+                "torch_version": "2.13.0+cu130",
+                "torch_cuda_version": "13.0",
+                "device_name": "NVIDIA GeForce RTX 5090",
+                "device_capability": [
+                  12,
+                  0
+                ],
+                "backend": "pytorch",
+                "amp_dtype": "float16",
+                "valid_iters": 4,
+                "max_disp": 192,
+                "max_disp_unit": "inference_resolution_pixels",
+                "optimize_build_volume": "pytorch1",
+                "serialized_config_compatibility": [
+                  {
+                    "key": "slow_fast_gru",
+                    "config_value": false,
+                    "serialized_status": "absent",
+                    "reason": "known official pickle omission; unused in pinned upstream",
+                    "model_args_modified": false
+                  }
+                ],
+                "forward_and_copy_ms": 39.66174996457994,
+                "padded_shape_hw": [
+                  736,
+                  1280
+                ],
+                "disparity_reference": "left_rectified_optical",
+                "disparity_definition": "x_left - x_right",
+                "disparity_unit": "original_input_pixels",
+                "finite_positive_fraction": 1,
+                "confidence_available": false,
+                "hardware_access": false,
+                "hardware_dispatch_authorized": false
+              },
+              "capture_timing": {
+                "mode": "live",
+                "age_ms": 12.363077,
+                "ir_skew_ms": 0,
+                "rgb_skew_ms": 0.024064,
+                "freshness_status": "host_receive_age_checked",
+                "timing_limits_status": "initial_configuration_requires_live_validation"
+              },
+              "elapsed_s": 0.24110577802639455,
+              "arrays_sha256": "8c35e42e157b6a4b4316e9df96c60cea38f6726ed9b871a55baf5f27ae693ea7",
+              "hardware_writes": 0
+            },
+            "metric_depth": true,
+            "K": [
+              [
+                906.5042114257812,
+                0,
+                643.140380859375
+              ],
+              [
+                0,
+                905.1109619140625,
+                379.1578063964844
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ],
+            "camera_frame": "head_d435_color_optical_frame",
+            "calibration_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+            "base_transform_available": true,
+            "T_base_camera": [
+              [
+                -0.016676558474787693,
+                -0.9997870619278373,
+                -0.012154143291059086,
+                0.2523087795091613
+              ],
+              [
+                -0.9994345921512982,
+                0.017023163241802336,
+                -0.02899496378012975,
+                -0.2721762188313748
+              ],
+              [
+                0.02919569161374791,
+                0.01166373503409468,
+                -0.9995056622532204,
+                0.7256526566607587
+              ],
+              [
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "inspection_image": "runtime/frames/77461fffe3df41e8a92a6101de78ab29/head.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          },
+          "left": {
+            "binding": "HTTP metadata bracket, not exact frame binding",
+            "source_timestamp_ns": 1794369996670434000,
+            "source": {
+              "camera": "left",
+              "serial": "262422071560",
+              "retrieved_unix_ns": 1794369996684560400,
+              "before": {
+                "age_seconds": 0.004,
+                "available": true,
+                "camera_role": "camera_left",
+                "camera_serial": "262422071560",
+                "device_frame_index": 5262,
+                "device_time_ns": 1794369996637382000,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 214129,
+                "source_timestamp_ns": 1794369996670434000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369996670434000,
+                "width": 1280
+              },
+              "after": {
+                "age_seconds": 0.005,
+                "available": true,
+                "camera_role": "camera_left",
+                "camera_serial": "262422071560",
+                "device_frame_index": 5262,
+                "device_time_ns": 1794369996637382000,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 214129,
+                "source_timestamp_ns": 1794369996670434000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369996670434000,
+                "width": 1280
+              },
+              "binding": "HTTP metadata bracket, not exact frame binding",
+              "display_shape_hw": [
+                720,
+                1280
+              ],
+              "native_shape_hw": [
+                720,
+                1280
+              ],
+              "display_to_native_scale_xy": [
+                1,
+                1
+              ],
+              "depth_aligned": false,
+              "pixel_to_robot_allowed": false
+            },
+            "metric_depth": false,
+            "inspection_image": "runtime/frames/77461fffe3df41e8a92a6101de78ab29/left.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          },
+          "right": {
+            "binding": "HTTP metadata bracket, not exact frame binding",
+            "source_timestamp_ns": 1794369996615292000,
+            "source": {
+              "camera": "right",
+              "serial": "262522070284",
+              "retrieved_unix_ns": 1794369996687849500,
+              "before": {
+                "age_seconds": 0.058,
+                "available": true,
+                "camera_role": "camera_right",
+                "camera_serial": "262522070284",
+                "device_frame_index": 5199,
+                "device_time_ns": 1794369996582176000,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 197348,
+                "source_timestamp_ns": 1794369996615292000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369996615292000,
+                "width": 1280
+              },
+              "after": {
+                "age_seconds": 0.058,
+                "available": true,
+                "camera_role": "camera_right",
+                "camera_serial": "262522070284",
+                "device_frame_index": 5199,
+                "device_time_ns": 1794369996582176000,
+                "encoding": "bgr8",
+                "height": 720,
+                "jpeg_bytes": 197348,
+                "source_timestamp_ns": 1794369996615292000,
+                "status": "live",
+                "timestamp_domain": "global_time",
+                "timestamp_ns": 1794369996615292000,
+                "width": 1280
+              },
+              "binding": "HTTP metadata bracket, not exact frame binding",
+              "display_shape_hw": [
+                720,
+                1280
+              ],
+              "native_shape_hw": [
+                720,
+                1280
+              ],
+              "display_to_native_scale_xy": [
+                1,
+                1
+              ],
+              "depth_aligned": false,
+              "pixel_to_robot_allowed": false
+            },
+            "metric_depth": false,
+            "inspection_image": "runtime/frames/77461fffe3df41e8a92a6101de78ab29/right.jpg",
+            "shape_hw": [
+              720,
+              1280
+            ],
+            "preview_shape_hw": [
+              360,
+              640
+            ]
+          }
+        },
+        "calibration_sha256": "c4a393c074890ff8f0d28532e8916dd7c6bdedc7ee8f4e91b7a6f6c07155fae6",
+        "calibration_provisional": true,
+        "after_ns": 1794369995838613500,
+        "captured_at_ns": 1794369996747893000,
+        "measured14": [
+          -0.47991318442088077,
+          1.7132501003426739,
+          -1.5539364462206315,
+          1.4991156544154896,
+          0,
+          -2.0524897470528116,
+          0.0096,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.002
+        ],
+        "state_binding": {
+          "kind": "state bracket; cameras are not hardware synchronized",
+          "before14": [
+            -0.47991318442088077,
+            1.7132501003426739,
+            -1.5539364462206315,
+            1.4991156544154896,
+            0,
+            -2.0524897470528116,
+            0.0096,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.002
+          ],
+          "after14": [
+            -0.47991318442088077,
+            1.7132501003426739,
+            -1.5539364462206315,
+            1.4991156544154896,
+            0,
+            -2.0524897470528116,
+            0.0096,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.002
+          ],
+          "owner_generation": 1,
+          "owner_unchanged": true,
+          "max_drift": 0,
+          "max_joint_drift_rad": 0,
+          "max_jaw_drift_m": 0,
+          "joint_tolerance_rad": 0.01,
+          "jaw_tolerance_m": 0.0005,
+          "rest_consistent": true
+        },
+        "finger_geometry": {
+          "status": "operator_measured_axial_extent_CAD_transverse_envelope",
+          "physical_clearance_authority": false,
+          "installed_tcp_validated": false,
+          "wrist_handeye_available": false,
+          "measured_full_gap_m": 0.0096,
+          "head_calibration_provisional": true,
+          "geometry_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+          "geometry_identity": {
+            "urdf_sha256": "12e4e447bffcbbfebca677fb96fd6062d122b1c2987da65187aaa3caa1bb330d",
+            "cad_bounds_sha256": "fb77932538519c2c7cb9a2312e6130b4524893990b6ba9dfd260befa05896f59",
+            "tool_calibration_sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+            "representation": "link6_axis_aligned_finger_envelopes_v1"
+          },
+          "fingers": [
+            {
+              "finger": 1,
+              "cad_corners_base_m": [
+                [
+                  0.31682930655514074,
+                  -0.13442885075463817,
+                  0.2237145307474573
+                ],
+                [
+                  0.31677940011659417,
+                  -0.13440287439955972,
+                  0.11971454752496855
+                ],
+                [
+                  0.31692899654850726,
+                  -0.19042876270139672,
+                  0.22370049566086989
+                ],
+                [
+                  0.3168790901099607,
+                  -0.1904027863463183,
+                  0.11970051243838115
+                ],
+                [
+                  0.34332926475164033,
+                  -0.1343816728417247,
+                  0.22370182600478272
+                ],
+                [
+                  0.34327935831309375,
+                  -0.13435569648664628,
+                  0.11970184278229398
+                ],
+                [
+                  0.34342895474500684,
+                  -0.19038158478848327,
+                  0.2236877909181953
+                ],
+                [
+                  0.34337904830646027,
+                  -0.19035560843340485,
+                  0.11968780769570656
+                ]
+              ],
+              "head_pixels_native": [
+                [
+                  363.29666642007703,
+                  255.26790347683973
+                ],
+                [
+                  407.0906569622034,
+                  274.9493462249631
+                ],
+                [
+                  465.9778753562079,
+                  253.76263723379967
+                ],
+                [
+                  491.93738024946106,
+                  273.6503229856485
+                ],
+                [
+                  362.2281000445032,
+                  206.90272064861986
+                ],
+                [
+                  406.2297086750853,
+                  234.96582168466313
+                ],
+                [
+                  464.97686171695835,
+                  205.55537784925056
+                ],
+                [
+                  491.1225562582561,
+                  233.77478938922246
+                ]
+              ],
+              "nominal_min_z_m": 0.11968780769570656
+            },
+            {
+              "finger": 2,
+              "cad_corners_base_m": [
+                [
+                  0.28072936617585426,
+                  -0.1344931195293572,
+                  0.2237318379616682
+                ],
+                [
+                  0.2806794597373077,
+                  -0.13446714317427877,
+                  0.11973185473917947
+                ],
+                [
+                  0.28082905616922077,
+                  -0.1904930314761158,
+                  0.22371780287508078
+                ],
+                [
+                  0.2807791497306742,
+                  -0.19046705512103734,
+                  0.11971781965259204
+                ],
+                [
+                  0.30722932437235384,
+                  -0.13444594161644374,
+                  0.22371913321899362
+                ],
+                [
+                  0.30717941793380726,
+                  -0.1344199652613653,
+                  0.11971914999650488
+                ],
+                [
+                  0.30732901436572035,
+                  -0.19044585356320232,
+                  0.2237050981324062
+                ],
+                [
+                  0.3072791079271737,
+                  -0.1904198772081239,
+                  0.11970511490991745
+                ]
+              ],
+              "head_pixels_native": [
+                [
+                  364.75018736435123,
+                  321.0568032788999
+                ],
+                [
+                  408.26206399190374,
+                  329.35096641458307
+                ],
+                [
+                  467.33951406916134,
+                  319.3370390697166
+                ],
+                [
+                  493.04603419817437,
+                  327.9051906084714
+                ],
+                [
+                  363.68343989716635,
+                  272.77394742520187
+                ],
+                [
+                  407.4023278780774,
+                  289.42373673111354
+                ],
+                [
+                  466.3401987624649,
+                  271.21156873848804
+                ],
+                [
+                  492.2323543258058,
+                  288.08564744628563
+                ]
+              ],
+              "nominal_min_z_m": 0.11970511490991745
+            }
+          ],
+          "effective_contact_tcp": {
+            "calibration_id": "left-tcp140-tip170-20261104",
+            "sha256": "a33bcac99a8ff7f0a0884e12b5440976d8944db64f210af89ca395a64c14627a",
+            "status": "operator_measured_candidate",
+            "T_base_tcp": [
+              [
+                0.9999983003436104,
+                0.001780178375452899,
+                -0.00047986960860348343,
+                0.31204365011100305
+              ],
+              [
+                0.0017802983830158322,
+                -0.9999983840743398,
+                0.0002497726487294339,
+                -0.1624188694669508
+              ],
+              [
+                -0.00047942419330175855,
+                -0.00025062653529007924,
+                -0.9999998536693802,
+                0.1497098268274032
+              ],
+              [
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "position": [
+              0.31204365011100305,
+              -0.1624188694669508,
+              0.1497098268274032
+            ],
+            "tip_axis_point_base_m": [
+              0.31202925402274495,
+              -0.16241137628748895,
+              0.11970983121732179
+            ],
+            "accuracy_m": null,
+            "independent_physical_validation": false,
+            "motion_permit": false
+          },
+          "tip_axial_m": 0.17,
+          "limitations": [
+            "Axial dimensions and alignment are operator-reported; accuracy unmeasured.",
+            "Prior CAD transverse bounds retained; conservative axial envelope extended to170mm.",
+            "No full environment collision proof; head calibration remains provisional."
+          ]
+        },
+        "observation_settling": {
+          "window_s": 0.307058922,
+          "samples": 7,
+          "max_range": 0.0000999999999999994,
+          "max_joint_range_rad": 0,
+          "max_jaw_range_m": 0.0000999999999999994,
+          "joint_range_limit_rad": 0.01,
+          "jaw_range_limit_m": 0.0003,
+          "source_timestamp_ns": 1794369995835251700,
+          "clock": "monotonic",
+          "physical_rest_independently_verified": false
+        },
+        "discarded_frame_ids": [],
+        "wall_budget": {
+          "session_seconds": 1800,
+          "elapsed_seconds": 172.256,
+          "remaining_seconds": 1627.744,
+          "finish_reserve_seconds": 60,
+          "phase": "active",
+          "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+        }
+      },
+      "wall_budget": {
+        "session_seconds": 1800,
+        "elapsed_seconds": 172.256,
+        "remaining_seconds": 1627.744,
+        "finish_reserve_seconds": 60,
+        "phase": "active",
+        "instruction": "Use this measured clock. During wind_down save PROGRESS/INDEX and finish; do not begin another physical action. A held object is not released automatically."
+      }
+    }
+  }
+]

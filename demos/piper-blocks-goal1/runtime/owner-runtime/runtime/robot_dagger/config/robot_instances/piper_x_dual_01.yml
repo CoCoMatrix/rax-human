@@ -1,0 +1,61 @@
+schema_version: xpolicy.robot_devices.v1
+robot_id: piper_x_dual_01
+robot_type: piper_x_dual
+
+arms:
+  left_arm:
+    can_adapter_serial: "004400264648571620303731"
+    netdev: can_px_00440026
+    bitrate: 1000000
+    firmware:
+      sdk_driver: v189
+      hardware_version: H-V1.2-1
+      motor_ratio_and_batch: "10"
+      node_type: Piper_X_MC
+      software_version: S-V1.9-0
+      production_date: "260803"
+      node_number: "15"
+    end_effector:
+      type: agx_gripper
+      mode: width
+      max_range_m: 0.1
+      teaching_range_percent: 100
+      teaching_friction: 1
+  right_arm:
+    can_adapter_serial: "0029001E4648570B20303731"
+    netdev: can_px_0029001e
+    bitrate: 1000000
+    firmware:
+      sdk_driver: v189
+      hardware_version: H-V1.2-1
+      motor_ratio_and_batch: "10"
+      node_type: Piper_X_MC
+      software_version: S-V1.9-0
+      production_date: "260803"
+      node_number: "15"
+    end_effector:
+      type: agx_gripper
+      mode: width
+      max_range_m: 0.1
+      teaching_range_percent: 100
+      teaching_friction: 1
+
+cameras:
+  camera_left:
+    model: Intel RealSense D435
+    serial: "262422071560"
+    usb_descriptor_serial: "401423025576"
+    firmware_version: "5.15.1.55"
+    usb_type: "3.2"
+  camera_head:
+    model: Intel RealSense D435
+    serial: "262522073779"
+    usb_descriptor_serial: "401423026056"
+    firmware_version: "5.15.1.55"
+    usb_type: "3.2"
+  camera_right:
+    model: Intel RealSense D435
+    serial: "262522070284"
+    usb_descriptor_serial: "401323027719"
+    firmware_version: "5.15.1.55"
+    usb_type: "3.2"

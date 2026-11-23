@@ -1,0 +1,12 @@
+{
+  "previous_report": "output/rehearsal/r4-approach-mid-01.json",
+  "initial_scene_report": "output/rehearsal/r4-transition-01.json",
+  "empty_history": [
+    "output/rehearsal/r4-transition-01.json",
+    "output/rehearsal/r4-transition-02.json",
+    "output/rehearsal/r4-hover-05.json",
+    "output/rehearsal/r4-approach-hover-02.json",
+    "output/rehearsal/r4-approach-mid-01.json"
+  ],
+  "color": "orange"
+}

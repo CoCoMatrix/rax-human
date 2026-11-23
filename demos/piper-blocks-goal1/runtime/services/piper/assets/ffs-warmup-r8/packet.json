@@ -1,0 +1,62 @@
+{
+  "schema": "junqi.piper.head_stereo_packet.v1",
+  "sample_id": "caa3c284538141048c9d01d1584b9a1f",
+  "serial": "262522073779",
+  "camera_role": "camera_head",
+  "calibration_payload_sha256": "28db0ac28c85f52dc7497ebeac82f46b361b0787d56ad07c791f4b7bfba4f091",
+  "host_received_unix_ns": 1793868187002369732,
+  "owner_generation": "5ded757c49164e3f85890ac68495a250",
+  "frames": {
+    "ir_left": {
+      "device_timestamp_ns": 1793868186969420288,
+      "frame_number": 26443,
+      "timestamp_domain": "timestamp_domain.global_time",
+      "profile": {
+        "stream": "stream.infrared",
+        "stream_index": 1,
+        "format": "format.y8",
+        "width": 1280,
+        "height": 720,
+        "fps": 30
+      }
+    },
+    "ir_right": {
+      "device_timestamp_ns": 1793868186969420288,
+      "frame_number": 26443,
+      "timestamp_domain": "timestamp_domain.global_time",
+      "profile": {
+        "stream": "stream.infrared",
+        "stream_index": 2,
+        "format": "format.y8",
+        "width": 1280,
+        "height": 720,
+        "fps": 30
+      }
+    },
+    "color": {
+      "device_timestamp_ns": 1793868186969443072,
+      "frame_number": 26444,
+      "timestamp_domain": "timestamp_domain.global_time",
+      "profile": {
+        "stream": "stream.color",
+        "stream_index": 0,
+        "format": "format.bgr8",
+        "width": 1280,
+        "height": 720,
+        "fps": 30
+      }
+    }
+  },
+  "rgb_encoding": "rgb8",
+  "capture_source": "existing_xpolicy_camera_owner_frameset",
+  "serial_binding_source": "owner_selected_device",
+  "robot_action_included": false,
+  "capture_timing_validation": {
+    "mode": "live",
+    "age_ms": 2.901674,
+    "ir_skew_ms": 0.0,
+    "rgb_skew_ms": 0.022784,
+    "freshness_status": "host_receive_age_checked",
+    "timing_limits_status": "initial_configuration_requires_live_validation"
+  }
+}

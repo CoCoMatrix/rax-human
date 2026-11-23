@@ -1,0 +1,37 @@
+schema: xpolicylab.piper-deployment/v1
+name: junqi-gpt-policy-scene-v10
+label: Junqi GPT-Policy direct control · URDF v11
+release:
+  status: contract_complete
+  evidence: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-scene-v10/contract.json
+  evidence_sha256: e0db3a4542f5e8bd95d0add6cf9580fa5a1a2a843668d35102fe7d22304fd841
+bundle:
+  kind: transport_contract
+  default_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-scene-v10
+  required:
+  - contract.json
+  - task_catalog.json
+  verifier: scripts/verify_junqi_gpt_policy_scene_v10.py
+policy:
+  backend: gpt_policy
+  action_frequency_hz: 30
+  action_horizon: 600
+  default_execute_chunk: 600
+  default_execute_mode: auto
+observation:
+  camera_profile: runtime/robot_dagger/config/camera_profiles/piper-x-dual-rgb-1280x720-30.yml
+server:
+  default_mode: external
+operator:
+  default_control_source: keyboard
+  keyboard_graph: runtime/robot_dagger/graphs/piper-x-dual-policy-30hz-keyboard.yml
+  ui_enabled: true
+tasks:
+  catalog_path: /home/ubuntu/code_junqi/xpolicylab-robot-runtime/deploy/junqi-gpt-policy-scene-v10/task_catalog.json
+  default: Pick up the brown bottled water and place it on the coaster.
+  inline:
+  - Pick up the brown bottled water and place it on the coaster.
+pigey:
+  supported: false
+qualification:
+  supported: false

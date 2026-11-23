@@ -1,0 +1,42 @@
+{
+  "function": "trial_lift",
+  "inputs": {
+    "quaternion": [
+      0.9996573249755574,
+      -0.026176948307873156,
+      0.0,
+      0.0
+    ],
+    "previous_report": "output/rehearsal/r4-close-01.json"
+  },
+  "source_sha256": "fdf03aedf549b2e0397c80d02e9662f7e9e4f7dd4ab322ab3350507434bab854",
+  "code_hashes": {
+    "controller.py": "fdf03aedf549b2e0397c80d02e9662f7e9e4f7dd4ab322ab3350507434bab854",
+    "perception.py": "2ede6674eaea3fced1ace9b582a92fbd76eb15d3c17663f13bc1e114ee4f5bc1",
+    "scene_checks.py": "fcd58e78cfa875d9eaae88203f8897cfab28aa8a6dadee264d1e43f85e4b9764",
+    "rehearse_step.py": "7ebf7419ab92c379828b537a91bf13f3395c240e5d734a5d28dc191ce263bfec"
+  },
+  "started_unix": 1794378800.2491717,
+  "report": "output/rehearsal/r4-trial-02.json",
+  "status": "returned",
+  "result": {
+    "ok": false,
+    "stage": "trial_lift",
+    "why": "RuntimeError: Native finish reserve: stop starting task functions/motions",
+    "executed": false,
+    "dispatch_attempted": false,
+    "receipts": [],
+    "facts": [],
+    "action_completed": false,
+    "needs_review": false,
+    "next_function": "transport",
+    "code_status": "R3 writable candidate; only individually reported functions rehearsed",
+    "elapsed_s": 0.006358866929076612
+  },
+  "wall_s": 0.006786505924537778,
+  "tool_s": 0.006187346996739507,
+  "motion_rpc_s": 0,
+  "auxiliary_visual_calls": 0,
+  "agent_wait_inside_function_s": 0,
+  "calls": 1
+}

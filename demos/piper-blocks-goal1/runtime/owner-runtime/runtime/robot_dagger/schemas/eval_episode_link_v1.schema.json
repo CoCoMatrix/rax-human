@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "xpolicy.eval.episode_link.v1",
+  "title": "XPolicyLab evaluation episode link",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "suite_id",
+    "suite_revision",
+    "task_id",
+    "task_revision",
+    "trial_id",
+    "case_id",
+    "robot_contract_sha256",
+    "evidence_retention_policy"
+  ],
+  "properties": {
+    "schema_version": {"const": "xpolicy.eval.episode_link.v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "suite_id": {"type": "string", "minLength": 1},
+    "suite_revision": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "task_revision": {"type": "string", "minLength": 1},
+    "trial_id": {"type": "string", "pattern": "^trial-[0-9]{6}$"},
+    "case_id": {"type": ["string", "null"]},
+    "robot_contract_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evidence_retention_policy": {
+      "enum": ["AUTO_RETAIN_ALL_EVAL"]
+    }
+  },
+  "additionalProperties": false
+}

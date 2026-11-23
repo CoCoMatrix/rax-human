@@ -1,0 +1,117 @@
+{
+  "change": "Native sampled collision check (services/piper/installed_collision*.py): before each exact FCL distance, a Coal 3.0.3 collide query with security margin = margin + 1 mm skips pairs that are certainly farther apart. Every pair that can matter still gets the exact FCL distance, so contacts, tolerated clearances and expected jaw contacts come from the same FCL numbers. Coal is vendored in runtime/vendor/coal-3.0.3 (BSD-2; licenses kept) and loaded only if every file matches services/piper/coal_vendor_manifest.json; otherwise, or with RAX_COAL_PREFILTER=0, the check is the previous plain FCL check. The shared venv and start1 are unchanged.",
+  "recorded_preview_replay": {
+    "previews": 346,
+    "samples": 41699,
+    "refused_previews": 2,
+    "decisions_identical": 346,
+    "bit_identical": 344,
+    "max_reported_float_diff_m": 1.0207078321921789e-07,
+    "native_check_s_off": 178.47,
+    "native_check_s_on": 73.68,
+    "speedup": 2.42,
+    "note": "Reported distances are always FCL values. Plain FCL against itself on the same 346 previews: 1 not bit-identical, max 3.7e-11 m (fcl_history.py shows the same sample giving different last digits after different call histories). One tolerated finger/obstacle clearance differs by 1.0e-07 m with the pre-filter, below the 1e-6 m FCL GJK distance tolerance; the closest recorded distance to the 3 mm margin is 3.0e-06 m."
+  },
+  "planning_dual_check": {
+    "planning_lanes": 12,
+    "calls_compared": 21196,
+    "differences": 0,
+    "max_float_diff_m": 0.0,
+    "check_time_s_on": 47.4,
+    "check_time_s_off": 86.2
+  },
+  "paired_23_scene_planning": {
+    "scenes": 23,
+    "static_equal": 23,
+    "both_planned": 20,
+    "plan_equal": 18,
+    "outcome_diff": 0,
+    "planning_s_both_planned_off_on": [
+      647.9,
+      565.6
+    ],
+    "note": "Search is time-sliced; with faster checks 2 scenes reached a different (also fully checked) candidate first."
+  },
+  "dry_execution": {
+    "runs": 8,
+    "outcome_identical": 8,
+    "cases": [
+      {
+        "case": "default__154128",
+        "ok": true,
+        "failed_step": null,
+        "identical": true,
+        "planning_s_on": 5.5,
+        "planning_s_off": 9.1
+      },
+      {
+        "case": "default__164238",
+        "ok": true,
+        "failed_step": null,
+        "identical": true,
+        "planning_s_on": 15.1,
+        "planning_s_off": 19.6
+      },
+      {
+        "case": "g2_L_corner_stack__154128",
+        "ok": true,
+        "failed_step": null,
+        "identical": true,
+        "planning_s_on": 5.2,
+        "planning_s_off": 7.8
+      },
+      {
+        "case": "g2_L_corner_stack__164238",
+        "ok": true,
+        "failed_step": null,
+        "identical": true,
+        "planning_s_on": 30.6,
+        "planning_s_off": 38.8
+      },
+      {
+        "case": "g6_square_flat__154128",
+        "ok": false,
+        "failed_step": "whole-task-preflight",
+        "identical": true,
+        "planning_s_on": null,
+        "planning_s_off": null
+      },
+      {
+        "case": "g6_square_flat__164238",
+        "ok": false,
+        "failed_step": "green-hover-9",
+        "identical": true,
+        "planning_s_on": 22.6,
+        "planning_s_off": 25.3
+      },
+      {
+        "case": "user_tight__154128",
+        "ok": true,
+        "failed_step": null,
+        "identical": true,
+        "planning_s_on": 5.2,
+        "planning_s_off": 7.8
+      },
+      {
+        "case": "user_tight__164238",
+        "ok": true,
+        "failed_step": null,
+        "identical": true,
+        "planning_s_on": 29.4,
+        "planning_s_off": 32.0
+      }
+    ],
+    "note": "exec_sim through the real native preview; g6_square_flat fails identically with and without Coal (180 s planning budget on 154128; known 73 mm vs 72.4 mm jaw margin at green-hover on 164238)."
+  },
+  "native_collision_tests": {
+    "on": "1 failed, 22 passed, 30 warnings, 12 subtests passed in 2.71s",
+    "off": "1 failed, 22 passed, 30 warnings, 12 subtests passed in 1.83s",
+    "same_result_on_off": true,
+    "note": "test_b07.py and test_retreat_feedback_1mm.py run with the RETREAT-ARGS.json fixture (they cannot find it in place); the one failure is an unrelated planner test."
+  },
+  "controller_tests": {
+    "summary": "190 failed, 375 passed, 1 warning, 16 errors, 36 subtests passed in 9.80s",
+    "same_failure_set_as_vec": true
+  },
+  "tools": "goal1-build/coal: patch_coal.py, patch_coal2.py, verify_coal.py, coal_dual.py; experiments/goal1-coal-dev has the raw results"
+}

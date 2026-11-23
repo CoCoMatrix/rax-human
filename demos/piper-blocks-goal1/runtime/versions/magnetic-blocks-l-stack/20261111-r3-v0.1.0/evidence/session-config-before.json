@@ -1,0 +1,16 @@
+{
+  "id": "magnetic-blocks-l-stack",
+  "title": "Magnetic blocks L stack",
+  "agent_auto_compact_token_limit": 65536,
+  "description": "TASK.md",
+  "backend_options": "workspace-bounds.json",
+  "seed_memory": "/home/ubuntu/code_junqi/rax-piper-franka-20261104/runtime/sessions/20261111T033539Z_magnetic-blocks-l-stack_c05091/agent-workspace/memory",
+  "history_lessons": null,
+  "prompts": {
+    "fresh": "fresh.md",
+    "common": "common.md",
+    "continuation": "unused.md",
+    "rehearsal": "unused.md",
+    "working_rehearsal": "unused.md"
+  }
+}

@@ -1,0 +1,23 @@
+[project]
+name = "dagger-router"
+version = "0.1.0"
+description = "Minimal model/expert router for GR3 DAgger collection"
+requires-python = ">=3.10"
+dependencies = [
+  "dora-rs==0.5.0",
+  "farther-core",
+  "numpy<2.3",
+  "pyarrow>=14",
+  "xpolicylab",
+]
+
+[project.scripts]
+dagger-router = "dagger_router.node:main"
+
+[tool.uv.sources]
+farther-core = { path = "../../libraries/farther-core", editable = true }
+xpolicylab = { path = "../../../..", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

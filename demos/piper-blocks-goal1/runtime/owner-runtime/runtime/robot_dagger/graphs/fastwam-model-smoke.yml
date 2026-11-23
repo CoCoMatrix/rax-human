@@ -1,0 +1,71 @@
+nodes:
+  - id: camera_top
+    build: uv pip install --python ../.venv/bin/python --no-deps -e ../nodes/dora-depthai
+    path: ../.venv/bin/dora-depthai
+    inputs:
+      tick: dora/timer/millis/100
+    outputs: [image]
+    env:
+      IMAGE_WIDTH: 640
+      IMAGE_HEIGHT: 400
+      FPS: 30
+      ROTATE: 180
+      USE_DEPTH: 0
+      DRAW_TIMESTAMP: 0
+      DEBUG: 0
+
+  - id: fastwam_probe
+    path: ../tests/fastwam_model_probe.py
+    inputs:
+      tick: dora/timer/millis/100
+      camera: camera_top/image
+      model_status: output_pipeline/status
+      model_raw_action: gr3_policy/action
+      raw_action: output_pipeline/raw_action
+      qp_action: output_pipeline/qp_action
+      mink_action: output_pipeline/mink_action
+      filtered_action: output_pipeline/filtered_action
+      action: output_pipeline/action
+      base_action: output_pipeline/base_action
+      model_info: gr3_policy/model_info
+    outputs: [state, base_state, control]
+    env:
+      SMOKE_TIMEOUT_SECONDS: 900
+      SMOKE_MODEL_COMMAND: "${SMOKE_MODEL_COMMAND:-step}"
+      PYTHONPATH: "../../.."
+
+  - id: gr3_policy
+    path: ../../../.venv/bin/xpolicylab-gr3-dora
+    inputs:
+      tick: dora/timer/millis/33
+      image: camera_top/image
+      state: fastwam_probe/state
+      base_state: fastwam_probe/base_state
+      control: fastwam_probe/control
+    outputs: [action_chunk, action, action_robot, base_action, model_info, status]
+    env:
+      POLICY_URL: "${POLICY_URL:-ws://127.0.0.1:19000}"
+      ROBOT_ID: smoke
+      ACTION_HZ: 30
+      ACTION_CHUNK_SIZE: "${ACTION_CHUNK_SIZE:-32}"
+      INFERENCE_TRIGGER_STEPS: "${INFERENCE_TRIGGER_STEPS:-0}"
+      CAMERA_IS_BGR: 1
+      IMAGE_WIDTH: 640
+      IMAGE_HEIGHT: 400
+      TASK: "${TASK:-Pick the tomato from the table and place it inside the basket on the left.}"
+
+  - id: output_pipeline
+    path: ../../../.venv/bin/xpolicylab-gr3-output
+    inputs:
+      tick: dora/timer/millis/33
+      control_tick: dora/timer/millis/11
+      action_chunk: gr3_policy/action_chunk
+      robot_state: fastwam_probe/state
+      control: fastwam_probe/control
+      model_status: gr3_policy/status
+    outputs: [action, action_robot, raw_action, qp_action, projected_action, mink_action, filtered_action, base_action, output_info, projector_info, status]
+    env:
+      OUTPUT_QP_ENABLED: "0"
+      OUTPUT_MINK_MODE: "off"
+      OUTPUT_FILTER_ENABLED: "0"
+      OUTPUT_SPLINE_ENABLED: "0"
